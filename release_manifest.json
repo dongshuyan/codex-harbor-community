@@ -55,6 +55,12 @@
   ],
   "documents": {
     "public/README.md": "README.md",
+    "public/README.zh-CN.md": "README.zh-CN.md",
+    "public/docs/USAGE.md": "docs/USAGE.md",
+    "public/docs/images/app-icon.png": "docs/images/app-icon.png",
+    "public/docs/images/overview.png": "docs/images/overview.png",
+    "public/docs/images/account-quota.png": "docs/images/account-quota.png",
+    "public/docs/images/model-parameters.png": "docs/images/model-parameters.png",
     "public/PRIVACY.md": "PRIVACY.md",
     "public/CONTRIBUTING.md": "CONTRIBUTING.md",
     "public/LICENSE": "LICENSE",
