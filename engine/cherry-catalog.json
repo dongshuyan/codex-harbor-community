@@ -1,0 +1,7131 @@
+{
+  "source": "Cherry Studio provider-registry",
+  "release": "2.0.14",
+  "revision": "d33b9b0266bda30d0e4715ae16650eee7b845d70",
+  "license": "MIT",
+  "source_sha256": "9c89bdffd3733d0cbab402e2494f2d877b38b45927678ad92526777bddfa0fb0",
+  "source_url": "https://github.com/CherryHQ/cherry-studio/blob/d33b9b0266bda30d0e4715ae16650eee7b845d70/packages/provider-registry/data/models.json",
+  "models": {
+    "active-speaker-detection": {},
+    "arrow-1-1": {
+      "contextWindow": 131072
+    },
+    "bce-embedding-base-v1": {
+      "contextWindow": 512
+    },
+    "bce-reranker-base-v1": {
+      "contextWindow": 512
+    },
+    "bevformer": {
+      "contextWindow": 128000
+    },
+    "bge-base-en-v1-5": {
+      "contextWindow": 512
+    },
+    "bge-base-zh-v1-5": {
+      "contextWindow": 512
+    },
+    "bge-large-en-v1-5": {
+      "contextWindow": 512
+    },
+    "bge-large-zh-v1-5": {
+      "contextWindow": 512
+    },
+    "bge-m3": {
+      "contextWindow": 8192
+    },
+    "bge-multilingual-gemma2": {
+      "contextWindow": 8192
+    },
+    "bge-reranker-base": {
+      "contextWindow": 512
+    },
+    "bge-reranker-large": {
+      "contextWindow": 512
+    },
+    "bge-reranker-v2-gemma": {
+      "contextWindow": 8192
+    },
+    "bge-reranker-v2-m3": {
+      "contextWindow": 8192
+    },
+    "bge-small-en-v1-5": {
+      "contextWindow": 512
+    },
+    "bge-small-zh-v1-5": {
+      "contextWindow": 512
+    },
+    "c4ai-aya-expanse-32b": {
+      "contextWindow": 131072
+    },
+    "c4ai-aya-expanse-8b": {
+      "contextWindow": 8192
+    },
+    "c4ai-aya-vision-32b": {
+      "contextWindow": 16384
+    },
+    "c4ai-aya-vision-8b": {
+      "contextWindow": 16384
+    },
+    "chatgpt-image-latest": {},
+    "claude-3-haiku": {
+      "contextWindow": 200000
+    },
+    "claude-fable-5": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "wireDialect": "effort"
+      }
+    },
+    "claude-fable-5-1": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "wireDialect": "effort"
+      }
+    },
+    "claude-fable-latest": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "max"
+        ],
+        "wireDialect": "effort"
+      }
+    },
+    "claude-haiku-4-5": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 64000,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 64000,
+          "min": 1024
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "claude-haiku-latest": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "max"
+            ]
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "max",
+          "none"
+        ],
+        "wireDialect": "effort"
+      }
+    },
+    "claude-opus-4": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 32000,
+            "min": 1024
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 32000,
+          "min": 1024
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "claude-opus-4-1": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 32000,
+            "min": 1024
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 32000,
+          "min": 1024
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "claude-opus-4-5": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 64000,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "none"
+        ],
+        "thinkingTokenLimits": {
+          "max": 64000,
+          "min": 1024
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "claude-opus-4-6": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "max"
+            ]
+          },
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 128000,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "max",
+          "none"
+        ],
+        "thinkingTokenLimits": {
+          "max": 128000,
+          "min": 1024
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "claude-opus-4-6-v1": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "max"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 128000,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "max"
+        ],
+        "thinkingTokenLimits": {
+          "max": 128000,
+          "min": 1024
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "claude-opus-4-7": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          },
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 128000,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "none"
+        ],
+        "thinkingTokenLimits": {
+          "max": 128000,
+          "min": 1024
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "claude-opus-4-8": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "none"
+        ],
+        "wireDialect": "effort"
+      }
+    },
+    "claude-opus-4-8-fast": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "none"
+        ],
+        "wireDialect": "effort"
+      }
+    },
+    "claude-opus-5": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "wireDialect": "effort"
+      }
+    },
+    "claude-opus-5-fast": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "wireDialect": "effort"
+      }
+    },
+    "claude-opus-latest": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "max"
+            ]
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "max",
+          "none"
+        ],
+        "wireDialect": "effort"
+      }
+    },
+    "claude-sonnet-4": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 64000,
+            "min": 1024
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 64000,
+          "min": 1024
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "claude-sonnet-4-5": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 64000,
+            "min": 1024
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 64000,
+          "min": 1024
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "claude-sonnet-4-6": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "max"
+            ]
+          },
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 64000,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "max",
+          "none"
+        ],
+        "thinkingTokenLimits": {
+          "max": 64000,
+          "min": 1024
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "claude-sonnet-5": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max",
+          "none"
+        ],
+        "wireDialect": "effort"
+      }
+    },
+    "claude-sonnet-latest": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "max"
+            ]
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "max",
+          "none"
+        ],
+        "wireDialect": "effort"
+      }
+    },
+    "codestral": {
+      "contextWindow": 256000
+    },
+    "codestral-embed": {
+      "contextWindow": 8192
+    },
+    "codestral-latest": {
+      "contextWindow": 256000
+    },
+    "cogview-4": {},
+    "command": {
+      "contextWindow": 4096
+    },
+    "command-a": {
+      "contextWindow": 262144
+    },
+    "command-a-03-2025": {
+      "contextWindow": 262144
+    },
+    "command-a-plus-05-2026": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "command-a-reasoning-08-2025": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "command-a-translate-08-2025": {
+      "contextWindow": 8192
+    },
+    "command-a-vision-07-2025": {
+      "contextWindow": 131072
+    },
+    "command-light": {
+      "contextWindow": 4096
+    },
+    "command-r": {
+      "contextWindow": 131072
+    },
+    "command-r-08-2024": {
+      "contextWindow": 131072
+    },
+    "command-r-plus": {
+      "contextWindow": 131072
+    },
+    "command-r-plus-08-2024": {
+      "contextWindow": 131072
+    },
+    "command-r7b-12-2024": {
+      "contextWindow": 131072
+    },
+    "command-r7b-arabic-02-2025": {
+      "contextWindow": 128000
+    },
+    "cosmos-predict1-5b": {},
+    "cosmos-reason2-8b": {
+      "contextWindow": 131072
+    },
+    "cosmos-transfer1-7b": {},
+    "cosmos-transfer2-5-2b": {},
+    "dall-e-2": {},
+    "dall-e-3": {},
+    "deep-research-max-preview-04-2026": {
+      "contextWindow": 131072
+    },
+    "deep-research-preview-04-2026": {
+      "contextWindow": 131072
+    },
+    "deepseek-chat": {
+      "contextWindow": 163840
+    },
+    "deepseek-chat-v3": {
+      "contextWindow": 163840
+    },
+    "deepseek-chat-v3-1": {
+      "contextWindow": 163840,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "deepseek-r1": {
+      "contextWindow": 163840
+    },
+    "deepseek-r1-distill-llama-70b": {
+      "contextWindow": 32768
+    },
+    "deepseek-r1-distill-llama-8b": {
+      "contextWindow": 32768
+    },
+    "deepseek-r1-distill-qwen-1-5b": {
+      "contextWindow": 32768
+    },
+    "deepseek-r1-distill-qwen-14b": {
+      "contextWindow": 32768
+    },
+    "deepseek-r1-distill-qwen-32b": {
+      "contextWindow": 32768
+    },
+    "deepseek-r1-distill-qwen-7b": {
+      "contextWindow": 32768
+    },
+    "deepseek-v3": {
+      "contextWindow": 163840
+    },
+    "deepseek-v3-1": {
+      "contextWindow": 163840,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "deepseek-v3-1-maas": {
+      "contextWindow": 163840,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "deepseek-v3-1-terminus": {
+      "contextWindow": 163840,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "deepseek-v3-2": {
+      "contextWindow": 163840,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "deepseek-v3-2-exp": {
+      "contextWindow": 163840,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "deepseek-v3-2-maas": {
+      "contextWindow": 163840,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "deepseek-v4-1-flash-expires-on": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "high",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "high",
+          "max"
+        ]
+      }
+    },
+    "deepseek-v4-flash": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "high",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "high",
+          "max"
+        ]
+      }
+    },
+    "deepseek-v4-flash-vision-exp": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "high",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "high",
+          "max"
+        ]
+      }
+    },
+    "deepseek-v4-pro": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "high",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "high",
+          "max"
+        ]
+      }
+    },
+    "devstral": {
+      "contextWindow": 262144
+    },
+    "devstral-2": {
+      "contextWindow": 256000
+    },
+    "devstral-2-123b": {
+      "contextWindow": 256000
+    },
+    "devstral-latest": {
+      "contextWindow": 262144
+    },
+    "devstral-medium": {
+      "contextWindow": 128000
+    },
+    "devstral-medium-latest": {
+      "contextWindow": 262144
+    },
+    "devstral-small": {
+      "contextWindow": 256000
+    },
+    "devstral-small-2": {
+      "contextWindow": 256000
+    },
+    "doubao-1-5-lite-32k": {
+      "contextWindow": 32768
+    },
+    "doubao-1-5-pro-256k": {
+      "contextWindow": 262144
+    },
+    "doubao-1-5-pro-32k": {
+      "contextWindow": 131072
+    },
+    "doubao-1-5-thinking-pro": {
+      "contextWindow": 131072
+    },
+    "doubao-1-5-thinking-pro-m": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "auto",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-1-5-thinking-vision-pro": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-1-5-ui-tars": {},
+    "doubao-1-5-vision-lite": {},
+    "doubao-1-5-vision-pro": {
+      "contextWindow": 32768
+    },
+    "doubao-1-5-vision-pro-32k": {
+      "contextWindow": 32768
+    },
+    "doubao-embedding-large-text": {},
+    "doubao-embedding-text": {},
+    "doubao-embedding-vision": {
+      "contextWindow": 131072
+    },
+    "doubao-seed-1-6": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "auto",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-seed-1-6-flash": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-seed-1-6-lite": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "auto",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-seed-1-6-vision": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-seed-1-8": {},
+    "doubao-seed-2-0-code-preview": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-seed-2-0-lite": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-seed-2-0-mini": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-seed-2-0-pro": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-seed-2-1-pro": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-seed-2-1-turbo": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-seed-character": {
+      "contextWindow": 131072
+    },
+    "doubao-seed-code-preview": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "doubao-seed-evolving": {
+      "contextWindow": 1024000
+    },
+    "doubao-seed-translation": {
+      "contextWindow": 4096
+    },
+    "doubao-seedance-1-0-lite-i2v": {},
+    "doubao-seedance-1-0-lite-t2v": {},
+    "doubao-seedance-1-0-pro": {},
+    "doubao-seedance-1-0-pro-fast": {},
+    "doubao-seedance-2-0": {},
+    "doubao-seedance-2-0-fast": {},
+    "doubao-seedance-2-0-mini": {},
+    "doubao-seededit-3-0-i2i": {},
+    "doubao-seedream-3-0-t2i": {},
+    "doubao-seedream-4-0": {},
+    "doubao-seedream-4-5": {},
+    "doubao-seedream-5-0-lite": {},
+    "doubao-seedream-5-0-pro": {},
+    "elevenlabs-music": {},
+    "elevenlabs-v2-5-turbo": {},
+    "elevenlabs-v3": {},
+    "embed-english-light-v3-0": {
+      "contextWindow": 512
+    },
+    "embed-english-v3-0": {
+      "contextWindow": 512
+    },
+    "embed-multilingual-light-v3-0": {
+      "contextWindow": 512
+    },
+    "embed-multilingual-v3-0": {
+      "contextWindow": 512
+    },
+    "embed-v4-0": {
+      "contextWindow": 131072
+    },
+    "embedding-3": {
+      "contextWindow": 8192
+    },
+    "eraser": {},
+    "ernie-3-5-128k": {
+      "contextWindow": 131072
+    },
+    "ernie-3-5-8k": {
+      "contextWindow": 8192
+    },
+    "ernie-4-0-8k": {
+      "contextWindow": 8192
+    },
+    "ernie-4-0-turbo-128k": {
+      "contextWindow": 131072
+    },
+    "ernie-4-0-turbo-8k": {
+      "contextWindow": 8192
+    },
+    "ernie-4-5": {
+      "contextWindow": 123904
+    },
+    "ernie-4-5-a3b": {
+      "contextWindow": 131072
+    },
+    "ernie-4-5-a47b": {
+      "contextWindow": 131072
+    },
+    "ernie-4-5-turbo": {
+      "contextWindow": 131072
+    },
+    "ernie-4-5-turbo-vl": {
+      "contextWindow": 32768
+    },
+    "ernie-4-5-vl-424b-a47b": {
+      "contextWindow": 123000
+    },
+    "ernie-4-5-vl-a3b": {
+      "contextWindow": 32768
+    },
+    "ernie-5-0": {
+      "contextWindow": 131072
+    },
+    "ernie-character-8k": {
+      "contextWindow": 8192
+    },
+    "ernie-lite-8k": {
+      "contextWindow": 8192
+    },
+    "ernie-speed-128k": {
+      "contextWindow": 131072
+    },
+    "ernie-tiny-8k": {
+      "contextWindow": 8192
+    },
+    "ernie-x1-1-preview": {
+      "contextWindow": 32768
+    },
+    "ernie-x1-turbo": {
+      "contextWindow": 32768
+    },
+    "esm2-650m": {
+      "contextWindow": 128000
+    },
+    "esmfold": {
+      "contextWindow": 128000
+    },
+    "expand-image": {},
+    "fibo": {},
+    "fibo-edit": {},
+    "flux-1-1-pro-ultra": {},
+    "flux-1-dev": {
+      "contextWindow": 4096
+    },
+    "flux-1-kontext-dev": {
+      "contextWindow": 40960
+    },
+    "flux-1-schnell": {
+      "contextWindow": 77
+    },
+    "flux-2-flex": {},
+    "flux-2-klein-4b": {
+      "contextWindow": 40960
+    },
+    "flux-2-klein-9b": {},
+    "flux-2-max": {
+      "contextWindow": 67300
+    },
+    "flux-2-pro": {
+      "contextWindow": 67300
+    },
+    "flux-3-video": {},
+    "flux-dev": {},
+    "flux-fast-schnell": {
+      "contextWindow": 512
+    },
+    "flux-fill-pro": {},
+    "flux-kontext-dev": {},
+    "flux-kontext-max": {
+      "contextWindow": 512
+    },
+    "flux-kontext-pro": {
+      "contextWindow": 512
+    },
+    "flux-pro": {},
+    "flux-pro-1-0-fill": {
+      "contextWindow": 512
+    },
+    "flux-pro-1-1": {
+      "contextWindow": 512
+    },
+    "flux-pro-1-1-ultra": {
+      "contextWindow": 512
+    },
+    "flux-schnell": {},
+    "fugu-ultra": {
+      "contextWindow": 1000000
+    },
+    "gemini-2-5-computer-use-preview-10-2025": {
+      "contextWindow": 131072
+    },
+    "gemini-2-5-flash": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "gemini-2-5-flash-image": {
+      "contextWindow": 32768,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "gemini-2-5-flash-image-preview": {
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "gemini-2-5-flash-lite": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 512
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 512
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "gemini-2-5-flash-preview-tts": {
+      "contextWindow": 8192
+    },
+    "gemini-2-5-flash-tts": {
+      "contextWindow": 32768
+    },
+    "gemini-2-5-pro": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 32768,
+            "min": 128
+          }
+        ],
+        "thinkingTokenLimits": {
+          "max": 32768,
+          "min": 128
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "gemini-2-5-pro-preview": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 32768,
+            "min": 128
+          }
+        ],
+        "thinkingTokenLimits": {
+          "max": 32768,
+          "min": 128
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "gemini-2-5-pro-preview-05-06": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 32768,
+            "min": 128
+          }
+        ],
+        "thinkingTokenLimits": {
+          "max": 32768,
+          "min": 128
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "gemini-2-5-pro-preview-tts": {
+      "contextWindow": 8192
+    },
+    "gemini-2-5-pro-tts": {
+      "contextWindow": 32768
+    },
+    "gemini-3-1-flash-image": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-1-flash-image-preview": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-1-flash-lite": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-1-flash-lite-image": {
+      "contextWindow": 65536,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-1-flash-lite-preview": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-1-flash-live-preview": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-1-flash-tts-preview": {
+      "contextWindow": 8192,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-1-pro-preview": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 32768,
+            "min": 128
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 32768,
+          "min": 128
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-1-pro-preview-customtools": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 32768,
+            "min": 128
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 32768,
+          "min": 128
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-5-flash": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-5-flash-lite": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-5-live-translate-preview": {
+      "contextWindow": 16384
+    },
+    "gemini-3-5-transcribe": {},
+    "gemini-3-5-transcribe-live": {},
+    "gemini-3-6-flash": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-7-flash": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-8-flash": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-flash": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-flash-preview": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-pro-image": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 32768,
+            "min": 128
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 32768,
+          "min": 128
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-3-pro-image-preview": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 32768,
+            "min": 128
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 32768,
+          "min": 128
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-embedding-001": {
+      "contextWindow": 8192
+    },
+    "gemini-embedding-2": {
+      "contextWindow": 8192
+    },
+    "gemini-flash-latest": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-flash-lite-latest": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 512
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 512
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemini-omni-flash-preview": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 24576,
+            "min": 0
+          }
+        ],
+        "thinkingTokenLimits": {
+          "max": 24576,
+          "min": 0
+        },
+        "wireDialect": "budget"
+      }
+    },
+    "gemini-pro-latest": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 32768,
+            "min": 128
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "thinkingTokenLimits": {
+          "max": 32768,
+          "min": 128
+        },
+        "wireDialect": "effort"
+      }
+    },
+    "gemma-2-27b-it": {
+      "contextWindow": 8192
+    },
+    "gemma-2-2b-it": {
+      "contextWindow": 128000
+    },
+    "gemma-3-12b-it": {
+      "contextWindow": 131072
+    },
+    "gemma-3-27b-it": {
+      "contextWindow": 202752
+    },
+    "gemma-3-4b-it": {
+      "contextWindow": 131072
+    },
+    "gemma-3n-e2b-it": {
+      "contextWindow": 128000
+    },
+    "gemma-3n-e4b-it": {
+      "contextWindow": 128000
+    },
+    "gemma-4-26b-a4b-it": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "gemma-4-31b-it": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "generate-background": {},
+    "genfill": {},
+    "gliner-pii": {
+      "contextWindow": 128000
+    },
+    "glm-3-turbo": {
+      "contextWindow": 131072
+    },
+    "glm-4": {
+      "contextWindow": 131072
+    },
+    "glm-4-1v": {
+      "contextWindow": 65536
+    },
+    "glm-4-5": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-4-5-air": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-4-5-flash": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-4-5v": {
+      "contextWindow": 66000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-4-6": {
+      "contextWindow": 204800,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-4-6v": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-4-7": {
+      "contextWindow": 204800,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-4-7-flash": {
+      "contextWindow": 202752,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-4-7-flashx": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-4-7-maas": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-4-air": {
+      "contextWindow": 131072
+    },
+    "glm-4-airx": {
+      "contextWindow": 8192
+    },
+    "glm-4-flash": {
+      "contextWindow": 131072
+    },
+    "glm-4-flashx": {
+      "contextWindow": 131072
+    },
+    "glm-4-long": {
+      "contextWindow": 1024000
+    },
+    "glm-4-plus": {
+      "contextWindow": 131072
+    },
+    "glm-4v": {
+      "contextWindow": 8192
+    },
+    "glm-4v-flash": {
+      "contextWindow": 8192
+    },
+    "glm-4v-plus": {
+      "contextWindow": 8192
+    },
+    "glm-5": {
+      "contextWindow": 204800,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-5-1": {
+      "contextWindow": 204800,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-5-2": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "minimal",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    },
+    "glm-5-2-fast": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "high",
+              "xhigh"
+            ]
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "high",
+          "xhigh",
+          "none"
+        ]
+      }
+    },
+    "glm-5-3": {
+      "contextWindow": 1310720,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "high",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "high",
+          "max"
+        ]
+      }
+    },
+    "glm-5-3-fast": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "high",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "high",
+          "max"
+        ]
+      }
+    },
+    "glm-5-3-flash": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "high",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "high",
+          "max"
+        ]
+      }
+    },
+    "glm-5-3-promo-50": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "high",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "high",
+          "max"
+        ]
+      }
+    },
+    "glm-5-maas": {
+      "contextWindow": 202752,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-5-turbo": {
+      "contextWindow": 202800,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-5v-turbo": {
+      "contextWindow": 202752,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "glm-flash-latest": {
+      "contextWindow": 1310720
+    },
+    "glm-image": {},
+    "glm-latest": {
+      "contextWindow": 1310720
+    },
+    "glm-z1": {
+      "contextWindow": 131072
+    },
+    "glm-z1-air": {
+      "contextWindow": 131072
+    },
+    "glm-z1-airx": {
+      "contextWindow": 131072
+    },
+    "glm-z1-flash": {
+      "contextWindow": 131072
+    },
+    "gpt-3-5-turbo": {
+      "contextWindow": 16385
+    },
+    "gpt-3-5-turbo-16k": {
+      "contextWindow": 16385
+    },
+    "gpt-3-5-turbo-instruct": {
+      "contextWindow": 4095
+    },
+    "gpt-4": {
+      "contextWindow": 8192
+    },
+    "gpt-4-1": {
+      "contextWindow": 1047576
+    },
+    "gpt-4-1-mini": {
+      "contextWindow": 1047576
+    },
+    "gpt-4-1-nano": {
+      "contextWindow": 1047576
+    },
+    "gpt-4-turbo": {
+      "contextWindow": 128000
+    },
+    "gpt-4-turbo-preview": {
+      "contextWindow": 128000
+    },
+    "gpt-4o": {
+      "contextWindow": 128000
+    },
+    "gpt-4o-mini": {
+      "contextWindow": 128000
+    },
+    "gpt-4o-mini-transcribe": {},
+    "gpt-4o-transcribe": {},
+    "gpt-5": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-5-1": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-5-1-codex": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-5-1-codex-max": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-1-codex-mini": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-5-2": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-2-chat": {
+      "contextWindow": 128000
+    },
+    "gpt-5-2-chat-latest": {
+      "contextWindow": 128000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "medium"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "medium"
+        ]
+      }
+    },
+    "gpt-5-2-codex": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-2-pro": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-3-chat-latest": {
+      "contextWindow": 128000
+    },
+    "gpt-5-3-codex": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-3-codex-spark": {
+      "contextWindow": 128000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-4": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-4-mini": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-4-nano": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-4-pro": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-5": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-5-pro": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-6": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    },
+    "gpt-5-6-luna": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    },
+    "gpt-5-6-luna-pro": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-6-sol": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    },
+    "gpt-5-6-sol-pro": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-6-terra": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    },
+    "gpt-5-6-terra-pro": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-5-chat": {},
+    "gpt-5-codex": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-5-image": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-5-image-mini": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-5-mini": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-5-nano": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-5-pro": {
+      "contextWindow": 400000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "high"
+        ]
+      }
+    },
+    "gpt-6-astra": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    },
+    "gpt-6-astra-pro": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    },
+    "gpt-audio": {
+      "contextWindow": 128000
+    },
+    "gpt-audio-mini": {
+      "contextWindow": 128000
+    },
+    "gpt-chat-latest": {
+      "contextWindow": 400000
+    },
+    "gpt-image-1": {},
+    "gpt-image-1-5": {},
+    "gpt-image-1-mini": {},
+    "gpt-image-2": {},
+    "gpt-latest": {
+      "contextWindow": 1050000
+    },
+    "gpt-mini-latest": {
+      "contextWindow": 400000
+    },
+    "gpt-oss-120b": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-oss-120b-maas": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-oss-20b": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-oss-20b-maas": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-oss-safeguard-120b": {
+      "contextWindow": 128000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-oss-safeguard-20b": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "gpt-realtime-1-5": {},
+    "gpt-realtime-2": {},
+    "gpt-realtime-2-1": {
+      "contextWindow": 128000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "gpt-realtime-mini": {},
+    "gpt-realtime-whisper": {},
+    "grok-2": {
+      "contextWindow": 131072
+    },
+    "grok-2-vision": {
+      "contextWindow": 32768
+    },
+    "grok-3": {
+      "contextWindow": 131072
+    },
+    "grok-3-fast": {
+      "contextWindow": 131072
+    },
+    "grok-3-mini": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "high"
+        ]
+      }
+    },
+    "grok-3-mini-fast": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "high"
+        ]
+      }
+    },
+    "grok-4": {
+      "contextWindow": 256000
+    },
+    "grok-4-1": {
+      "contextWindow": 256000
+    },
+    "grok-4-1-fast": {
+      "contextWindow": 1000000
+    },
+    "grok-4-1-fast-non-reasoning": {
+      "contextWindow": 1000000
+    },
+    "grok-4-20": {
+      "contextWindow": 2000000
+    },
+    "grok-4-20-0309-non-reasoning": {
+      "contextWindow": 1000000
+    },
+    "grok-4-20-multi-agent": {
+      "contextWindow": 2000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "grok-4-20-multi-agent-beta": {
+      "contextWindow": 2000000
+    },
+    "grok-4-20-non-reasoning": {
+      "contextWindow": 2000000
+    },
+    "grok-4-20-non-reasoning-beta": {
+      "contextWindow": 2000000
+    },
+    "grok-4-20-reasoning-beta": {
+      "contextWindow": 2000000
+    },
+    "grok-4-3": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "grok-4-5": {
+      "contextWindow": 500000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "grok-4-6": {
+      "contextWindow": 500000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "grok-4-fast": {
+      "contextWindow": 2000000
+    },
+    "grok-beta": {
+      "contextWindow": 131072
+    },
+    "grok-build-0-1": {
+      "contextWindow": 256000
+    },
+    "grok-code-fast-1": {
+      "contextWindow": 256000
+    },
+    "grok-imagine-image": {
+      "contextWindow": 16000
+    },
+    "grok-imagine-image-2-0": {
+      "contextWindow": 64000
+    },
+    "grok-imagine-image-quality": {
+      "contextWindow": 16000
+    },
+    "grok-imagine-video": {
+      "contextWindow": 1024
+    },
+    "grok-imagine-video-1-5": {
+      "contextWindow": 1024
+    },
+    "grok-imagine-video-1-5-preview": {},
+    "grok-latest": {
+      "contextWindow": 500000
+    },
+    "grok-stt": {},
+    "grok-tts": {},
+    "grok-vision-beta": {
+      "contextWindow": 8192
+    },
+    "grok-voice-think-fast-1-0": {},
+    "grok-voice-think-fast-2-0": {},
+    "hermes-3-llama-3-1-405b": {
+      "contextWindow": 131072
+    },
+    "hermes-4-405b": {
+      "contextWindow": 131072
+    },
+    "hermes-4-70b": {
+      "contextWindow": 131072
+    },
+    "hunyuan-2-0": {
+      "contextWindow": 196608
+    },
+    "hunyuan-2-0-instruct": {
+      "contextWindow": 147456
+    },
+    "hunyuan-a13b-instruct": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "hunyuan-t1": {},
+    "hunyuan-turbos": {},
+    "hy-image-lite": {},
+    "hy-image-v3-0": {},
+    "hy-mt2-1-8b": {
+      "contextWindow": 8192
+    },
+    "hy-mt2-30b-a3b": {
+      "contextWindow": 8192
+    },
+    "hy-mt2-7b": {
+      "contextWindow": 8192
+    },
+    "hy-mt2-lite": {
+      "contextWindow": 8192
+    },
+    "hy-mt2-plus": {
+      "contextWindow": 8192
+    },
+    "hy-mt2-pro": {
+      "contextWindow": 8192
+    },
+    "hy-role": {
+      "contextWindow": 32768
+    },
+    "hy3": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "high"
+        ]
+      }
+    },
+    "hy3-preview": {
+      "contextWindow": 262144
+    },
+    "hy4-preview": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ]
+      }
+    },
+    "ideogram-v2": {},
+    "ideogram-v2a": {},
+    "ideogram-v2a-turbo": {},
+    "ideogram-v3": {},
+    "ideogram-v4": {},
+    "image-01": {},
+    "image-01-live": {},
+    "image-3-2": {},
+    "imagen-3": {},
+    "imagen-3-fast": {},
+    "imagen-4": {},
+    "imagen-4-0": {},
+    "imagen-4-0-fast-generate-001": {},
+    "imagen-4-0-fast-generate-preview-06-06": {},
+    "imagen-4-0-generate-001": {},
+    "imagen-4-0-generate-preview-06-06": {},
+    "imagen-4-0-ultra": {},
+    "imagen-4-0-ultra-generate-001": {},
+    "imagen-4-0-ultra-generate-preview-06-06": {},
+    "imagen-4-fast": {},
+    "imagen-4-ultra": {},
+    "inkling": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "minimal",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    },
+    "inkling-small": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "minimal",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    },
+    "interfaze-beta": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "jamba-1-5-large": {},
+    "jamba-1-5-mini": {},
+    "jamba-large-1-7": {},
+    "jamba-mini-1-7": {},
+    "jina-clip-v1": {
+      "contextWindow": 8192
+    },
+    "jina-clip-v2": {
+      "contextWindow": 8192
+    },
+    "jina-code-embeddings-0-5b": {
+      "contextWindow": 32768
+    },
+    "jina-code-embeddings-1-5b": {
+      "contextWindow": 32768
+    },
+    "jina-colbert-v1-en": {
+      "contextWindow": 8192
+    },
+    "jina-colbert-v2": {
+      "contextWindow": 8192
+    },
+    "jina-embedding-b-en-v1": {
+      "contextWindow": 512
+    },
+    "jina-embeddings-v2-base-code": {
+      "contextWindow": 8192
+    },
+    "jina-embeddings-v2-base-de": {
+      "contextWindow": 8192
+    },
+    "jina-embeddings-v2-base-en": {
+      "contextWindow": 8192
+    },
+    "jina-embeddings-v2-base-es": {
+      "contextWindow": 8192
+    },
+    "jina-embeddings-v2-base-zh": {
+      "contextWindow": 8192
+    },
+    "jina-embeddings-v3": {
+      "contextWindow": 8192
+    },
+    "jina-embeddings-v4": {
+      "contextWindow": 32768
+    },
+    "jina-embeddings-v5-omni-nano": {
+      "contextWindow": 8192
+    },
+    "jina-embeddings-v5-omni-small": {
+      "contextWindow": 32768
+    },
+    "jina-embeddings-v5-text-nano": {
+      "contextWindow": 8192
+    },
+    "jina-embeddings-v5-text-small": {
+      "contextWindow": 32768
+    },
+    "jina-reranker-m0": {
+      "contextWindow": 10240
+    },
+    "jina-reranker-v1-base-en": {
+      "contextWindow": 8192
+    },
+    "jina-reranker-v1-tiny-en": {
+      "contextWindow": 8192
+    },
+    "jina-reranker-v1-turbo-en": {
+      "contextWindow": 8192
+    },
+    "jina-reranker-v2-base-multilingual": {
+      "contextWindow": 1024
+    },
+    "jina-reranker-v3": {
+      "contextWindow": 131072
+    },
+    "kat-coder-air-v2-5": {
+      "contextWindow": 256000
+    },
+    "kat-coder-pro-v1": {
+      "contextWindow": 256000
+    },
+    "kat-coder-pro-v2": {
+      "contextWindow": 262144
+    },
+    "kat-coder-pro-v2-5": {
+      "contextWindow": 262144
+    },
+    "kimi-k2": {
+      "contextWindow": 262144
+    },
+    "kimi-k2-5": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "kimi-k2-6": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "minimal",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          },
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "kimi-k2-7-code": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "kimi-k2-7-code-highspeed": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 30720,
+            "min": 0
+          }
+        ],
+        "thinkingTokenLimits": {
+          "max": 30720,
+          "min": 0
+        }
+      }
+    },
+    "kimi-k2-instruct": {
+      "contextWindow": 262144
+    },
+    "kimi-k2-thinking-maas": {
+      "contextWindow": 262144
+    },
+    "kimi-k3": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "high",
+              "max"
+            ]
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "high",
+          "max",
+          "none"
+        ]
+      }
+    },
+    "kimi-k3-fast": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "high",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "high",
+          "max"
+        ]
+      }
+    },
+    "kimi-latest": {
+      "contextWindow": 1048576
+    },
+    "kling-v1": {},
+    "kling-v1-5": {},
+    "kling-v1-6": {},
+    "kling-v2-1": {},
+    "kling-v2-1-master": {},
+    "kling-v2-5-turbo": {},
+    "kling-v2-5-turbo-i2v": {},
+    "kling-v2-5-turbo-t2v": {},
+    "kling-v2-6": {},
+    "kling-v2-6-i2v": {},
+    "kling-v2-6-motion-control": {},
+    "kling-v2-6-t2v": {},
+    "kling-v2-master": {},
+    "kling-v3-0-i2v": {},
+    "kling-v3-0-motion-control": {},
+    "kling-v3-0-t2v": {},
+    "kolors": {},
+    "laguna-s-2-1": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "laguna-xs-2-1": {
+      "contextWindow": 262144
+    },
+    "lfm-2-5-2-6b": {
+      "contextWindow": 65536
+    },
+    "ling-1t": {
+      "contextWindow": 128000
+    },
+    "ling-3-0-flash": {
+      "contextWindow": 262144
+    },
+    "ling-3-0-flash-fin": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "ling-3-0-flash-sante": {
+      "contextWindow": 262144
+    },
+    "llama-3-1-70b": {
+      "contextWindow": 131072
+    },
+    "llama-3-1-70b-instruct": {
+      "contextWindow": 131072
+    },
+    "llama-3-1-8b": {
+      "contextWindow": 128000
+    },
+    "llama-3-1-8b-instruct": {
+      "contextWindow": 131072
+    },
+    "llama-3-1-nemotron-70b-instruct": {
+      "contextWindow": 128000
+    },
+    "llama-3-1-nemotron-nano-8b-v1": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "llama-3-1-nemotron-nano-vl-8b-v1": {
+      "contextWindow": 32768
+    },
+    "llama-3-1-nemotron-safety-guard-8b-v3": {
+      "contextWindow": 128000
+    },
+    "llama-3-1-nemotron-ultra-253b-v1": {
+      "contextWindow": 128000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "llama-3-2-11b-vision-instruct": {
+      "contextWindow": 128000
+    },
+    "llama-3-2-1b-instruct": {
+      "contextWindow": 128000
+    },
+    "llama-3-2-3b-instruct": {
+      "contextWindow": 131072
+    },
+    "llama-3-2-90b-vision-instruct": {
+      "contextWindow": 128000
+    },
+    "llama-3-2-nemoretriever-300m-embed-v1": {
+      "contextWindow": 32768
+    },
+    "llama-3-3-70b": {
+      "contextWindow": 128000
+    },
+    "llama-3-3-70b-instruct": {
+      "contextWindow": 131072
+    },
+    "llama-3-3-70b-instruct-maas": {
+      "contextWindow": 128000
+    },
+    "llama-3-3-nemotron-super-49b-v1": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "llama-3-3-nemotron-super-49b-v1-5": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "llama-4-maverick": {
+      "contextWindow": 1048576
+    },
+    "llama-4-maverick-17b-128e-instruct": {
+      "contextWindow": 128000
+    },
+    "llama-4-maverick-17b-128e-instruct-maas": {
+      "contextWindow": 524288
+    },
+    "llama-4-scout": {
+      "contextWindow": 1310720
+    },
+    "llama-guard-4-12b": {
+      "contextWindow": 163840
+    },
+    "llama-nemotron-embed-vl-1b-v2": {
+      "contextWindow": 32768
+    },
+    "llama-nemotron-rerank-vl-1b-v2": {
+      "contextWindow": 128000
+    },
+    "llama3-1-70b-instruct": {
+      "contextWindow": 128000
+    },
+    "llama3-1-8b-instruct": {
+      "contextWindow": 128000
+    },
+    "llama3-3-70b-instruct": {
+      "contextWindow": 128000
+    },
+    "llama4-maverick-17b-instruct": {
+      "contextWindow": 1000000
+    },
+    "llama4-scout-17b-instruct": {
+      "contextWindow": 3500000
+    },
+    "longcat-2-0": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "lyria-3-clip-preview": {
+      "contextWindow": 1048576
+    },
+    "lyria-3-pro-preview": {
+      "contextWindow": 1048576
+    },
+    "magistral-medium-latest": {
+      "contextWindow": 128000
+    },
+    "magistral-small": {
+      "contextWindow": 128000
+    },
+    "magpie-tts-zeroshot": {},
+    "mai-image-2-5": {},
+    "mai-image-2-5-pro": {},
+    "mai-image-2-6": {},
+    "mai-image-2-6-flash": {},
+    "mercury-2": {
+      "contextWindow": 128000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "mercury-2-5-preview": {
+      "contextWindow": 260000
+    },
+    "mercury-coder-small": {
+      "contextWindow": 32000
+    },
+    "mercury-edit-2": {
+      "contextWindow": 128000
+    },
+    "mimo-v2-5": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "mimo-v2-5-pro": {
+      "contextWindow": 1050000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "mimo-v2-5-pro-ultraspeed": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "mimo-v2-flash": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "mimo-v2-omni": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "mimo-v2-pro": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "minimax-01": {
+      "contextWindow": 1000192
+    },
+    "minimax-h3": {},
+    "minimax-h3-max": {},
+    "minimax-m1": {
+      "contextWindow": 1000000
+    },
+    "minimax-m2": {
+      "contextWindow": 205000
+    },
+    "minimax-m2-1": {
+      "contextWindow": 204800
+    },
+    "minimax-m2-1-lightning": {
+      "contextWindow": 204800
+    },
+    "minimax-m2-5": {
+      "contextWindow": 204800
+    },
+    "minimax-m2-5-highspeed": {
+      "contextWindow": 204800
+    },
+    "minimax-m2-7": {
+      "contextWindow": 204800
+    },
+    "minimax-m2-7-highspeed": {
+      "contextWindow": 204800
+    },
+    "minimax-m2-her": {
+      "contextWindow": 65536
+    },
+    "minimax-m3": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "ministral-14b": {
+      "contextWindow": 262144
+    },
+    "ministral-14b-instruct": {
+      "contextWindow": 262144
+    },
+    "ministral-3-14b-instruct": {
+      "contextWindow": 128000
+    },
+    "ministral-3-3b-instruct": {
+      "contextWindow": 256000
+    },
+    "ministral-3-8b-instruct": {
+      "contextWindow": 128000
+    },
+    "ministral-3b": {
+      "contextWindow": 131072
+    },
+    "ministral-3b-latest": {
+      "contextWindow": 128000
+    },
+    "ministral-8b": {
+      "contextWindow": 262144
+    },
+    "ministral-8b-latest": {
+      "contextWindow": 128000
+    },
+    "mistral-7b-instruct-v0-3": {
+      "contextWindow": 65536
+    },
+    "mistral-embed": {
+      "contextWindow": 8192
+    },
+    "mistral-large": {
+      "contextWindow": 262144
+    },
+    "mistral-large-3": {
+      "contextWindow": 256000
+    },
+    "mistral-large-3-675b-instruct": {
+      "contextWindow": 262144
+    },
+    "mistral-large-latest": {
+      "contextWindow": 262144
+    },
+    "mistral-medium": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ]
+      }
+    },
+    "mistral-medium-3": {
+      "contextWindow": 131072
+    },
+    "mistral-medium-3-1": {
+      "contextWindow": 131072
+    },
+    "mistral-medium-3-5": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ]
+      }
+    },
+    "mistral-medium-3-5-128b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ]
+      }
+    },
+    "mistral-medium-3-instruct": {
+      "contextWindow": 131072
+    },
+    "mistral-medium-latest": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ]
+      }
+    },
+    "mistral-nemo": {
+      "contextWindow": 131072
+    },
+    "mistral-nemotron": {
+      "contextWindow": 128000
+    },
+    "mistral-saba": {
+      "contextWindow": 32768
+    },
+    "mistral-small": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ]
+      }
+    },
+    "mistral-small-24b-instruct": {
+      "contextWindow": 32768
+    },
+    "mistral-small-3-1-24b-instruct": {
+      "contextWindow": 128000
+    },
+    "mistral-small-3-2-24b-instruct": {
+      "contextWindow": 131072
+    },
+    "mistral-small-4-119b": {
+      "contextWindow": 128000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ]
+      }
+    },
+    "mistral-small-latest": {
+      "contextWindow": 256000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ]
+      }
+    },
+    "mixtral-8x22b-instruct": {
+      "contextWindow": 65536
+    },
+    "mixtral-8x7b-instruct": {
+      "contextWindow": 32768
+    },
+    "morph-v3-fast": {
+      "contextWindow": 81920
+    },
+    "morph-v3-large": {
+      "contextWindow": 262144
+    },
+    "muse-glimmer-30b": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "minimal",
+              "low",
+              "medium",
+              "high",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "max"
+        ]
+      }
+    },
+    "muse-image-1-0": {},
+    "muse-spark-1-1": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high",
+              "xhigh"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "xhigh"
+        ]
+      }
+    },
+    "muse-spark-1-2": {
+      "contextWindow": 1048576
+    },
+    "muse-spark-1-2-contributor": {
+      "contextWindow": 1048576
+    },
+    "muse-spark-1-3": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    },
+    "muse-spark-1-3-contributor": {
+      "contextWindow": 1048576
+    },
+    "namazu": {
+      "contextWindow": 262144
+    },
+    "nemotron-3-5-content-safety": {
+      "contextWindow": 131072
+    },
+    "nemotron-3-5-lightning": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 32768,
+            "min": 1
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 32768,
+          "min": 1
+        }
+      }
+    },
+    "nemotron-3-5-lightning-30b-a3b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "nemotron-3-content-safety": {
+      "contextWindow": 128000
+    },
+    "nemotron-3-nano-30b-a3b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "nemotron-3-nano-omni-30b-a3b": {
+      "contextWindow": 256000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "nemotron-3-super-120b-a12b": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "nemotron-3-ultra-550b-a55b": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "nemotron-content-safety-reasoning-4b": {
+      "contextWindow": 128000
+    },
+    "nemotron-mini-4b-instruct": {
+      "contextWindow": 128000
+    },
+    "nemotron-nano-12b-v2": {
+      "contextWindow": 128000
+    },
+    "nemotron-nano-12b-v2-vl": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "nemotron-nano-3-30b": {
+      "contextWindow": 128000
+    },
+    "nemotron-nano-9b-v2": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "nemotron-super-3-120b": {
+      "contextWindow": 262144
+    },
+    "nemotron-voicechat": {
+      "contextWindow": 128000
+    },
+    "north-mini-code": {
+      "contextWindow": 131072
+    },
+    "north-mini-code-1-0": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "high"
+        ]
+      }
+    },
+    "nova-2-lite": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high",
+          "none"
+        ]
+      }
+    },
+    "nova-2-lite-v1": {
+      "contextWindow": 1000000
+    },
+    "nova-lite": {
+      "contextWindow": 300000
+    },
+    "nova-lite-v1": {
+      "contextWindow": 300000
+    },
+    "nova-micro": {
+      "contextWindow": 128000
+    },
+    "nova-micro-v1": {
+      "contextWindow": 128000
+    },
+    "nova-premier-v1": {
+      "contextWindow": 1000000
+    },
+    "nova-pro": {
+      "contextWindow": 300000
+    },
+    "nova-pro-v1": {
+      "contextWindow": 300000
+    },
+    "nv-embed-v1": {
+      "contextWindow": 32768
+    },
+    "nv-embedcode-7b-v1": {
+      "contextWindow": 32768
+    },
+    "o1": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "o1-pro": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "o3": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "o3-mini": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "o3-pro": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "o4-mini": {
+      "contextWindow": 200000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "open-mistral-7b": {
+      "contextWindow": 8000
+    },
+    "open-mixtral-8x22b": {
+      "contextWindow": 64000
+    },
+    "open-mixtral-8x7b": {
+      "contextWindow": 32000
+    },
+    "paligemma": {
+      "contextWindow": 128000
+    },
+    "palmyra-x4": {
+      "contextWindow": 122880
+    },
+    "palmyra-x5": {
+      "contextWindow": 1040000
+    },
+    "phi-4": {
+      "contextWindow": 16384
+    },
+    "phi-4-mini-instruct": {
+      "contextWindow": 131072
+    },
+    "phi-4-multimodal-instruct": {
+      "contextWindow": 128000
+    },
+    "photon": {},
+    "photon-flash": {},
+    "pixtral-12b": {
+      "contextWindow": 128000
+    },
+    "pixtral-large": {
+      "contextWindow": 128000
+    },
+    "pixtral-large-latest": {
+      "contextWindow": 128000
+    },
+    "pplx-embed-v1-0-6b": {
+      "contextWindow": 32000
+    },
+    "pplx-embed-v1-4b": {
+      "contextWindow": 32000
+    },
+    "qvq-max": {
+      "contextWindow": 131072
+    },
+    "qwen-2-5-72b-instruct": {
+      "contextWindow": 32768
+    },
+    "qwen-2-5-7b-instruct": {
+      "contextWindow": 32768
+    },
+    "qwen-2-5-coder-32b-instruct": {
+      "contextWindow": 32768
+    },
+    "qwen-3-14b": {
+      "contextWindow": 40960,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "qwen-3-235b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "qwen-3-30b": {
+      "contextWindow": 40960,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "qwen-3-32b": {
+      "contextWindow": 128000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1
+        }
+      }
+    },
+    "qwen-3-6-max-preview": {
+      "contextWindow": 240000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 131072,
+            "min": 1
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 131072,
+          "min": 1
+        }
+      }
+    },
+    "qwen-deep-research": {
+      "contextWindow": 1000000
+    },
+    "qwen-doc-turbo": {
+      "contextWindow": 131072
+    },
+    "qwen-flash": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen-image": {},
+    "qwen-image-3": {},
+    "qwen-image-3-0": {},
+    "qwen-image-3-0-pro": {},
+    "qwen-image-3-pro": {},
+    "qwen-image-edit": {},
+    "qwen-long": {
+      "contextWindow": 10000000
+    },
+    "qwen-math-plus": {
+      "contextWindow": 4096
+    },
+    "qwen-math-turbo": {
+      "contextWindow": 4096
+    },
+    "qwen-max": {
+      "contextWindow": 131072
+    },
+    "qwen-mt-plus": {
+      "contextWindow": 16384
+    },
+    "qwen-mt-turbo": {
+      "contextWindow": 16384
+    },
+    "qwen-omni-turbo": {
+      "contextWindow": 32768
+    },
+    "qwen-omni-turbo-realtime": {
+      "contextWindow": 32768
+    },
+    "qwen-plus": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen-plus-character": {
+      "contextWindow": 32768
+    },
+    "qwen-plus-character-ja": {
+      "contextWindow": 8192
+    },
+    "qwen-turbo": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 0
+        }
+      }
+    },
+    "qwen-vl-max": {
+      "contextWindow": 131072
+    },
+    "qwen-vl-ocr": {
+      "contextWindow": 34096
+    },
+    "qwen-vl-plus": {
+      "contextWindow": 131072
+    },
+    "qwen2-5-14b-instruct": {
+      "contextWindow": 131072
+    },
+    "qwen2-5-32b-instruct": {
+      "contextWindow": 131072
+    },
+    "qwen2-5-72b-instruct": {
+      "contextWindow": 131072
+    },
+    "qwen2-5-7b-instruct": {
+      "contextWindow": 131072
+    },
+    "qwen2-5-coder-32b-instruct": {
+      "contextWindow": 131072
+    },
+    "qwen2-5-coder-7b-instruct": {
+      "contextWindow": 131072
+    },
+    "qwen2-5-math-72b-instruct": {
+      "contextWindow": 4096
+    },
+    "qwen2-5-math-7b-instruct": {
+      "contextWindow": 4096
+    },
+    "qwen2-5-omni-7b": {
+      "contextWindow": 32768
+    },
+    "qwen2-5-vl-72b-instruct": {
+      "contextWindow": 131072
+    },
+    "qwen2-5-vl-7b-instruct": {
+      "contextWindow": 131072
+    },
+    "qwen3-14b": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-235b-a22b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 1
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 1
+        }
+      }
+    },
+    "qwen3-235b-a22b-instruct-2507-maas": {
+      "contextWindow": 262144
+    },
+    "qwen3-30b-a3b": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-30b-a3b-instruct": {
+      "contextWindow": 262144
+    },
+    "qwen3-32b": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-5-122b-a10b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-5-27b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-5-35b-a3b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-5-397b-a17b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-5-4b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-5-9b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-5-flash": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 1
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 1
+        }
+      }
+    },
+    "qwen3-5-flash-02-23": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-5-plus": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 1
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 1
+        }
+      }
+    },
+    "qwen3-5-plus-02-15": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-6-27b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 131072,
+            "min": 1
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 131072,
+          "min": 1
+        }
+      }
+    },
+    "qwen3-6-35b-a3b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-6-flash": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-6-max-preview": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-6-plus": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 131072,
+            "min": 1
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 131072,
+          "min": 1
+        }
+      }
+    },
+    "qwen3-7-flash": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-7-max": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 262144,
+            "min": 1
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 262144,
+          "min": 1
+        }
+      }
+    },
+    "qwen3-7-plus": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 262144,
+            "min": 1
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 262144,
+          "min": 1
+        }
+      }
+    },
+    "qwen3-8-2-4t-a95b": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "xhigh"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "xhigh"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-8-27b": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "low",
+              "medium",
+              "xhigh"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "low",
+          "medium",
+          "xhigh"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-8-flash": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "xhigh"
+            ]
+          },
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 262144,
+            "min": 0
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "xhigh",
+          "none"
+        ],
+        "thinkingTokenLimits": {
+          "max": 262144,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-8-flash-next": {
+      "contextWindow": 1048576,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "xhigh"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "xhigh"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-8-max": {
+      "contextWindow": 1000000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "xhigh"
+            ]
+          },
+          {
+            "kind": "budget",
+            "max": 262144,
+            "min": 0
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "xhigh",
+          "none"
+        ],
+        "thinkingTokenLimits": {
+          "max": 262144,
+          "min": 0
+        }
+      }
+    },
+    "qwen3-8-max-preview": {
+      "contextWindow": 1000000
+    },
+    "qwen3-8b": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-asr-flash": {
+      "contextWindow": 53248
+    },
+    "qwen3-coder": {
+      "contextWindow": 262144
+    },
+    "qwen3-coder-30b-a3b": {
+      "contextWindow": 262144
+    },
+    "qwen3-coder-30b-a3b-instruct": {
+      "contextWindow": 262144
+    },
+    "qwen3-coder-480b-a35b": {
+      "contextWindow": 131072
+    },
+    "qwen3-coder-480b-a35b-instruct": {
+      "contextWindow": 262144
+    },
+    "qwen3-coder-flash": {
+      "contextWindow": 1000000
+    },
+    "qwen3-coder-next": {
+      "contextWindow": 262144
+    },
+    "qwen3-coder-plus": {
+      "contextWindow": 1048576
+    },
+    "qwen3-embedding-0-6b": {
+      "contextWindow": 32768
+    },
+    "qwen3-embedding-4b": {
+      "contextWindow": 32768
+    },
+    "qwen3-embedding-8b": {
+      "contextWindow": 32768
+    },
+    "qwen3-livetranslate-flash-realtime": {
+      "contextWindow": 53248
+    },
+    "qwen3-max": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 1
+          }
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 1
+        }
+      }
+    },
+    "qwen3-max-preview": {
+      "contextWindow": 262144
+    },
+    "qwen3-next-80b-a3b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-next-80b-a3b-instruct": {
+      "contextWindow": 262144
+    },
+    "qwen3-omni-flash": {
+      "contextWindow": 65536,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-omni-flash-realtime": {
+      "contextWindow": 65536
+    },
+    "qwen3-reranker-0-6b": {
+      "contextWindow": 32768
+    },
+    "qwen3-reranker-4b": {
+      "contextWindow": 32768
+    },
+    "qwen3-reranker-8b": {
+      "contextWindow": 32768
+    },
+    "qwen3-vl": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 81920,
+            "min": 1
+          }
+        ],
+        "thinkingTokenLimits": {
+          "max": 81920,
+          "min": 1
+        }
+      }
+    },
+    "qwen3-vl-235b-a22b": {
+      "contextWindow": 262000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-vl-235b-a22b-instruct": {
+      "contextWindow": 262144
+    },
+    "qwen3-vl-30b-a3b": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-vl-30b-a3b-instruct": {
+      "contextWindow": 262144
+    },
+    "qwen3-vl-32b-instruct": {
+      "contextWindow": 131072
+    },
+    "qwen3-vl-8b": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwen3-vl-8b-instruct": {
+      "contextWindow": 262144
+    },
+    "qwen3-vl-instruct": {
+      "contextWindow": 131072
+    },
+    "qwen3-vl-plus": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          },
+          {
+            "kind": "budget",
+            "max": 38912,
+            "min": 1024
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ],
+        "thinkingTokenLimits": {
+          "max": 38912,
+          "min": 1024
+        }
+      }
+    },
+    "qwq-32b": {
+      "contextWindow": 131072
+    },
+    "qwq-plus": {
+      "contextWindow": 131072
+    },
+    "recraft-v2": {
+      "contextWindow": 512
+    },
+    "recraft-v3": {
+      "contextWindow": 512
+    },
+    "recraft-v4": {},
+    "recraft-v4-1": {},
+    "recraft-v4-1-pro": {},
+    "recraft-v4-1-pro-vector": {},
+    "recraft-v4-1-utility": {},
+    "recraft-v4-1-utility-pro": {},
+    "recraft-v4-1-vector": {},
+    "recraft-v4-pro": {},
+    "recraft-v4-pro-vector": {},
+    "recraft-v4-styles": {},
+    "recraft-v4-styles-pro": {},
+    "recraft-v4-styles-pro-vector": {},
+    "recraft-v4-styles-vector": {},
+    "recraft-v4-vector": {},
+    "reka-edge": {
+      "contextWindow": 16384
+    },
+    "reka-flash-3": {
+      "contextWindow": 65536
+    },
+    "rerank-1": {
+      "contextWindow": 8000
+    },
+    "rerank-2": {
+      "contextWindow": 16000
+    },
+    "rerank-2-5": {
+      "contextWindow": 32000
+    },
+    "rerank-2-5-lite": {
+      "contextWindow": 32000
+    },
+    "rerank-2-lite": {
+      "contextWindow": 8000
+    },
+    "rerank-english-v3-0": {
+      "contextWindow": 4096
+    },
+    "rerank-lite-1": {
+      "contextWindow": 4000
+    },
+    "rerank-multilingual-v3-0": {
+      "contextWindow": 4096
+    },
+    "rerank-qa-mistral-4b": {
+      "contextWindow": 128000
+    },
+    "rerank-v3-5": {
+      "contextWindow": 4096
+    },
+    "rerank-v4-fast": {
+      "contextWindow": 32768
+    },
+    "rerank-v4-pro": {
+      "contextWindow": 32768
+    },
+    "ring-1t": {
+      "contextWindow": 128000
+    },
+    "riva-translate-4b-instruct-v1-1": {
+      "contextWindow": 128000
+    },
+    "riverflow-v2-5-fast": {},
+    "riverflow-v2-5-pro": {},
+    "riverflow-v2-fast": {},
+    "riverflow-v2-pro": {},
+    "runway-aleph": {},
+    "runway-gen-3a-turbo": {},
+    "runway-gen-4-turbo": {},
+    "s1": {},
+    "s2-1-pro": {},
+    "s2-pro": {},
+    "sarvam-m": {
+      "contextWindow": 128000
+    },
+    "seed-1-6": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "auto"
+        ]
+      }
+    },
+    "seed-1-8": {
+      "contextWindow": 256000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          {
+            "kind": "toggle"
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "none"
+        ]
+      }
+    },
+    "seed-oss-36b-instruct": {
+      "contextWindow": 262000
+    },
+    "seedance-2-0": {},
+    "seedance-2-0-fast": {},
+    "seedance-2-0-mini": {},
+    "seedance-2-5": {},
+    "seedance-v1-0-pro": {},
+    "seedance-v1-0-pro-fast": {},
+    "seedance-v1-5-pro": {},
+    "seedream-4-0": {},
+    "seedream-4-5": {},
+    "seedream-5-0-lite": {},
+    "seedream-5-0-pro": {},
+    "solar-10-7b-instruct": {
+      "contextWindow": 128000
+    },
+    "solar-mini": {
+      "contextWindow": 32768
+    },
+    "solar-pro-3": {
+      "contextWindow": 131072
+    },
+    "solar-pro2": {
+      "contextWindow": 65536,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "high"
+        ]
+      }
+    },
+    "solar-pro3": {
+      "contextWindow": 131072,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "solar-pro4": {
+      "contextWindow": 524288,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "none",
+              "minimal",
+              "low",
+              "medium",
+              "high",
+              "xhigh",
+              "max"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "none",
+          "minimal",
+          "low",
+          "medium",
+          "high",
+          "xhigh",
+          "max"
+        ]
+      }
+    },
+    "sonar": {
+      "contextWindow": 128000
+    },
+    "sonar-deep-research": {
+      "contextWindow": 128000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "sonar-pro": {
+      "contextWindow": 200000
+    },
+    "sonar-reasoning-pro": {
+      "contextWindow": 128000,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "minimal",
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "sparsedrive": {
+      "contextWindow": 128000
+    },
+    "stable-diffusion-3": {},
+    "stable-diffusion-3-5-large": {},
+    "stable-diffusion-3-5-large-turbo": {},
+    "stable-diffusion-v1-4": {},
+    "stable-diffusion-v1-5": {},
+    "stable-diffusion-xl-base-1-0": {},
+    "step-1-32k": {
+      "contextWindow": 32768
+    },
+    "step-2-16k": {
+      "contextWindow": 16384
+    },
+    "step-3-5-flash": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "high"
+        ]
+      }
+    },
+    "step-3-7-flash": {
+      "contextWindow": 262144,
+      "reasoning": {
+        "controls": [
+          {
+            "kind": "effort",
+            "values": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        ],
+        "supportedEfforts": [
+          "low",
+          "medium",
+          "high"
+        ]
+      }
+    },
+    "step-tts-2": {},
+    "stepaudio-2-5-asr": {},
+    "stepaudio-2-5-tts": {},
+    "streampetr": {
+      "contextWindow": 128000
+    },
+    "studiovoice": {
+      "contextWindow": 128000
+    },
+    "suno-v3": {},
+    "suno-v3-5": {},
+    "suno-v4": {},
+    "suno-v4-5": {},
+    "synthetic-video-detector": {},
+    "tc-code": {},
+    "text-embedding-005": {
+      "contextWindow": 8192
+    },
+    "text-embedding-3-large": {
+      "contextWindow": 8192
+    },
+    "text-embedding-3-small": {
+      "contextWindow": 8192
+    },
+    "text-embedding-ada-002": {
+      "contextWindow": 8192
+    },
+    "text-multilingual-embedding-002": {
+      "contextWindow": 8192
+    },
+    "tiny-aya-earth": {
+      "contextWindow": 8192
+    },
+    "tiny-aya-fire": {
+      "contextWindow": 8192
+    },
+    "tiny-aya-global": {
+      "contextWindow": 8192
+    },
+    "tiny-aya-water": {
+      "contextWindow": 8192
+    },
+    "titan-embed-text-v2": {
+      "contextWindow": 8192
+    },
+    "tongyi-intent-detect-v3": {
+      "contextWindow": 8192
+    },
+    "transcribe-1": {},
+    "trinity-large": {
+      "contextWindow": 262144
+    },
+    "tts-1": {},
+    "tts-1-hd": {},
+    "usdcode": {
+      "contextWindow": 128000
+    },
+    "usdvalidate": {},
+    "veo-3-0-fast-generate-001": {},
+    "veo-3-0-generate-001": {},
+    "veo-3-1-fast-generate-001": {},
+    "veo-3-1-fast-generate-preview": {
+      "contextWindow": 480
+    },
+    "veo-3-1-generate-001": {},
+    "veo-3-1-generate-preview": {
+      "contextWindow": 480
+    },
+    "veo-3-1-lite-generate-001": {},
+    "veo-3-1-lite-generate-preview": {
+      "contextWindow": 480
+    },
+    "viduq1": {},
+    "viduq2": {},
+    "viduq3-pro": {},
+    "viduq3-pro-fast": {},
+    "viduq3-turbo": {},
+    "voxtral-mini-3b": {
+      "contextWindow": 128000
+    },
+    "voxtral-mini-latest": {},
+    "voxtral-mini-tts-latest": {},
+    "voxtral-small-24b": {
+      "contextWindow": 32768
+    },
+    "voxtral-small-latest": {
+      "contextWindow": 32000
+    },
+    "voyage-2": {
+      "contextWindow": 4000
+    },
+    "voyage-3": {
+      "contextWindow": 32000
+    },
+    "voyage-3-5": {
+      "contextWindow": 32000
+    },
+    "voyage-3-5-lite": {
+      "contextWindow": 32000
+    },
+    "voyage-3-large": {
+      "contextWindow": 32000
+    },
+    "voyage-3-lite": {
+      "contextWindow": 32000
+    },
+    "voyage-4": {
+      "contextWindow": 32000
+    },
+    "voyage-4-large": {
+      "contextWindow": 32000
+    },
+    "voyage-4-lite": {
+      "contextWindow": 32000
+    },
+    "voyage-4-nano": {
+      "contextWindow": 32000
+    },
+    "voyage-code-2": {
+      "contextWindow": 16000
+    },
+    "voyage-code-3": {
+      "contextWindow": 32000
+    },
+    "voyage-finance-2": {
+      "contextWindow": 32000
+    },
+    "voyage-large-2": {
+      "contextWindow": 16000
+    },
+    "voyage-large-2-instruct": {
+      "contextWindow": 16000
+    },
+    "voyage-law-2": {
+      "contextWindow": 16000
+    },
+    "voyage-multilingual-2": {
+      "contextWindow": 32000
+    },
+    "voyage-multimodal-3": {
+      "contextWindow": 32000
+    },
+    "voyage-multimodal-3-5": {
+      "contextWindow": 32000
+    },
+    "wan-v2-5-t2v-preview": {},
+    "wan-v2-6-i2v": {},
+    "wan-v2-6-i2v-flash": {},
+    "wan-v2-6-r2v": {},
+    "wan-v2-6-r2v-flash": {},
+    "wan-v2-6-t2v": {},
+    "wan-v2-7-r2v": {},
+    "wan-v2-7-t2v": {},
+    "wan-v3-0-video": {},
+    "wan-v3-0-video-prime": {},
+    "wan2-6-image": {},
+    "wan2-6-t2i": {},
+    "wan2-7-image": {},
+    "wan2-7-image-pro": {},
+    "whisper-1": {},
+    "whisper-large-v3": {}
+  }
+}

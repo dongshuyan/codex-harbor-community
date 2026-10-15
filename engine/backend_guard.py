@@ -1,0 +1,170 @@
+"""Hold a backend lease until the actual native process finishes cleanup."""
+import fcntl
+import json
+import os
+from pathlib import Path
+import signal
+import stat
+import subprocess
+import sys
+import threading
+
+
+PATH_METHODS = {'thread/start', 'thread/resume', 'thread/fork', 'turn/start',
+                'thread/settings/update', 'command/exec'}
+VALUE_OPTIONS = {'-c', '--config', '--enable', '--disable', '-p', '--profile'}
+MAX_RPC_LINE = 64 * 1024 * 1024
+
+
+def is_stdio_app_server(args):
+    """Recognize only the supported stdio command shapes; leave other CLI uses alone."""
+    i = 0
+    while i < len(args):
+        value = args[i]
+        if value in VALUE_OPTIONS:
+            i += 2
+        elif any(value.startswith(option+'=') for option in VALUE_OPTIONS if option.startswith('--')):
+            i += 1
+        else:
+            break
+    if i >= len(args) or args[i] != 'app-server':
+        return False
+    i += 1
+    while i < len(args):
+        value = args[i]
+        if value in VALUE_OPTIONS:
+            if i+1 >= len(args): return False
+            i += 2
+        elif any(value.startswith(option+'=') for option in VALUE_OPTIONS if option.startswith('--')):
+            i += 1
+        elif value in {'--analytics-default-enabled', '--stdio'}:
+            i += 1
+        elif value == '--listen' and i+1 < len(args) and args[i+1] == 'stdio://':
+            i += 2
+        elif value == '--listen=stdio://':
+            i += 1
+        else:
+            return False
+    return True
+
+
+def rewrite_permission_paths(raw, alias, home):
+    """Replace this launch's home prefix in local permission paths, never in text.
+
+    Do not realpath suffixes: child symlinks must still reach Codex's native
+    validation. Old aliases and non-local environment paths stay untouched.
+    Unchanged messages retain their original bytes.
+    """
+    try:
+        value = json.loads(raw)
+    except (ValueError, RecursionError):
+        return raw
+    if not isinstance(value, dict) or not isinstance(value.get('method'), str) or value['method'] not in PATH_METHODS:
+        return raw
+    params = value.get('params')
+    if not isinstance(params, dict): return raw
+    changed = False
+    def path(item):
+        nonlocal changed
+        if not isinstance(item, str) or alias == '/' or not alias:
+            return item
+        if item != alias and not item.startswith(alias+'/'):
+            return item
+        suffix = item[len(alias):]
+        if any(part in {'.', '..'} for part in suffix.split('/')):
+            return item
+        changed = True
+        return home+suffix
+    if 'cwd' in params: params['cwd'] = path(params['cwd'])
+    if isinstance(params.get('runtimeWorkspaceRoots'), list):
+        params['runtimeWorkspaceRoots'] = [path(item) for item in params['runtimeWorkspaceRoots']]
+    policy = params.get('sandboxPolicy')
+    if isinstance(policy, dict) and isinstance(policy.get('writableRoots'), list):
+        policy['writableRoots'] = [path(item) for item in policy['writableRoots']]
+    # Current desktop turns carry the built-in local executor's roots here,
+    # even when the top-level runtimeWorkspaceRoots field is absent. Remote
+    # executors use their own path namespace, so never rewrite those entries.
+    if isinstance(params.get('environments'), list):
+        for environment in params['environments']:
+            if not isinstance(environment, dict) or environment.get('environmentId') != 'local':
+                continue
+            if 'cwd' in environment: environment['cwd'] = path(environment['cwd'])
+            if isinstance(environment.get('runtimeWorkspaceRoots'), list):
+                environment['runtimeWorkspaceRoots'] = [path(item) for item in environment['runtimeWorkspaceRoots']]
+    if not changed: return raw
+    return json.dumps(value, separators=(',', ':')).encode()+b'\n'
+
+
+def validate_home_alias(alias, home):
+    link, target = Path(alias), Path(home)
+    try:
+        parent = link.parent.stat()
+        valid = (link.is_absolute() and target.is_absolute() and link.is_symlink()
+                 and link.lstat().st_uid == os.getuid()
+                 and parent.st_uid == os.getuid() and not stat.S_IMODE(parent.st_mode) & 0o077
+                 and link.parent.resolve(strict=True) == link.parent
+                 and target.resolve(strict=True) == target and target.is_dir()
+                 and link.resolve(strict=True) == target)
+    except (OSError, RuntimeError):
+        valid = False
+    if not valid:
+        raise SystemExit('Harbor: private desktop home alias does not match this instance.')
+
+
+def main():
+    lease, marker, generation, binary, *args=sys.argv[1:]
+    handle=None
+    if lease!='-':
+        fd=os.open(lease,os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW,0o600)
+        handle=os.fdopen(fd,'a')
+        try: fcntl.flock(handle,fcntl.LOCK_SH|fcntl.LOCK_NB)
+        except BlockingIOError: raise SystemExit('Harbor: account storage is being switched.')
+        if Path(marker).is_symlink() or json.loads(Path(marker).read_text()).get('job')!=generation:
+            raise SystemExit('Harbor: expired instance, reopen from the launcher.')
+    # Keep the guardian alive instead of depending on Electron/Rust fd inheritance.
+    alias=os.environ.get('HARBOR_DESKTOP_CODEX_HOME_ALIAS')
+    adapted=bool(alias and is_stdio_app_server(args))
+    home=os.environ.get('CODEX_HOME','')
+    if adapted:validate_home_alias(alias,home)
+    proc=subprocess.Popen([binary,*args],close_fds=True,stdin=subprocess.PIPE if adapted else None,
+                          pass_fds=(handle.fileno(),) if handle else ())
+    def forward(sig,_frame):
+        if proc.poll() is None: proc.send_signal(sig)
+    signal.signal(signal.SIGTERM,forward);signal.signal(signal.SIGINT,forward)
+    failed=threading.Event()
+    if adapted:
+        def pump():
+            try:
+                # An idle desktop may keep stdin open after native exit. Do not
+                # hold Python's stdin buffer lock in this daemon at shutdown.
+                pending=bytearray()
+                def send(raw):
+                    data=memoryview(rewrite_permission_paths(raw,alias,home))
+                    while data:
+                        written=os.write(proc.stdin.fileno(),data)
+                        if written<=0:raise OSError('Backend input pipe closed')
+                        data=data[written:]
+                while chunk := os.read(sys.stdin.fileno(),65536):
+                    pending.extend(chunk)
+                    while (end := pending.find(b'\n')) >= 0:
+                        if end+1>MAX_RPC_LINE:raise ValueError('RPC line limit exceeded')
+                        send(bytes(pending[:end+1]));del pending[:end+1]
+                    if len(pending)>MAX_RPC_LINE:raise ValueError('RPC line limit exceeded')
+                if pending:send(bytes(pending))
+            except BrokenPipeError:
+                pass
+            except (OSError, ValueError):
+                failed.set()
+                print('Harbor: local backend input could not be forwarded.',file=sys.stderr)
+                if proc.poll() is None:proc.terminate()
+            finally:
+                try:proc.stdin.close()
+                except (OSError, BrokenPipeError):pass
+        threading.Thread(target=pump,daemon=True).start()
+    code=proc.wait()
+    if handle: handle.close()
+    if failed.is_set():raise SystemExit(1)
+    raise SystemExit(code if code>=0 else 128-code)
+
+
+if __name__=='__main__': main()
