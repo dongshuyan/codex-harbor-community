@@ -1,110 +1,74 @@
 <p align="center">
-  <img src="docs/images/app-icon.png" width="112" height="112" alt="Codex Harbor Community icon">
+  <img src="docs/images/app-icon.png" width="96" height="96" alt="Codex Harbor Community app icon">
 </p>
 
 <h1 align="center">Codex Harbor Community</h1>
 
 <p align="center">
-  <strong>Choose your Codex account and history location independently.</strong><br>
-  A native macOS launcher for official accounts and Responses-compatible APIs.
+  <strong>Open Codex with the account and chat history you choose.</strong><br>
+  A native macOS launcher for your existing Codex desktop app.
 </p>
 
 <p align="center">
-  <a href="https://github.com/dongshuyan/codex-harbor-community/releases/latest"><strong>Download for macOS</strong></a> ·
-  <a href="#quick-start">Quick start</a> ·
-  <a href="docs/USAGE.md">User guide</a> ·
-  <a href="README.zh-CN.md">简体中文</a>
+  <a href="https://github.com/dongshuyan/codex-harbor-community/releases/latest"><strong>Download for macOS</strong></a> &nbsp;·&nbsp;
+  <a href="#get-started">Get started</a> &nbsp;·&nbsp;
+  <a href="docs/USAGE.md">User guide</a> &nbsp;·&nbsp;
+  <a href="README.zh-CN.md">Chinese</a>
 </p>
 
-<p align="center">macOS 14+ · Apple Silicon &amp; Intel · MIT</p>
+<p align="center">macOS 14+ &nbsp;·&nbsp; Free and open source &nbsp;·&nbsp; MIT</p>
 
-![Native launcher overview with a demo Responses Router, two official accounts, portable and local history locations, and numbered setup annotations.](docs/images/overview.png)
+![Choose a ChatGPT account or API on the left, a local or external history folder on the right, then open a separate Codex window.](docs/images/overview.en.png)
 
-> Real native interface with fictional demo data and added English annotations. Accounts, URLs, paths, model mappings and quota values are illustrative. The app interface is currently in Simplified Chinese.
+<p align="center"><sub>Interface illustration with fictional data. The app currently uses a Simplified Chinese interface.</sub></p>
 
-## One launcher, two independent choices
+## More accounts, the history you already have
 
-Pick an official account or your own API on the left. Pick the folder that holds your Codex history on the right. Review the combination and open a separate Codex window.
+Use a ChatGPT account or a Responses-compatible API with any registered Codex history folder. Switch accounts while keeping the same history location, or open separate windows for different work.
 
-| Capability | What you can do |
-| --- | --- |
-| Official accounts | Sign in through OpenAI's browser authorization flow and keep accounts separate. See quota windows returned by Codex. |
-| Custom APIs | Set a Responses base URL and API key, then map multiple upstream models to names available in Codex. All configured mappings are enabled together. |
-| History locations | Register local folders or external drives. Choose explicitly or let availability and your priority order decide. Drag cards to reorder. |
-| Workspace organization | Read local projects, session groups, pins and ordering from the selected native Codex home. |
-| Model parameters | Discover context and reasoning settings, inspect their sources, and make protected manual edits. Probe one model or every model in the selected API. |
-| Native Codex windows | Choose the model and permissions in Codex itself. Different accounts and API routes can run concurrently. |
+- **Keep accounts ready to use.** Sign in once per account. Open multiple Codex windows, including several from the same account, without signing out of the others.
+- **Choose where your chats live.** Use a folder on your Mac or an external drive. Automatic selection follows your preferred order; manual selection is always available. Harbor leaves history in place.
+- **See quota before you start.** Compare the remaining quota and reset dates returned for each ChatGPT account. Reset times currently use Beijing time (Asia/Shanghai).
+- **Spend less time configuring models.** Context and reasoning settings fill in automatically, with their sources shown. Your manual edits survive refreshes. Check one model or all models in an API; checks may be billed.
 
-## Quick start
+Existing local projects, pinned chats, supported settings and skills carry over from the selected Codex folder. Models and permissions remain native Codex controls. [Shared history](docs/USAGE.md#windows-and-shared-history) · [Saved settings and skills](docs/USAGE.md#saved-codex-settings)
 
-### Install
+![Illustrated account quota bars with reset dates, beside model settings with automatic sources, protected manual edits and a check button.](docs/images/details.en.png)
 
-1. Download the universal App ZIP from [Releases](https://github.com/dongshuyan/codex-harbor-community/releases/latest). A `SHA256SUMS` file is included alongside it.
-2. Extract the ZIP and move **Codex Harbor Community.app** to your Applications folder.
-3. Open Harbor and add your own sources. **A fresh installation has no accounts, API configuration or registered history locations.**
+## Get started
 
-You will need:
+You need **macOS 14+**, **Python 3.11+**, and the official **Codex desktop app** installed separately and opened at least once. Supported app names are `Codex.app` and `ChatGPT.app`.
 
-- **macOS 14 or later.** The universal package contains Apple Silicon and Intel executables. Runtime acceptance has been performed on Apple Silicon; a physical Intel Mac has not been tested.
-- **The official Codex desktop app**, installed as `Codex.app` or `ChatGPT.app` in `/Applications` or your user's Applications folder. Open it once before using Harbor. Codex is installed separately.
-- **Python 3.11 or later**, from python.org or Homebrew. No additional Python packages are required.
+1. **Install Harbor.** Download the app ZIP from [Releases](https://github.com/dongshuyan/codex-harbor-community/releases/latest), unzip it and move **Codex Harbor Community.app** to Applications. Checksums are available alongside the download.
+2. **Add your two sources.** Use the left **+** to sign in with a ChatGPT account or configure your API. Use the right **+** to register your existing Codex data folder, such as `~/.codex`, or create a new one. Do not select a project's source-code folder as the history location.
+3. **Choose both and launch.** Review the pairing, then open Codex. Choose your model inside the new window.
 
-Release builds are locally ad-hoc signed and are **not Apple Developer ID signed or notarized**. macOS may require approval before opening a downloaded build.
+A fresh installation has **no saved accounts, API settings or paths**. The universal package includes Apple Silicon and Intel binaries; runtime testing covers Apple Silicon. Releases are ad-hoc signed, **not Apple-notarized**, so macOS may require approval on first launch.
 
-### Configure and launch
+<details>
+<summary>Compatibility and everyday use</summary>
 
-1. **Add an account or API.** Use the left **＋** to sign in to an official account, or enter a Responses URL, API key and model mappings.
-2. **Add a history location.** Use the right **＋** to name a folder and register its absolute path. Use an existing native Codex home or explicitly create a new directory.
-3. **Choose both, then launch.** Select the two sources and review the center panel. Choose the specific model inside the new Codex window.
+- APIs must support **Responses**. Harbor does not convert Chat Completions or Anthropic Messages.
+- History locations remain independent; Harbor does not migrate, merge or automatically synchronize them. Finish a turn before continuing the same conversation in another window.
+- Choose a local folder even when an external drive is connected. Close windows using an external drive before ejecting it.
+- Codex updates and individual API providers may need compatibility checks. A successful model check confirms a short reply, not every desktop feature.
 
-Registering or removing a location never moves or deletes its history. When an external drive is connected, you can still choose a local folder manually. Different locations do not synchronize automatically.
+See the [full guide](docs/USAGE.md) for installation, window behavior and [building from source](docs/USAGE.md#build-and-compatibility).
 
-## Accounts and quota at a glance
+</details>
 
-![Official account details with separate login identity, five-hour and weekly quota bars, and absolute reset dates in Beijing time. All values are illustrative.](docs/images/account-quota.png)
+## Your configuration stays under your control
 
-See which account you are selecting, its returned quota windows, and when they reset. Missing or stale results remain visible as such. Reset times use full dates in **Asia/Shanghai (Beijing time)**. Reading quota does not send a model request.
+API keys are stored in **macOS Keychain**. Official login files use user-only file permissions; names, URLs, model mappings and paths are local files, **not encrypted**. Community keeps its own data folder and has no configuration-upload, account-sync or analytics service.
 
-Open multiple windows from the same official account or API, with the same or different history locations. Finish a turn before continuing that conversation in another window; avoid editing one conversation concurrently. Shared history lists may require reopening the destination window. See the [window and history guide](docs/USAGE.md#windows-and-shared-history).
+Requests go to the account or API you select. Continuing a conversation through an API also sends its history context to that provider. [Privacy and storage details →](PRIVACY.md)
 
-## Model parameters with visible sources
+## Credits and community
 
-![Model editor with an upstream model mapping, automatic parameter discovery, protected manual context and reasoning settings, and an individual draft probe.](docs/images/model-parameters.png)
+Built with model data from **OpenAI Codex**, **Cherry Studio's provider registry** and **OpenRouter**, and configuration editing with **TOML Kit**. See [credits](CREDITS.md) for the projects and native interaction patterns we learned from, and [third-party notices](THIRD-PARTY-NOTICES.md) for retained licenses.
 
-Discovery prefers metadata from your API, then bundled public model catalogs, then a generic preset. Context and reasoning settings stay editable; refreshing does not overwrite manual changes. Catalog values are references, and an alias does not give an upstream model new capabilities.
+Thanks to **[LINUX DO](https://linux.do/)** and its community for sharing open-source work and feedback.
 
-**Responses is the supported API protocol.** Harbor does not convert Chat Completions or Anthropic Messages. Probes are explicit, billable requests with bounded budgets and a 60-second deadline per model. A passing probe checks a short response; desktop tools and session continuation need separate acceptance. [Parameter and probe details →](docs/USAGE.md#model-parameters-and-probes)
+[Report an issue](https://github.com/dongshuyan/codex-harbor-community/issues) · [Contribution guide](CONTRIBUTING.md) · [MIT license](LICENSE)
 
-## Private configuration stays on your Mac
-
-- API keys use a dedicated **macOS Keychain** namespace, with no plaintext fallback in profile JSON.
-- Official logins use isolated native Codex credential files protected by filesystem permissions.
-- Names, URLs, mappings and paths stay in Harbor's local data directory. Harbor has no configuration upload, account sync or analytics service of its own.
-- Model requests go to the account or API you select. Continuing history through a Router sends that context to that provider.
-
-Community has its own data root at `~/Library/Application Support/Codex Harbor Community/` and starts with no accounts or paths. Once you select an existing Codex directory, its non-routing settings and skills are available as defaults; your local edits are preserved. Read the [privacy and credential storage policy](PRIVACY.md).
-
-## Build from source
-
-With the Swift 6 toolchain and Python 3.11+:
-
-```sh
-python3 -B -m unittest discover -s tests -p 'test_*.py'
-python3 -B build.py --community --universal
-```
-
-A verified ZIP is written to `release-artifacts/`. Builds clean up their temporary app bundles on normal exit, including handled failures; cleanup errors report the remaining path. After a forced termination, the next build reclaims owned inactive temporary directories. Building does not install the app or read personal configuration. See the [build and compatibility notes](docs/USAGE.md#build-and-compatibility) and [contribution workflow](CONTRIBUTING.md).
-
-## Credits
-
-Harbor includes model metadata from [OpenAI Codex](https://github.com/openai/codex) and [Cherry Studio's provider registry](https://github.com/CherryHQ/cherry-studio/tree/d33b9b0266bda30d0e4715ae16650eee7b845d70/packages/provider-registry), with public context references from OpenRouter. Design and compatibility research drew on CC Switch, CodexBar, Cockpit Tools, CodeEdit, and native AppKit drag-and-drop examples.
-
-See [Credits](CREDITS.md) for each contribution, the sidebar interaction references, and retained upstream licenses. Special thanks to **[LINUX DO](https://linux.do/)** and its community for a place to share open-source work and exchange feedback.
-
-## Support and license
-
-Report reproducible problems through [GitHub Issues](https://github.com/dongshuyan/codex-harbor-community/issues). Include app and Codex versions, with synthetic examples. Never attach keys, login files or entire data folders.
-
-Harbor's original code is [MIT licensed](LICENSE). Bundled public model metadata retains its [upstream licenses and notices](THIRD-PARTY-NOTICES.md).
-
-Codex Harbor Community is an independent project and is not affiliated with or endorsed by OpenAI.
+Please use synthetic examples in reports; never attach keys, login files or private data folders. Codex Harbor Community is an independent project, not affiliated with or endorsed by OpenAI.

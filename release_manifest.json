@@ -102,14 +102,15 @@
     "public/README.zh-CN.md": "README.zh-CN.md",
     "public/docs/USAGE.md": "docs/USAGE.md",
     "public/docs/images/app-icon.png": "docs/images/app-icon.png",
-    "public/docs/images/overview.png": "docs/images/overview.png",
-    "public/docs/images/account-quota.png": "docs/images/account-quota.png",
-    "public/docs/images/model-parameters.png": "docs/images/model-parameters.png",
     "public/PRIVACY.md": "PRIVACY.md",
     "public/CONTRIBUTING.md": "CONTRIBUTING.md",
     "public/CREDITS.md": "CREDITS.md",
     "public/LICENSE": "LICENSE",
-    "public/THIRD-PARTY-NOTICES.md": "THIRD-PARTY-NOTICES.md"
+    "public/THIRD-PARTY-NOTICES.md": "THIRD-PARTY-NOTICES.md",
+    "public/docs/images/overview.en.png": "docs/images/overview.en.png",
+    "public/docs/images/overview.zh-CN.png": "docs/images/overview.zh-CN.png",
+    "public/docs/images/details.en.png": "docs/images/details.en.png",
+    "public/docs/images/details.zh-CN.png": "docs/images/details.zh-CN.png"
   },
   "version": "0.10.3",
   "private_version": "0.9.3"

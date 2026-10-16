@@ -1,110 +1,74 @@
 <p align="center">
-  <img src="docs/images/app-icon.png" width="112" height="112" alt="Codex Harbor Community 图标">
+  <img src="docs/images/app-icon.png" width="96" height="96" alt="Codex Harbor Community 应用图标">
 </p>
 
 <h1 align="center">Codex Harbor Community</h1>
 
 <p align="center">
-  <strong>账号与会话位置，各自选择。</strong><br>
-  为官方账号和 Responses API 提供独立配置的原生 macOS Codex 启动器。
+  <strong>选好账号和会话位置，打开你熟悉的 Codex。</strong><br>
+  为已有的 Codex 桌面应用提供多账号、多会话位置管理的原生 macOS 启动器。
 </p>
 
 <p align="center">
-  <a href="https://github.com/dongshuyan/codex-harbor-community/releases/latest"><strong>下载 macOS 版</strong></a> ·
-  <a href="#快速开始">快速开始</a> ·
-  <a href="docs/USAGE.md">详细指南（英文）</a> ·
-  <a href="README.md">English</a>
+  <a href="https://github.com/dongshuyan/codex-harbor-community/releases/latest"><strong>下载 macOS 版</strong></a> &nbsp;·&nbsp;
+  <a href="#快速开始">快速开始</a> &nbsp;·&nbsp;
+  <a href="docs/USAGE.md">使用指南（英文）</a> &nbsp;·&nbsp;
+  <a href="README.md">英文版</a>
 </p>
 
-<p align="center">macOS 14+ · Apple Silicon 与 Intel · MIT 开源许可</p>
+<p align="center">macOS 14+ &nbsp;·&nbsp; 免费开源 &nbsp;·&nbsp; MIT 许可</p>
 
-![真实启动器界面：左侧是演示 Router 与两个官方账号，右侧是移动硬盘、本地与离线位置，数字标注说明选择和启动流程。](docs/images/overview.png)
+![左侧选择 ChatGPT 账号或 API，右侧选择本地或移动硬盘上的会话目录，再打开独立的 Codex 窗口。](docs/images/overview.zh-CN.png)
 
-> 配图来自真实原生界面，使用虚构的演示数据，并添加英文标注。账号、URL、路径、模型映射和额度数值均为示例；App 当前使用简体中文界面。
+<p align="center"><sub>依据应用布局绘制的示意图。账号、路径与额度均为虚构数据；应用目前使用简体中文界面。</sub></p>
 
-## 两个维度，独立选择
+## 多个账号，沿用已有会话
 
-左侧选择官方账号或自己的 API，右侧选择保存 Codex 历史的文件夹，在中间核对后打开独立 Codex 窗口。
+ChatGPT 账号或兼容 Responses 的 API，都可以搭配已登记的 Codex 会话目录。换账号时继续使用同一份历史，也可以打开多个窗口，分别处理不同的工作。
 
-| 功能 | 可以做什么 |
-| --- | --- |
-| 官方账号 | 通过 OpenAI 网页授权登录，不同账号独立保存。显示 Codex 实际返回的额度周期。 |
-| 自定义 API | 配置 Responses 基础 URL、API Key 与多个模型映射，启动时启用全部映射。 |
-| 会话位置 | 登记本地目录或移动硬盘；手动选择，或按优先级使用首个可用位置。按住卡片拖动排序。 |
-| 工作区分组 | 读取所选原生 Codex home 中的本地项目、会话分组、置顶与顺序。 |
-| 模型参数 | 自动补齐上下文与推理设置，标明来源，保护手动修改。支持单模型或当前 API 全部模型测活。 |
-| 原生 Codex 窗口 | 模型和权限仍在 Codex 自己的菜单中选择。不同账号、API 可以同时运行。 |
+- **账号随时可用。** 每个账号授权一次即可保留登录。同一账号或不同账号都能打开多个 Codex 窗口，无需退出其他窗口的登录。
+- **会话放在哪里，由你决定。** 本地目录和移动硬盘都能使用。自动选择按你排列的优先级查找可用位置，也能随时手动指定。历史保留在原处。
+- **启动前看清额度。** 对比各 ChatGPT 账号实际返回的剩余额度与重置时间，重置时间目前统一显示为北京时间。
+- **少填一些模型参数。** 自动补齐上下文与推理设置，并标明来源；手动改过的内容不会被重新获取覆盖。支持单模型或全部模型测活，测活可能产生费用。
+
+所选 Codex 目录中的本地项目、置顶、受支持的设置与技能会继续沿用。模型和权限仍在 Codex 原生菜单中选择。详见[共享历史](docs/USAGE.md#windows-and-shared-history)与[设置、技能](docs/USAGE.md#saved-codex-settings)说明（英文）。
+
+![功能示意图：左侧显示账号额度与重置时间，右侧显示模型参数、自动获取来源、受保护的手动修改与测活入口。](docs/images/details.zh-CN.png)
 
 ## 快速开始
 
-### 安装
+需要 **macOS 14 或以上**、**Python 3.11 或以上**，以及另行安装并至少打开过一次的官方 **Codex 桌面应用**。支持的应用名称为 `Codex.app` 和 `ChatGPT.app`。
 
-1. 从 [Releases](https://github.com/dongshuyan/codex-harbor-community/releases/latest) 下载通用 App ZIP，同页提供 `SHA256SUMS` 校验文件。
-2. 解压，将 **Codex Harbor Community.app** 放进 Applications 文件夹。
-3. 打开 Harbor，添加自己的来源。**首次安装没有账号、API 配置或已登记的历史路径。**
+1. **安装 Harbor。** 从[发布页](https://github.com/dongshuyan/codex-harbor-community/releases/latest)下载应用压缩包，解压后将 **Codex Harbor Community.app** 放进“应用程序”文件夹。同页提供校验文件。
+2. **添加两侧来源。** 左侧点 **+**，授权 ChatGPT 账号或配置自己的 API；右侧点 **+**，登记已有的 Codex 数据目录（例如 `~/.codex`），或新建一个目录。会话位置应选择 Codex 数据目录，不是项目的代码文件夹。
+3. **选好组合并启动。** 核对账号与会话位置，打开 Codex，再在新窗口里选择具体模型。
 
-运行要求：
+首次安装**没有任何已保存的账号、API 设置或路径**。通用安装包包含 Apple 芯片与 Intel 版本，实际运行测试使用 Apple 芯片。发行包采用临时签名，**未经过 Apple 公证**，首次打开时可能需要系统授权。
 
-- **macOS 14 或以上。** 通用安装包包含 Apple Silicon 与 Intel 可执行文件；实际运行验收使用 Apple Silicon，尚未在实体 Intel Mac 上验证。
-- **已安装官方 Codex 桌面 App。** 支持 `/Applications` 或用户 Applications 文件夹中的 `Codex.app`、`ChatGPT.app`。使用 Harbor 前，先打开官方 App 一次。Harbor 安装包不包含 Codex 本体。
-- **Python 3.11 或以上。** 支持 python.org 或 Homebrew 安装，无需额外 Python 包。
+<details>
+<summary>兼容性与日常使用说明</summary>
 
-当前发行包使用本机 ad-hoc 签名，**未经过 Apple Developer ID 签名或公证**；macOS 可能需要用户批准后才能打开。
+- API 必须支持 **Responses** 协议。Harbor 不转换 Chat Completions 或 Anthropic Messages 协议。
+- 各位置的历史独立保存，不迁移、不合并、不自动同步。同一会话换窗口续聊前，请先结束上一轮生成。
+- 插着移动硬盘时，仍可手动选择本地目录。弹出硬盘前，请先关闭正在使用它的窗口。
+- Codex 更新后、使用不同 API 服务商时，可能需要重新核对兼容性。测活通过表示完成了一次短回复，不代表所有桌面功能均已验证。
 
-### 配置并启动
+完整安装、多窗口与[源码构建说明](docs/USAGE.md#build-and-compatibility)见[使用指南（英文）](docs/USAGE.md)。
 
-1. **添加账号或 API。** 点击左侧 **＋**，选择官方账号并在浏览器授权；或填写自己的 Responses URL、API Key 和模型映射。
-2. **添加会话位置。** 点击右侧 **＋**，为文件夹起名并登记绝对路径。可以选择已有原生 Codex home，也可以明确创建新目录。
-3. **选好两侧并启动。** 在中间核对组合，点击启动；具体使用哪个模型，在新打开的 Codex 窗口内选择。
+</details>
 
-登记或移除位置都不会移动、删除历史。插上移动硬盘后，仍可手动使用本地；不同位置之间不会自动同步。
+## 配置由你掌握
 
-## 账号和额度，一眼看清
+API 密钥保存在 **macOS 钥匙串**中；官方登录文件由仅当前用户可访问的文件权限保护。名称、地址、模型映射和路径保存在本机文件中，**未加密**。社区版使用独立数据目录，没有配置上传、账号同步或分析统计服务。
 
-![官方账号详情：独立登录身份、五小时与每周额度条、完整的北京时间重置日期。数值均为演示。](docs/images/account-quota.png)
+模型请求发往你选中的账号或 API。通过 API 继续已有会话时，历史上下文也会发送给该服务商。详见[隐私与存储说明（英文）](PRIVACY.md)。
 
-直接查看账号身份、服务返回的额度周期及重置时间。没有返回或已经过期的数据会明确标识。重置时间统一显示完整日期与 **Asia/Shanghai（北京时间）**；查询额度不发送模型请求。
+## 致谢与社区
 
-同一个官方账号或 API 可以同时打开多个窗口，各自选择相同或不同的会话位置。换窗口续聊前先结束上一轮，避免同时编辑同一会话；共享历史列表有时需要重新打开目标窗口才会更新。详见[多窗口与历史说明](docs/USAGE.md#windows-and-shared-history)。
+模型数据来自 **OpenAI Codex**、**Cherry Studio 服务商注册表**与 **OpenRouter**，配置编辑使用 **TOML Kit**。参考项目与原生交互方案见[完整致谢（英文）](CREDITS.md)，相关许可见[第三方声明（英文）](THIRD-PARTY-NOTICES.md)。
 
-## 模型参数可追溯，也可手动调整
+感谢 **[LINUX DO](https://linux.do/)** 及其社区的开源分享与反馈。
 
-![模型编辑页：实际 ModelName 映射、自动参数获取、受保护的手动上下文与推理档位、单模型草稿测活。](docs/images/model-parameters.png)
+[报告问题](https://github.com/dongshuyan/codex-harbor-community/issues) · [贡献指南（英文）](CONTRIBUTING.md) · [MIT 许可](LICENSE)
 
-先读取当前 API 的信息，缺少时参考内置公开模型库，未知模型使用通用预设。上下文、推理程度均可调整，重新获取不会覆盖手动修改。模型库数值只是参考；映射名称不会改变上游模型的实际能力。
-
-**目前仅支持 Responses 协议**，不提供 Chat Completions 或 Anthropic Messages 协议转换。测活由用户明确触发，使用有限 token 预算，每个模型总限时 60 秒，可能产生费用。测活通过表示完成了一次短回复，桌面工具和续聊仍需独立验证。详见[参数与测活说明](docs/USAGE.md#model-parameters-and-probes)。
-
-## 私人配置保存在自己的 Mac
-
-- API Key 存入专用 **macOS 钥匙串**，不会退回到配置 JSON 中明文保存。
-- 官方登录使用独立的 Codex 原生凭据文件，通过文件系统权限保护。
-- 名称、URL、映射与路径保存在本机数据目录。Harbor 本身没有配置上传、账号同步或分析统计服务。
-- 模型请求发往选中的账号或 API。通过 Router 继续历史会话时，历史上下文会发送给该服务商。
-
-社区版的数据根目录是 `~/Library/Application Support/Codex Harbor Community/`，首次启动没有账号或路径。选择已有 Codex 目录后，会沿用其中不涉及账号和路由的设置及技能，并保留 Harbor 窗口中的手动修改。详情见[隐私与凭据存储说明](PRIVACY.md)。
-
-## 从源码构建
-
-需要 Swift 6 工具链和 Python 3.11+：
-
-```sh
-python3 -B -m unittest discover -s tests -p 'test_*.py'
-python3 -B build.py --community --universal
-```
-
-产物位于 `release-artifacts/`。正常退出或处理构建错误时会清理临时 App；清理失败会报告剩余路径。若进程被强制终止，下次构建只回收本工具创建且已无活动构建占用的临时目录。构建不会安装 App，也不读取个人配置。另见[构建与兼容性说明](docs/USAGE.md#build-and-compatibility)及[贡献流程](CONTRIBUTING.md)。
-
-## 致谢
-
-Harbor 的模型数据来自 [OpenAI Codex](https://github.com/openai/codex) 和 [Cherry Studio provider-registry](https://github.com/CherryHQ/cherry-studio/tree/d33b9b0266bda30d0e4715ae16650eee7b845d70/packages/provider-registry)，并使用 OpenRouter 的公开上下文参考数据。设计与兼容性调研参考了 CC Switch、CodexBar、Cockpit Tools、CodeEdit，以及原生 AppKit 拖放示例。
-
-各项贡献、侧栏交互参考和上游许可见[完整致谢](CREDITS.md)。特别感谢 **[LINUX DO](https://linux.do/)** 及其社区，为开源作品的分享、交流和反馈提供空间。
-
-## 反馈与许可
-
-通过 [GitHub Issues](https://github.com/dongshuyan/codex-harbor-community/issues) 提交可复现问题，附上 App、Codex 版本和虚构示例。不要上传 Key、登录文件或整个数据文件夹。
-
-Harbor 原创代码采用 [MIT 许可](LICENSE)，内置公开模型数据保留各自的[上游许可与声明](THIRD-PARTY-NOTICES.md)。
-
-Codex Harbor Community 是独立项目，与 OpenAI 没有关联或背书关系。
+反馈请使用虚构示例，不要附上密钥、登录文件或私人数据目录。Codex Harbor Community 是独立项目，与 OpenAI 没有关联或背书关系。
