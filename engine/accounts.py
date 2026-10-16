@@ -51,7 +51,7 @@ def legacy_idle(store, ident, candidates, launch_job=None):
         if path.is_symlink(): raise UserError('旧实例记录不安全，未导入登录。')
         value=json.loads(path.read_text())
         if value.get('id')==ident:
-            if (value.get('lifecycle_version')==1 and value.get('desktop_spawn_attempted') is False and
+            if (value.get('lifecycle_version') in (1,2) and value.get('desktop_spawn_attempted') is False and
                     value.get('status') in ('exited','error') and not value.get('pid') and not value.get('pid_start')):
                 continue  # New worker positively recorded failure before desktop spawn.
             if (launch_job and ID.fullmatch(launch_job) and path.stem==launch_job and

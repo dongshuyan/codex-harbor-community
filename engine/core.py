@@ -166,20 +166,23 @@ class Store:
     def __init__(self, root=DEFAULT_ROOT, external=EXTERNAL, mounted=disk_mounted, *, community=None,keychain=None,user_home=None):
         self.community=EDITION['community'] if community is None else community
         self.keychain=keychain
-        for value in (root,external):
+        for value in (root,):
             for part in [Path(value).absolute(),*Path(value).absolute().parents]:
                 if part.is_symlink() and part not in (Path('/var'),Path('/tmp'),Path('/etc')):
                     raise UserError(f'数据根目录不能经过符号链接：{part}')
         self.root = Path(root).resolve()
         # Explicit fixture roots stay isolated unless given a synthetic user home.
         self.user_home = Path(user_home).resolve() if user_home is not None else (USER_HOME if self.root == DEFAULT_ROOT else None)
-        self.external = Path(external).resolve()
+        # Merely constructing the engine (including quota reads) must not touch
+        # an unselected removable disk. StorageRegistry validates every path
+        # component immediately before selection, initialization and use.
+        self.external = Path(os.path.abspath(external))
         self.mounted = mounted
         forbidden=[Path.home()/'.codex',*[Path(p) for _,p in MACHINE.get('original_homes',{}).values()],
                    Path.home()/'Library/Application Support/Codex Smart-2',VOLUME/'Harnesses/CodexSmart2',
                    Path.home()/'Library/Application Support/Codex',Path.home()/'Library/Application Support/ChatGPT']
         for p in (self.root,self.external):
-            if any(p.resolve()==f or f in p.resolve().parents for f in forbidden):
+            if any(p==f or f in p.parents for f in forbidden):
                 raise UserError('Harbor 不允许把现有 Codex 数据目录作为测试目录。')
         directory(self.root)
         directory(self.root/'profiles')
@@ -353,6 +356,7 @@ class Store:
                 if self.live_desktop(storage,ident):
                     raise UserError('对应窗口仍在运行，需先从 Harbor 退出该实例。')
                 handles.append(stack.enter_context(take_lock(self.instance_backend_lock(storage,ident))))
+                handles.append(stack.enter_context(take_lock(self.instance_backend_lock(storage,ident,v2=True))))
             yield tuple(h.fileno() for h in handles)
 
     def removed_profiles(self):
@@ -414,6 +418,16 @@ class Store:
             account=self.root/'accounts'/ident
             targets += [account/'codex'/name for name in ['auth.json','.credentials.json']]
             targets += [account/'import-backup'/'auth.json']
+            targets += [account/'refresh-owner'/'codex'/'auth.json']
+            private_instances=self.root/'instances'/ident
+            safe_path(private_instances)
+            if private_instances.exists():
+                for scope in private_instances.iterdir():
+                    safe_path(scope)
+                    if not scope.is_dir():continue
+                    for slot in scope.iterdir():
+                        safe_path(slot)
+                        if slot.is_dir():targets += [slot/'codex'/name for name in ['auth.json','.credentials.json']]
             for location in self.registry.credential_locations():
                 if not self.registry.disk_available(location):
                     raise UserError('有登记过的会话磁盘离线或身份不匹配；请连接正确磁盘后再永久删除。未删除任何凭据。')
@@ -445,8 +459,9 @@ class Store:
             if job.get('id')==ident and job.get('storage')==storage and process_matches(job):return job
         return None
 
-    def instance_backend_lock(self,storage,ident):
-        return self.lock_path(storage,ident).with_name(f'{storage}-{ident}-backend.lock')
+    def instance_backend_lock(self,storage,ident,*,v2=False):
+        suffix='v2-backend' if v2 else 'backend'
+        return self.lock_path(storage,ident).with_name(f'{storage}-{ident}-{suffix}.lock')
 
     def running_profile(self, ident):
         from accounts import account_lock_paths, take_lock
@@ -458,6 +473,7 @@ class Store:
             if self.live_desktop(storage,ident):return True
             try:
                 with take_lock(self.instance_backend_lock(storage,ident)): pass
+                with take_lock(self.instance_backend_lock(storage,ident,v2=True)): pass
             except UserError: return True
             f=self.root/'locks'/f'{storage}-{ident}.lock'
             if not f.exists(): continue
@@ -497,7 +513,7 @@ class Store:
     def select_storage(self, selection):
         return self.registry.select(selection)
 
-    def prepare(self, ident, selection, model=None, *, launch_job=None):
+    def prepare(self, ident, selection, model=None, *, launch_job=None, instance_slot=None):
         p=self.profile(ident)
         explicit_model=model is not None
         storage=self.select_storage(selection)
@@ -509,12 +525,18 @@ class Store:
         with self.registry.open_history(location) as history:
             from accounts import account_home, bind_account_cache, bind_link
             official=p['kind']=='official'
-            home=account_home(self,ident,launch_job) if official else directory(base/'instances'/ident/'codex')
+            slot=instance_slot or launch_job
+            if slot:
+                from instances import runtime
+                paths=runtime(self,ident,storage,slot,launch_job)
+                home,electron,os_home=(paths[key] for key in ('home','electron','os_home'))
+            else:
+                home=account_home(self,ident,launch_job) if official else directory(base/'instances'/ident/'codex')
+                electron=directory(base/'instances'/ident/'desktop')
+                os_home=directory(base/'instances'/ident/'os-home')
             from organization import Organization
             Organization(self).prepare(home,history)
-            if official: bind_account_cache(self,ident,storage,home)
-            electron=directory(base/'instances'/ident/'desktop')
-            os_home=directory(base/'instances'/ident/'os-home')
+            if official and slot in (None,'primary'): bind_account_cache(self,ident,storage,home)
             workspace=directory(base/'workspace')
             for rel in ['sessions','archived_sessions','thread-writer-locks','rollout-migrations']:
                 bind_link(home/rel,history/rel,official)
@@ -527,7 +549,8 @@ class Store:
             return dict(id=ident,storage=storage,control=str(self.root),external=str(self.external),base=str(base),history=str(history),home=str(home),
                         native_user_home=str(self.user_home) if self.user_home else None,
                         electron=str(electron),os_home=str(os_home),workspace=str(workspace),model=model,explicit_model=explicit_model,
-                        profile=p,storage_paths=self.registry.sensitive_paths(),existing_home=history!=base/'history')
+                        profile=p,storage_paths=self.registry.sensitive_paths(),existing_home=history!=base/'history',
+                        multi_instance=bool(slot),instance_slot=slot)
 
 
 def configure(prepared, proxy_url=None, proxy_token=None):
@@ -567,7 +590,8 @@ def configure(prepared, proxy_url=None, proxy_token=None):
     lines=[f'model = {json.dumps(prepared["model"])}', 'model_provider = "openai"',
            f'model_reasoning_effort = {json.dumps(mapping["effort"] if mapping else "low")}',
            f'sqlite_home = {json.dumps(prepared["history"])}',
-           'cli_auth_credentials_store = "file"', 'mcp_oauth_credentials_store = "file"']
+           'cli_auth_credentials_store = '+json.dumps('ephemeral' if p['kind']=='official' and prepared.get('multi_instance') else 'file'),
+           'mcp_oauth_credentials_store = "file"']
     if p['kind']=='api': lines.append(f'model_catalog_json = {json.dumps(str(home/"smart2-models.json"))}')
     if proxy_url: lines.append('openai_base_url = '+json.dumps(proxy_url))
     if access_mode=='native':

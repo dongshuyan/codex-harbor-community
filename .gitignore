@@ -14,6 +14,8 @@ profiles/
 removed-profiles/
 purged-profiles/
 accounts/
+instances/
+instance-slots/
 login/
 jobs/
 events/

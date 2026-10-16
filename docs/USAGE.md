@@ -16,9 +16,11 @@ Use the right **＋** to register an absolute history-directory path and a name.
 
 ## Windows and shared history
 
-Different official accounts and API routes can run concurrently. Use each official account entry at one history location at a time. Do not add the same real account as duplicate entries.
+The same official account or API entry can open multiple independent windows, using the same or different history locations. Select the entry and location, then click **Launch Codex** again. Each window has its own runtime configuration, desktop cache and backend. Reusable private slots preserve settings between launches.
 
-Windows using the same location share native session history. The account/API selected for the current window supplies that window's requests. Finish the current turn and close the old instance before continuing the same conversation elsewhere. Continuing private history through a Router sends the context to that provider.
+Official windows receive access tokens in memory. One native refresh owner maintains the account's persistent login, preventing simultaneous windows from rotating the same refresh token independently. Logging out inside one Codex window detaches only that window. To change the stored account, close its windows and use Harbor's login action. When upgrading from a version with single-instance authentication, close that account's older Harbor-launched windows before opening the new ones; Harbor does not stop them automatically.
+
+Windows using the same location share native session history. The account/API selected for the current window supplies that window's requests. Finish the current turn before continuing the same conversation elsewhere; avoid simultaneous writes to one conversation. Continuing private history through a Router sends the context to that provider.
 
 Session lists and project organization may require reopening the target window. Different locations are independent and never synchronize automatically.
 
@@ -40,8 +42,8 @@ From Community 0.9.1, normal relaunches preserve settings saved inside the Harbo
 
 Settings belong to the private instance's `config.toml`, not to the history location's original configuration:
 
-- Official account: `accounts/<account-id>/codex/config.toml` under the Community data root. The same account entry keeps its settings when switching history locations after exiting its old instance.
-- Custom API: `stores/<location-id>/instances/<api-id>/codex/config.toml` under the Community data root. Each API/location combination has its own settings.
+- The first available official-account window reuses `accounts/<account-id>/codex/config.toml` under the Community data root. The first API window reuses its existing per-location runtime.
+- Additional windows use `instances/<entry-id>/<location-scope>/<slot-id>/codex/config.toml` under the Community data root. A new slot starts with the entry's existing preferences, without copying credentials or history. Reopening reuses an idle slot and retains that slot's edits.
 
 The selected history directory's `config.toml` supplies non-routing defaults, including `[desktop]` (such as the Max visibility switch), project trust, instructions, rules, MCP definitions and plugin preferences. Existing private settings take priority. Unchanged inherited defaults can follow source updates; settings changed or removed inside the Harbor window stay protected. Source login files, provider routing and account-specific remote plugin provisioning are never imported. The selected API and history location remain authoritative. Model availability still determines where Max can be used.
 
@@ -73,7 +75,7 @@ A passing probe confirms a completed short response. It does not prove desktop t
 
 Quota reads use the installed Codex interface and do not send a model request. Harbor displays only returned periods, including five-hour or weekly windows when present. Missing periods are not invented as full quota.
 
-The foreground app refreshes due snapshots every five minutes; explicit refresh is also available. Results include the last update time. Failed, stale or expired snapshots stay marked as such.
+The foreground app refreshes due snapshots every five minutes; explicit refresh is also available. Up to ten reads run concurrently. Additional accounts wait for a free slot, and each result appears independently. Results include the last update time. Failed, stale or expired snapshots stay marked as such.
 
 Reset times are absolute dates in `Asia/Shanghai`, labelled Beijing time. They are not countdowns and do not follow a different system timezone.
 
@@ -82,6 +84,8 @@ Reset times are absolute dates in `Asia/Shanghai`, labelled Beijing time. They a
 API keys are stored in a dedicated macOS Keychain namespace; profile JSON contains opaque references. Denied or locked Keychain operations fail rather than storing plaintext. Ad-hoc signed updates can require Keychain reauthorization or re-entering the API key.
 
 Official logins remain native Codex credential files in isolated account homes, protected by user-only filesystem permissions. Metadata such as names, URLs and history paths is local JSON and is not encrypted. Treat the whole data root as private. See the complete [privacy policy](../PRIVACY.md).
+
+Harbor does not inspect disabled or removed history locations during background status refreshes. An enabled Desktop or removable-drive location can still require macOS permission. macOS owns those decisions; because release builds use ad-hoc signing, an update may prompt again. Keep the installed app in a consistent location. Harbor does not reset system permissions or grant itself access.
 
 Some official macOS UI preferences and the `codex://` handler are shared across native instances. Harbor captures a local recovery snapshot before the first desktop launch. Restoration is explicit, requires all Codex instances to be closed, and does not restore account or history files.
 
@@ -99,5 +103,7 @@ python3 -B build.py --community --universal
 Build output is placed in `build/<source hash>/`; building neither installs the app nor reads personal configuration. The native Keychain integration suite uses a disposable synthetic keychain and accepts an exact helper path with `--helper`. It makes no live account or model call.
 
 The universal release includes arm64 and x86_64 executables. Runtime acceptance has been performed on Apple Silicon, not a physical Intel Mac. Release builds are ad-hoc signed, not Apple Developer ID signed or notarized. Keychain authorization dialogs, other official Codex versions and every external model service are not implied to have passed acceptance.
+
+Multi-instance official authentication uses Codex's experimental external-token app-server protocol, verified against bundled CLI `0.162.0-alpha.17.2`. An incompatible version stops with a login/compatibility error rather than falling back to concurrent refresh-token files. Recheck this integration when updating Codex.
 
 Development and acceptance take place in a separate private development repository. The public repository receives reviewed snapshots and release artifacts; private Git history and acceptance evidence are not mirrored. See [CONTRIBUTING.md](../CONTRIBUTING.md).

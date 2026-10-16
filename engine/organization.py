@@ -17,9 +17,9 @@ from core import ID, UserError, directory, write_json
 
 STATE = '.codex-global-state.json'
 MAP_KEY = 'app-server-project-id-by-legacy-project-id-by-host'
-HOST_KEYS = (MAP_KEY, 'app-server-projects-migration-by-host',
-             'app-server-migrated-pinned-thread-ids-by-host',
-             'app-server-pending-project-deletions-by-host')
+CHECKPOINT_KEYS = ('app-server-projects-migration-by-host',
+                   'app-server-migrated-pinned-thread-ids-by-host')
+HOST_KEYS = (MAP_KEY, *CHECKPOINT_KEYS, 'app-server-pending-project-deletions-by-host')
 LIST_KEYS = ('project-order', 'pinned-project-ids', 'pinned-thread-ids',
              'electron-saved-workspace-roots', 'active-workspace-roots', 'projectless-thread-ids')
 DICT_KEYS = ('local-projects', 'thread-project-assignments', 'thread-workspace-root-hints',
@@ -236,8 +236,22 @@ class Organization:
                 scope['data']=merge_changes(scope['data'],scope['source'],observed)
                 scope['source']=observed
             private=read_object(home/STATE) or {}
-            projection(private,home)  # A corrupt current home must not be overwritten.
+            baseline=projection(private,home)  # Reject corrupt state before overwriting it.
             projected=copy.deepcopy(scope['data'])
+            writer=self.writer(home,key,baseline,'pending')
+            previous=value['writers'].get(str(home),{})
+            checkpoints={}
+            # Native migration scans every thread when these private markers
+            # disappear. Reuse only this home's unchanged, completed binding;
+            # never import completion from the source or another writer.
+            if (previous.get('scope')==key and previous.get('phase')=='ready' and
+                    previous.get('home_volume_uuid')==writer['home_volume_uuid'] and
+                    writer['home_volume_uuid']!='' and baseline==projected):
+                identity='local:'+str(home)
+                for field,kind in zip(CHECKPOINT_KEYS,(dict,list)):
+                    entries=private.get(field)
+                    if isinstance(entries,dict) and isinstance(entries.get(identity),kind):
+                        checkpoints[field]={identity:copy.deepcopy(entries[identity])}
             for field in (*LIST_KEYS,*DICT_KEYS,'selected-project',*HOST_KEYS):private.pop(field,None)
             atoms=private.get('electron-persisted-atom-state',{})
             if isinstance(atoms,dict):
@@ -250,12 +264,14 @@ class Organization:
             mapping=projected.pop('__project-id-map',{})
             if mapping:private[MAP_KEY]={'local:'+str(home):mapping}
             private.update(projected)
+            private.update(checkpoints)
             # Keep a one-time rollback of this private state, never source auth.
             backup=home/'.harbor-organization-before.json'
             if (home/STATE).exists() and not backup.exists():write_json(backup,read_object(home/STATE))
             # Commit a pending baseline first. If interrupted, recovery must not
             # interpret the old location's state as edits to the new location.
-            value['writers'][str(home)]=self.writer(home,key,projection(private,home),'pending')
+            writer['baseline']=projection(private,home)
+            value['writers'][str(home)]=writer
             write_json(self.path,value)
             write_json(home/STATE,private)
             value['writers'][str(home)]['phase']='ready'

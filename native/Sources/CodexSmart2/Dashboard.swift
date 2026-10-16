@@ -160,7 +160,6 @@ struct Dashboard: View {
             }
         } actions: {
             HStack {
-                if model.isRunning(p.id) { Label("使用中", systemImage: "circle.fill").font(.caption2).foregroundStyle(.green).allowsHitTesting(false) }
                 if probes.pendingCount(p) > 0 { Text("测活中 · \(probes.pendingCount(p))").font(.caption2).foregroundStyle(.secondary) }
                 Spacer()
                 if p.kind=="official" {
@@ -319,10 +318,10 @@ struct Dashboard: View {
                 Button("保存") { Task { _ = await saveDraft() } }.buttonStyle(.borderedProminent).disabled(model.busy || !dirty || (draft.map { model.isRunning($0.id) } ?? false))
             } else {
                 Button { Task { await model.launch() } } label: {
-                    Label(model.currentRunning ? "已在运行" : "启动 Codex", systemImage: "arrow.up.right.square")
+                    Label("启动 Codex", systemImage: "arrow.up.right.square")
                         .padding(.vertical, 5)
                 }.buttonStyle(.borderedProminent)
-                    .disabled(model.busy || dirty || model.selected == nil || model.resolvedLocation?.available != true || model.currentRunning)
+                    .disabled(model.busy || dirty || model.selected == nil || model.resolvedLocation?.available != true)
             }
         }.padding(19)
     }

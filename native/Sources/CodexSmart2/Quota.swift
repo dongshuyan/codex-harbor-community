@@ -130,7 +130,7 @@ struct QuotaState: Equatable {
         pump()
     }
     private func pump() {
-        while active.count<2 && !queue.isEmpty {
+        while active.count<10 && !queue.isEmpty {
             let item=queue.removeFirst()
             guard states[item.id]?.revision==item.revision else{continue}
             active.insert(item.id);states[item.id]?.status="loading"

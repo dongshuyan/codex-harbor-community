@@ -29,7 +29,7 @@ struct Distribution: Equatable {
             return value
         } ?? fallbackName
         let version = displayValue(object["version"], limit: 32) ??
-            displayValue(bundleInfo["CFBundleShortVersionString"], limit: 32) ?? (community ? "0.9.1" : "0.8.1")
+            displayValue(bundleInfo["CFBundleShortVersionString"], limit: 32) ?? (community ? "0.10.0" : "0.9.0")
         return Distribution(edition: community ? "community" : "private", appName: name, dataDirectory: directory, version: version)
     }
 

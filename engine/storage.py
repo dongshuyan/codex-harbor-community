@@ -154,7 +154,7 @@ class StorageRegistry:
         if ident in EXISTING_HOMES and path == Path(EXISTING_HOMES[ident][1]):
             return path
         forbidden=[self.store.root/'stores'/key for key in EXISTING_HOMES]
-        forbidden += [self.store.root/k for k in ['profiles','removed-profiles','purged-profiles','accounts','locks','jobs','events','bindings','organization','keychain-refs','application-backups','probe-control','login']]
+        forbidden += [self.store.root/k for k in ['profiles','removed-profiles','purged-profiles','accounts','instances','instance-slots','locks','jobs','events','bindings','organization','keychain-refs','application-backups','probe-control','login']]
         forbidden += [Path.home()/'Library/Application Support/Codex Smart-2',Path.home()/'Library/Application Support/Codex',Path.home()/'Library/Application Support/ChatGPT']
         if MACHINE.get('volume'):forbidden.append(Path(MACHINE['volume'])/'Harnesses/CodexSmart2')
         forbidden += [Path('/Applications'),Path.home()/'Applications']
@@ -163,22 +163,28 @@ class StorageRegistry:
         return path
 
     def state(self, item):
+        # Background snapshots do not inspect paths that the user disabled.
+        if not item['enabled']:
+            return dict(item, protected=False, exists=False, available=False, reason='已停用')
         try:
             path = self.checked_path(item['path'], item['id'])
             disk = self.disk_available(item)
             exists = disk and path.is_dir()
             writable = exists and os.access(path, os.R_OK | os.W_OK | os.X_OK)
-            reason = ('已停用' if not item['enabled'] else '磁盘未挂载或身份不匹配' if not disk
+            reason = ('磁盘未挂载或身份不匹配' if not disk
                       else '目录不存在，请先建立目录' if not exists
                       else '目录不可写或无法访问，请检查权限' if not writable else '可用')
-            return dict(item, protected=False, exists=exists, available=bool(item['enabled'] and writable), reason=reason)
+            return dict(item, protected=False, exists=exists, available=bool(writable), reason=reason)
         except (UserError, OSError):
             return dict(item, protected=False, exists=False, available=False, reason='目录不安全或无法访问')
 
     def snapshot(self):
         value = self.read()
         return {'revision': value['revision'], 'storages': [self.state(s) for s in value['storages']],
-                'removed_storages': [self.state(s) for s in value.get('removed_storages',[])]}
+                # Keep the saved enablement for restoration, without probing
+                # removed paths during every status refresh.
+                'removed_storages': [dict(s, protected=False, exists=False, available=False, reason='已移除')
+                                     for s in value.get('removed_storages',[])]}
 
     def select(self, ident):
         if ident == 'auto':

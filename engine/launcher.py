@@ -58,17 +58,15 @@ def launch_request(store, profile_id, storage, model=None, *, access_mode='nativ
 def run_instance(store, job, profile_id, storage, model, *, lab=None):
     jobs=directory(store.root/'jobs');job_path=jobs/f'{job}.json'
     lock_path=store.lock_path(storage,profile_id)
-    gateway=None;proc=None;life=None;account_lock=None;backend_switch=None
+    gateway=None;proc=None;life=None;account_lock=None;backend_switch=None;slot_guards=None
     state={'id':profile_id,'storage':storage,'job':job,'status':'starting',
-           'lifecycle_version':1,'desktop_spawn_attempted':False,'created_at':time.time()}
+           'lifecycle_version':2,'desktop_spawn_attempted':False,'created_at':time.time()}
     with lock_path.open('a') as lock:
         try:
             life=lifecycle_lock(store.root)
-            try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
-            except BlockingIOError:raise UserError('这个存储与账号/API 组合已在运行，请使用已有窗口。') from None
-            if store.live_desktop(storage,profile_id):
-                raise UserError('上次启动的窗口仍在运行；请先在 Harbor 退出对应实例再启动。')
-            with store.operation_guard(profile_id),store.registry.guard():
+            try:fcntl.flock(lock,fcntl.LOCK_SH|fcntl.LOCK_NB)
+            except BlockingIOError:raise UserError('该组合仍有旧版窗口或配置修改进行中，请退出旧窗口后重试。') from None
+            with store.operation_guard(profile_id,shared=True),store.registry.guard():
                 planned=json.loads(job_path.read_text()) if job_path.exists() else {}
                 access_mode=planned.get('access_mode','native')
                 if access_mode not in ['native','readonly','workspace']:raise UserError('实例权限模式无效，未启动。')
@@ -85,21 +83,21 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
                 # The caller's timestamp remains stable if this worker dies.
                 write_json(job_path,state)
                 p=store.profile(profile_id)
-                if p['kind']=='official':
-                    if any(store.live_desktop(s['id'],profile_id) for s in store.registry.entries()):
-                        raise UserError('此官方账号仍有窗口运行，请退出后再换会话位置。')
-                    account_path,lease_path=account_lock_paths(store,profile_id)
-                    account_lock=take_lock(account_path)
-                    backend_switch=take_lock(lease_path)
-                    generation=str(directory(store.root/'accounts'/profile_id)/'launch-generation.json')
-                    # Fence every old wrapper before the first binding mutation.
+                account_path,old_backend=account_lock_paths(store,profile_id)
+                account_lock=take_lock(account_path,shared=True)
+                # Old backends never used private slots. Prove their lease is
+                # idle before touching an existing primary runtime directory.
+                legacy_lease=old_backend if p['kind']=='official' else store.instance_backend_lock(storage,profile_id)
+                with take_lock(legacy_lease):
+                    old_generation=(directory(store.root/'accounts'/profile_id)/'launch-generation.json'
+                                    if p['kind']=='official' else directory(store.root/'bindings')/f'{storage}-{profile_id}.json')
+                    write_json(old_generation,{'job':None,'phase':'private-instances','storage':storage})
+                    from instances import reserve
+                    slot,paths,slot_guards,slot_claim,backend_switch=reserve(store,profile_id,storage)
+                    generation=str(paths['control']/'generation.json')
+                    lease_path=paths['control']/'backend.lock'
                     write_json(Path(generation),{'job':None,'phase':'switching','storage':storage})
-                else:
-                    lease_path=store.instance_backend_lock(storage,profile_id)
-                    backend_switch=take_lock(lease_path)
-                    generation=str(directory(store.root/'bindings')/f'{storage}-{profile_id}.json')
-                    write_json(Path(generation),{'job':None,'phase':'switching','storage':storage})
-                prepared=store.prepare(profile_id,storage,model,launch_job=job)
+                    prepared=store.prepare(profile_id,storage,model,launch_job=job,instance_slot=slot)
                 prepared['access_mode']=access_mode
             backup=snapshot(store.root)
             # Chromium's Unix singleton socket needs a short private temp path.
@@ -133,6 +131,11 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
             # the real home. The guard adapts only explicit local permission paths.
             pinned['CODEX_HOME']=prepared['home']
             pinned['HARBOR_DESKTOP_CODEX_HOME_ALIAS']=prepared['short_home']
+            pinned['HARBOR_BACKEND_SHARED_LEASES']=json.dumps([
+                str(account_path),str(store.instance_backend_lock(storage,profile_id,v2=True))])
+            if p['kind']=='official':
+                pinned['HARBOR_OFFICIAL_PROFILE']=profile_id
+                pinned['HARBOR_CONTROL_ROOT']=str(store.root)
             lease=str(lease_path)
             write_json(Path(generation),{'job':job,'phase':'ready','storage':storage})
             command=[sys.executable,'-I','-B',str(Path(__file__).with_name('backend_guard.py')),
@@ -146,7 +149,7 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
             binary=discover_app([APP])[2]
             if not binary.is_file():raise UserError('找不到已安装的官方 Codex 应用。')
             state.update(home=prepared['home'],history=prepared['history'],electron=prepared['electron'],
-                         backup=backup)
+                         backup=backup,instance_slot=slot)
             # Direct spawn avoids reusing another account's Launch Services instance.
             # No secrets are present in argv or environment; Router key stays in this worker.
             cmd=[sys.executable,'-I','-B',str(Path(__file__).with_name('desktop_child.py')),
@@ -160,7 +163,7 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
             proc=subprocess.Popen(cmd,env=env,cwd=prepared['workspace'],stdin=subprocess.DEVNULL,
                                   stdout=subprocess.DEVNULL,stderr=log or subprocess.DEVNULL,
                                   start_new_session=True,close_fds=True,
-                                  pass_fds=(lock.fileno(),life.fileno())+((account_lock.fileno(),) if account_lock else ()))
+                                  pass_fds=(lock.fileno(),life.fileno(),account_lock.fileno(),slot_claim.fileno()))
             def terminate(_sig,_frame):
                 if proc.poll() is None:os.killpg(proc.pid,signal.SIGTERM)
             if __import__('threading').current_thread() is __import__('threading').main_thread():
@@ -190,6 +193,7 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
             write_json(job_path,state)
             if life:life.close()
             if backend_switch:backend_switch.close()
+            if slot_guards:slot_guards.close()
             if account_lock:account_lock.close()
     return state
 

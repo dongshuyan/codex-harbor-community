@@ -40,7 +40,7 @@ def status(store):
     import profile_order
     profiles=store.profiles()
     from login import snapshot as login_snapshot
-    return {'profiles':profiles,'profile_order_revision':profile_order.revision(profiles),'removed_profiles':store.removed_profiles(),'models':model_options(),'external_mounted':store.mounted(),
+    return {'profiles':profiles,'profile_order_revision':profile_order.revision(profiles),'removed_profiles':store.removed_profiles(),'models':model_options(),
             'storages':storage['storages'],'storage_revision':storage['revision'],
             'removed_storages':storage['removed_storages'],
             'accounts':{p['id']:login_snapshot(store,p['id']) for p in store.profiles() if p['kind']=='official'},

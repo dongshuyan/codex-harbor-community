@@ -30,7 +30,7 @@ struct StorageEditor: View {
                 Text("不同位置的历史独立保存，连接移动盘后不会自动合并。更改顺序不影响已经打开的窗口。").font(.callout).foregroundStyle(.secondary)
                 Divider()
                 Text(existingHome ? "历史目录离线时不会建立空目录。手动选中离线位置会停止启动；自动选择会使用下一个可用位置。" : "目录不存在时，先保存登记，再回到本页点击“建立目录”。手动选中的目录不可用时，启动会停止，不会切换到别处。").font(.callout).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
-                if !isNew && !location.protected && !location.exists && !existingHome {
+                if !isNew && location.enabled && !location.protected && !location.exists && !existingHome {
                     Button("建立已保存的目录") { Task {
                         if await model.action(["action":"initialize_storage","id":location.id,"revision":revision,"path":location.path],message:"已建立保存的目录。") {
                             if let saved = model.snapshot?.storages.first(where: { $0.id == location.id }) { initialized(saved) }

@@ -373,10 +373,6 @@ enum Engine {
     var selected: Profile? { snapshot?.profiles.first { $0.id == selection } }
     var resolvedStorage: String { storage == "auto" ? (snapshot?.storages.first { $0.available }?.id ?? "") : storage }
     var resolvedLocation: StorageLocation? { snapshot?.storages.first { $0.id == resolvedStorage } }
-    var currentRunning: Bool {
-        if let p = selected, p.kind == "official", isRunning(p.id) { return true }
-        return snapshot?.jobs.contains { $0.profileID == selection && $0.storage == resolvedStorage && ["running","starting"].contains($0.status) } ?? false
-    }
     func isRunning(_ id: String) -> Bool { snapshot?.busyProfiles.contains(id) ?? false }
     func name(_ alias: String) -> String { snapshot?.models.first { $0.id == alias }?.name ?? alias }
     private func beginMutation() {

@@ -65,7 +65,7 @@ Registering or removing a location never moves or deletes its history. When an e
 
 See which account you are selecting, its returned quota windows, and when they reset. Missing or stale results remain visible as such. Reset times use full dates in **Asia/Shanghai (Beijing time)**. Reading quota does not send a model request.
 
-Use each official account entry at one history location at a time. Finish a turn and close the old instance before continuing that conversation in another account or API window. Shared history lists may require reopening the destination window. See the [window and history guide](docs/USAGE.md#windows-and-shared-history).
+Open multiple windows from the same official account or API, with the same or different history locations. Finish a turn before continuing that conversation in another window; avoid editing one conversation concurrently. Shared history lists may require reopening the destination window. See the [window and history guide](docs/USAGE.md#windows-and-shared-history).
 
 ## Model parameters with visible sources
 

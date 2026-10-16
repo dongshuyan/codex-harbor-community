@@ -201,6 +201,12 @@ def run_flow(store, ident, publish, *, command=None, timeout=300):
                     if params.get('loginId')!=login_id:continue
                     if params.get('success') is not True:raise UserError('OpenAI 授权未完成，请重新发起登录。')
                     account=rpc.request('account/read',{'refreshToken':False},3,min(deadline,time.monotonic()+8))
+                    # A newly completed login supersedes an uncertain old refresh.
+                    # Only touch its recovery journal when one actually exists.
+                    owner=home.parent/'refresh-owner';journal=home.parent/'refresh-transaction.json'
+                    if owner.exists() or owner.is_symlink() or journal.exists() or journal.is_symlink():
+                        from official_auth import clear_recovery_after_login
+                        clear_recovery_after_login(store,ident,timeout=8)
                     return update({'state':'success','masked_account':masked_account(account),'message':'登录已完成；尚未发送模型请求。'})
             if login_id:rpc.send('account/login/cancel',{'loginId':login_id},4)
             return update({'state':'timeout','message':'等待授权超时；未发送模型请求。'})

@@ -16,6 +16,26 @@ VALUE_OPTIONS = {'-c', '--config', '--enable', '--disable', '-p', '--profile'}
 MAX_RPC_LINE = 64 * 1024 * 1024
 
 
+def ephemeral_arguments(args):
+    """Pin only this auth option, without rewriting prompts or other arguments."""
+    result=list(args)
+    for index,value in enumerate(result):
+        if value=='--':break
+        if value in ('-c','--config') and index+1<len(result):
+            setting=result[index+1]
+            if setting.split('=',1)[0].strip()=='cli_auth_credentials_store':
+                result[index+1]='cli_auth_credentials_store="ephemeral"'
+        elif value.startswith('--config='):
+            setting=value[len('--config='):]
+            if setting.split('=',1)[0].strip()=='cli_auth_credentials_store':
+                result[index]='--config=cli_auth_credentials_store="ephemeral"'
+        elif value.startswith('-c') and len(value)>2:
+            setting=value[2:].removeprefix('=')
+            if setting.split('=',1)[0].strip()=='cli_auth_credentials_store':
+                result[index]='-ccli_auth_credentials_store="ephemeral"'
+    return ['-c','cli_auth_credentials_store="ephemeral"',*result]
+
+
 def is_stdio_app_server(args):
     """Recognize only the supported stdio command shapes; leave other CLI uses alone."""
     i = 0
@@ -23,7 +43,7 @@ def is_stdio_app_server(args):
         value = args[i]
         if value in VALUE_OPTIONS:
             i += 2
-        elif any(value.startswith(option+'=') for option in VALUE_OPTIONS if option.startswith('--')):
+        elif value.startswith('-c') and len(value)>2 or any(value.startswith(option+'=') for option in VALUE_OPTIONS if option.startswith('--')):
             i += 1
         else:
             break
@@ -35,7 +55,7 @@ def is_stdio_app_server(args):
         if value in VALUE_OPTIONS:
             if i+1 >= len(args): return False
             i += 2
-        elif any(value.startswith(option+'=') for option in VALUE_OPTIONS if option.startswith('--')):
+        elif value.startswith('-c') and len(value)>2 or any(value.startswith(option+'=') for option in VALUE_OPTIONS if option.startswith('--')):
             i += 1
         elif value in {'--analytics-default-enabled', '--stdio'}:
             i += 1
@@ -121,18 +141,54 @@ def main():
         except BlockingIOError: raise SystemExit('Harbor: account storage is being switched.')
         if Path(marker).is_symlink() or json.loads(Path(marker).read_text()).get('job')!=generation:
             raise SystemExit('Harbor: expired instance, reopen from the launcher.')
+    extra=[]
+    for path in json.loads(os.environ.get('HARBOR_BACKEND_SHARED_LEASES','[]')):
+        target=Path(path)
+        if not target.is_absolute() or target.resolve()!=target:
+            raise SystemExit('Harbor: invalid private backend lease.')
+        fd=os.open(target,os.O_RDWR|os.O_CREAT|os.O_NOFOLLOW,0o600)
+        guard=os.fdopen(fd,'a');extra.append(guard)
+        try:fcntl.flock(guard,fcntl.LOCK_SH|fcntl.LOCK_NB)
+        except BlockingIOError:raise SystemExit('Harbor: account or storage is being edited.')
     # Keep the guardian alive instead of depending on Electron/Rust fd inheritance.
     alias=os.environ.get('HARBOR_DESKTOP_CODEX_HOME_ALIAS')
     adapted=bool(alias and is_stdio_app_server(args))
     home=os.environ.get('CODEX_HOME','')
     if adapted:validate_home_alias(alias,home)
-    proc=subprocess.Popen([binary,*args],close_fds=True,stdin=subprocess.PIPE if adapted else None,
-                          pass_fds=(handle.fileno(),) if handle else ())
+    official=os.environ.get('HARBOR_OFFICIAL_PROFILE')
+    bridge=bool(official and is_stdio_app_server(args))
+    credentials=None
+    if official:
+        from core import ID, Store
+        if not ID.fullmatch(official):raise SystemExit('Harbor: invalid account identifier.')
+        # Ignore the canonical refresh-token file even when using the primary
+        # home. Every native child, including non-app-server helpers, is ephemeral.
+        args=ephemeral_arguments(args)
+        if bridge:
+            from official_auth import credentials_for_instance
+            store=Store(Path(os.environ['HARBOR_CONTROL_ROOT']))
+            credentials=lambda **kwargs:credentials_for_instance(store,official,**kwargs)
+    proc=subprocess.Popen([binary,*args],close_fds=True,stdin=subprocess.PIPE if adapted or bridge else None,
+                          stdout=subprocess.PIPE if bridge else None,
+                          pass_fds=tuple(item.fileno() for item in ([handle] if handle else [])+extra))
     def forward(sig,_frame):
         if proc.poll() is None: proc.send_signal(sig)
     signal.signal(signal.SIGTERM,forward);signal.signal(signal.SIGINT,forward)
     failed=threading.Event()
-    if adapted:
+    if bridge:
+        from auth_bridge import run
+        try:
+            rewrite=(lambda raw:rewrite_permission_paths(raw,alias,home)) if adapted else (lambda raw:raw)
+            if not run(proc,credentials,rewrite=rewrite):failed.set()
+        except (OSError,ValueError,TimeoutError):
+            failed.set()
+            print('Harbor: official account connection closed; check login in Harbor.',file=sys.stderr)
+        finally:
+            if proc.poll() is None:
+                proc.terminate()
+                try:proc.wait(timeout=3)
+                except subprocess.TimeoutExpired:proc.kill();proc.wait()
+    elif adapted:
         def pump():
             try:
                 # An idle desktop may keep stdin open after native exit. Do not
@@ -163,6 +219,7 @@ def main():
         threading.Thread(target=pump,daemon=True).start()
     code=proc.wait()
     if handle: handle.close()
+    for item in extra:item.close()
     if failed.is_set():raise SystemExit(1)
     raise SystemExit(code if code>=0 else 128-code)
 

@@ -1,17 +1,20 @@
 {
   "runtime": [
     "engine/accounts.py",
+    "engine/auth_bridge.py",
     "engine/backend_guard.py",
     "engine/core.py",
     "engine/configuration.py",
     "engine/desktop_child.py",
     "engine/distribution.py",
     "engine/keychain_store.py",
+    "engine/instances.py",
     "engine/launcher.py",
     "engine/login.py",
     "engine/main.py",
     "engine/model_metadata.py",
     "engine/organization.py",
+    "engine/official_auth.py",
     "engine/probe.py",
     "engine/profile_order.py",
     "engine/proxy.py",
@@ -71,7 +74,16 @@
     "tests/keychain_acceptance.py",
     "tests/native_distribution_acceptance.swift",
     "LICENSE-TOMLKIT",
-    "tests/test_native_defaults.py"
+    "tests/test_native_defaults.py",
+    "tests/test_auth_bridge.py",
+    "tests/test_instance_slots.py",
+    "tests/test_official_auth.py",
+    "tests/test_multi_instance_v09.py",
+    "tests/test_background_access_v09.py",
+    "tests/test_workspace_loading_v09.py",
+    "tests/native_multi_instance_acceptance.py",
+    "tests/desktop_multi_instance_acceptance.py",
+    "tests/test_auth_bridge_transport.py"
   ],
   "documents": {
     "public/README.md": "README.md",
@@ -87,5 +99,5 @@
     "public/LICENSE": "LICENSE",
     "public/THIRD-PARTY-NOTICES.md": "THIRD-PARTY-NOTICES.md"
   },
-  "version": "0.9.1"
+  "version": "0.10.0"
 }
