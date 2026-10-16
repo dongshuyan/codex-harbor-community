@@ -82,7 +82,7 @@ Discovery prefers metadata from your API, then bundled public model catalogs, th
 - Names, URLs, mappings and paths stay in Harbor's local data directory. Harbor has no configuration upload, account sync or analytics service of its own.
 - Model requests go to the account or API you select. Continuing history through a Router sends that context to that provider.
 
-Community has its own data root at `~/Library/Application Support/Codex Harbor Community/` and no automatic importer. Read the [privacy and credential storage policy](PRIVACY.md), including native preferences shared by Codex instances and Keychain authorization after updates.
+Community has its own data root at `~/Library/Application Support/Codex Harbor Community/` and starts with no accounts or paths. Once you select an existing Codex directory, its non-routing settings and skills are available as defaults; your local edits are preserved. Read the [privacy and credential storage policy](PRIVACY.md).
 
 ## Build from source
 
@@ -94,6 +94,12 @@ python3 -B build.py --community --universal
 ```
 
 Output is written to `build/<source hash>/`. Building does not install the app or read personal configuration. See the [build and compatibility notes](docs/USAGE.md#build-and-compatibility) and [contribution workflow](CONTRIBUTING.md).
+
+## Credits
+
+Harbor includes model metadata from [OpenAI Codex](https://github.com/openai/codex) and [Cherry Studio's provider registry](https://github.com/CherryHQ/cherry-studio/tree/d33b9b0266bda30d0e4715ae16650eee7b845d70/packages/provider-registry), with public context references from OpenRouter. Design and compatibility research drew on CC Switch, CodexBar, Cockpit Tools, CodeEdit, and native AppKit drag-and-drop examples.
+
+See [Credits](CREDITS.md) for each contribution, the sidebar interaction references, and retained upstream licenses. Special thanks to **[LINUX DO](https://linux.do/)** and its community for a place to share open-source work and exchange feedback.
 
 ## Support and license
 

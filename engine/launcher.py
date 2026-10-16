@@ -137,7 +137,8 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
             write_json(Path(generation),{'job':job,'phase':'ready','storage':storage})
             command=[sys.executable,'-I','-B',str(Path(__file__).with_name('backend_guard.py')),
                      lease,generation,job,str(CODEX)]
-            atomic_write(wrapper,'#!/bin/sh\n'+''.join('export '+k+'='+shlex.quote(v)+'\n' for k,v in pinned.items())+
+            from native_defaults import ROUTE_ENV
+            atomic_write(wrapper,'#!/bin/sh\nunset '+' '.join(ROUTE_ENV)+'\n'+''.join('export '+k+'='+shlex.quote(v)+'\n' for k,v in pinned.items())+
                          'exec '+shlex.join(command)+' "$@"\n')
             wrapper.chmod(0o700)
             if backend_switch:backend_switch.close();backend_switch=None

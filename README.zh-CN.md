@@ -82,7 +82,7 @@
 - 名称、URL、映射与路径保存在本机数据目录。Harbor 本身没有配置上传、账号同步或分析统计服务。
 - 模型请求发往选中的账号或 API。通过 Router 继续历史会话时，历史上下文会发送给该服务商。
 
-社区版的数据根目录是 `~/Library/Application Support/Codex Harbor Community/`，没有自动导入功能。请阅读[隐私与凭据存储说明](PRIVACY.md)，了解 Codex 实例共用的原生偏好及更新后的钥匙串授权边界。
+社区版的数据根目录是 `~/Library/Application Support/Codex Harbor Community/`，首次启动没有账号或路径。选择已有 Codex 目录后，会沿用其中不涉及账号和路由的设置及技能，并保留 Harbor 窗口中的手动修改。详情见[隐私与凭据存储说明](PRIVACY.md)。
 
 ## 从源码构建
 
@@ -94,6 +94,12 @@ python3 -B build.py --community --universal
 ```
 
 产物位于 `build/<source hash>/`。构建不会安装 App，也不读取个人配置。另见[构建与兼容性说明](docs/USAGE.md#build-and-compatibility)及[贡献流程](CONTRIBUTING.md)。
+
+## 致谢
+
+Harbor 的模型数据来自 [OpenAI Codex](https://github.com/openai/codex) 和 [Cherry Studio provider-registry](https://github.com/CherryHQ/cherry-studio/tree/d33b9b0266bda30d0e4715ae16650eee7b845d70/packages/provider-registry)，并使用 OpenRouter 的公开上下文参考数据。设计与兼容性调研参考了 CC Switch、CodexBar、Cockpit Tools、CodeEdit，以及原生 AppKit 拖放示例。
+
+各项贡献、侧栏交互参考和上游许可见[完整致谢](CREDITS.md)。特别感谢 **[LINUX DO](https://linux.do/)** 及其社区，为开源作品的分享、交流和反馈提供空间。
 
 ## 反馈与许可
 

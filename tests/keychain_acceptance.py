@@ -45,7 +45,9 @@ class NativeKeychain(unittest.TestCase):
                        check=True, capture_output=True, timeout=15)
 
     def setUp(self):
-        self.temp = tempfile.TemporaryDirectory(prefix='codex-harbor-keychain-test-')
+        # Harbor-launched shells may have a private TMPDIR. The native helper
+        # intentionally allows only a direct child of this fixed test root.
+        self.temp = tempfile.TemporaryDirectory(prefix='codex-harbor-keychain-test-', dir='/private/tmp')
         self.keychain = Path(self.temp.name).resolve() / 'test.keychain-db'
         self.addCleanup(self.temp.cleanup)
         result = self.raw({'op':'test_create', 'secret':PASSWORD})

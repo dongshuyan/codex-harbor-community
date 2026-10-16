@@ -43,6 +43,9 @@ profile-order.json
 organization/
 .codex-global-state.json*
 .harbor-organization-before.json
+.harbor-managed-config.toml
+.harbor-native-resources.json
+.harbor-config-before-preservation.toml
 engine/machine-defaults.json
 public-export/
 release-artifacts/

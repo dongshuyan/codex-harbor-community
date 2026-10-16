@@ -3,6 +3,7 @@
     "engine/accounts.py",
     "engine/backend_guard.py",
     "engine/core.py",
+    "engine/configuration.py",
     "engine/desktop_child.py",
     "engine/distribution.py",
     "engine/keychain_store.py",
@@ -20,7 +21,23 @@
     "engine/storage.py",
     "engine/models.json",
     "engine/context-catalog.json",
-    "engine/cherry-catalog.json"
+    "engine/cherry-catalog.json",
+    "engine/vendor/README.md",
+    "engine/vendor/tomlkit/__init__.py",
+    "engine/vendor/tomlkit/_compat.py",
+    "engine/vendor/tomlkit/_types.py",
+    "engine/vendor/tomlkit/_utils.py",
+    "engine/vendor/tomlkit/api.py",
+    "engine/vendor/tomlkit/container.py",
+    "engine/vendor/tomlkit/exceptions.py",
+    "engine/vendor/tomlkit/items.py",
+    "engine/vendor/tomlkit/parser.py",
+    "engine/vendor/tomlkit/py.typed",
+    "engine/vendor/tomlkit/source.py",
+    "engine/vendor/tomlkit/toml_char.py",
+    "engine/vendor/tomlkit/toml_document.py",
+    "engine/vendor/tomlkit/toml_file.py",
+    "engine/native_defaults.py"
   ],
   "native": [
     "native/Sources/CodexSmart2/ApiProbeView.swift",
@@ -49,9 +66,12 @@
     "assets/make_icon.swift",
     "assets/restore-macos.command",
     "tests/test_community.py",
+    "tests/test_config_persistence.py",
     "tests/test_keychain_store.py",
     "tests/keychain_acceptance.py",
-    "tests/native_distribution_acceptance.swift"
+    "tests/native_distribution_acceptance.swift",
+    "LICENSE-TOMLKIT",
+    "tests/test_native_defaults.py"
   ],
   "documents": {
     "public/README.md": "README.md",
@@ -63,8 +83,9 @@
     "public/docs/images/model-parameters.png": "docs/images/model-parameters.png",
     "public/PRIVACY.md": "PRIVACY.md",
     "public/CONTRIBUTING.md": "CONTRIBUTING.md",
+    "public/CREDITS.md": "CREDITS.md",
     "public/LICENSE": "LICENSE",
     "public/THIRD-PARTY-NOTICES.md": "THIRD-PARTY-NOTICES.md"
   },
-  "version": "0.9.0"
+  "version": "0.9.1"
 }

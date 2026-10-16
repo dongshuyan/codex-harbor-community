@@ -21,7 +21,7 @@ def settings(engine=None):
     if not public and (engine/'machine-defaults.json').is_file():
         machine=json.loads((engine/'machine-defaults.json').read_text())
     return dict(community=public,app_name=name,data_directory=name,
-                version=str(value.get('version','0.9.0' if public else '0.8.0')),machine=machine)
+                version=str(value.get('version','0.9.1' if public else '0.8.1')),machine=machine)
 
 
 def discover_app(candidates=None):

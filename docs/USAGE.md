@@ -8,7 +8,7 @@ The release requires macOS 14+, Python 3.11+ and a separately installed official
 
 Harbor checks `/opt/homebrew/bin/python3`, `/usr/local/bin/python3`, then `/usr/bin/python3`, and requires Python 3.11 or later. It does not install Python or require additional packages.
 
-Community starts empty. It does not import another Harbor installation, shell routing variables or native login files. Its root is `~/Library/Application Support/Codex Harbor Community/`. It can be configured with the same account/API and history choices as another installation by adding those choices yourself.
+Community starts empty. It does not import another Harbor installation, shell routing variables or native login files. Its root is `~/Library/Application Support/Codex Harbor Community/`. Add your own account/API and history choices. After you select an existing Codex directory, its non-routing settings and local customizations are available as defaults as described below.
 
 Use the left **＋** to create an official account entry or a custom API. Official accounts use browser authorization. For an API, enter its Responses base URL without the `/responses` suffix, API key and actual model names. Saving alone does not send a model request. When an API URL changes, the editor asks you to confirm its destination before using a newly entered key for discovery or a probe.
 
@@ -33,6 +33,27 @@ Drag location cards to change the automatic-selection order. **Automatic** choos
 An unavailable manual choice remains unavailable; Harbor does not silently redirect its history to another folder. Connect the drive or choose another location yourself. Close instances using an external drive before ejecting it.
 
 Removing a location removes only its registration, through the recoverable list. Even confirmed permanent removal leaves the history directory and sessions intact.
+
+## Saved Codex settings
+
+From Community 0.9.1, normal relaunches preserve settings saved inside the Harbor-launched Codex window, including the desktop Max visibility switch, appearance, default model, reasoning effort and other user preferences. Harbor refreshes the fields it owns for account isolation, history routing and API transport. A Router model or effort removed from its mappings falls back to a currently configured choice.
+
+Settings belong to the private instance's `config.toml`, not to the history location's original configuration:
+
+- Official account: `accounts/<account-id>/codex/config.toml` under the Community data root. The same account entry keeps its settings when switching history locations after exiting its old instance.
+- Custom API: `stores/<location-id>/instances/<api-id>/codex/config.toml` under the Community data root. Each API/location combination has its own settings.
+
+The selected history directory's `config.toml` supplies non-routing defaults, including `[desktop]` (such as the Max visibility switch), project trust, instructions, rules, MCP definitions and plugin preferences. Existing private settings take priority. Unchanged inherited defaults can follow source updates; settings changed or removed inside the Harbor window stay protected. Source login files, provider routing and account-specific remote plugin provisioning are never imported. The selected API and history location remain authoritative. Model availability still determines where Max can be used.
+
+TOML Kit edits only changed fields and retains surrounding comments and formatting. An unchanged configuration is not rewritten. Before the first update of an existing instance config, Harbor keeps its original text in `.harbor-config-before-preservation.toml` beside it. `.harbor-managed-config.toml` records managed fields and inherited defaults. Both are private local files. Invalid configuration stops launch with a controlled error instead of replacing the file.
+
+### Skills and the user environment
+
+Normal launches use your real user home. Codex discovers global `~/.agents/skills` and workspace-local skills using its native rules. Harbor connects user skills from the selected Codex directory's `skills/`, while keeping system skills and writable account/plugin caches independent. Workspace skills remain scoped to their workspace. No history or skill directories are moved.
+
+Global `AGENTS.md`, `AGENTS.override.md` and `rules/*.rules` from the selected directory get private working copies; local edits are preserved and the sources are never written by Harbor. Their tracking file, `.harbor-native-resources.json`, is private. MCP configuration may contain local secrets, so treat the entire private data root as confidential. MCP OAuth credentials and plugin account sessions stay separate; services that require authorization for the new account may still request it.
+
+Your zsh startup files are loaded normally, followed by a small routing guard that restores this window's `CODEX_HOME` and history path and removes conflicting model-provider credential variables. Harbor does not edit your shell files. Installed plugins are still managed by Codex for the selected account; Harbor does not copy another account's plugin cache or credentials. Browser login state remains isolated per instance.
 
 ## Model parameters and probes
 

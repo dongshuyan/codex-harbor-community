@@ -12,6 +12,10 @@ Official logins use Codex's native OAuth flow. Codex owns access/refresh credent
 
 History stays in the selected directory. Project organization is cached locally in `organization/`; it can contain project names, absolute paths and session IDs. Recovery preferences, runtime jobs, synthetic configuration files and gateway event metadata also remain local. Harbor gateway events exclude key/header values and conversation bodies. Native Codex may create its own local logs and caches: treat the entire data root as private, not only files named auth.json.
 
+Native settings are retained in each instance's `config.toml`. Selecting an existing Codex directory permits Harbor to read its non-routing preferences, instructions, rules and skill locations as defaults. Source credentials and account-specific remote plugin provisioning are excluded; original settings are never written by Harbor. Your global user environment and workspace-specific skills are discovered normally. Local changes in Harbor take priority over inherited defaults.
+
+The preservation backup and tracking files (`.harbor-config-before-preservation.toml`, `.harbor-managed-config.toml`, `.harbor-native-resources.json`) can contain private configuration, paths and MCP settings, including secrets already present in a user's MCP definitions. They are protected and excluded from source/release exports. Plugin and MCP OAuth credential files are not copied from another account. See [saved Codex settings](docs/USAGE.md#saved-codex-settings) for the scope of persistence.
+
 ## Network
 
 - Official login, quota reads and official model calls communicate with OpenAI through the installed Codex.

@@ -1,4 +1,4 @@
-"""Harbor profile/storage preparation. Never imports original credentials/config."""
+"""Harbor account/storage preparation. Source credentials are never imported."""
 from __future__ import annotations
 
 import copy
@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import pwd
 import re
 import secrets
 import subprocess
@@ -18,7 +19,8 @@ import uuid
 ENGINE = Path(__file__).resolve().parent
 from distribution import EDITION,discover_app
 MACHINE=EDITION['machine']
-DEFAULT_ROOT = Path.home() / 'Library/Application Support' / EDITION['data_directory']
+USER_HOME = Path(pwd.getpwuid(os.getuid()).pw_dir)
+DEFAULT_ROOT = USER_HOME / 'Library/Application Support' / EDITION['data_directory']
 VOLUME = Path(MACHINE.get('volume','/Volumes/HarborExternal'))
 VOLUME_UUID = MACHINE.get('volume_uuid','')
 EXTERNAL = Path(MACHINE.get('external',str(DEFAULT_ROOT/'stores/external')))
@@ -161,7 +163,7 @@ def process_matches(job):
 
 
 class Store:
-    def __init__(self, root=DEFAULT_ROOT, external=EXTERNAL, mounted=disk_mounted, *, community=None,keychain=None):
+    def __init__(self, root=DEFAULT_ROOT, external=EXTERNAL, mounted=disk_mounted, *, community=None,keychain=None,user_home=None):
         self.community=EDITION['community'] if community is None else community
         self.keychain=keychain
         for value in (root,external):
@@ -169,6 +171,8 @@ class Store:
                 if part.is_symlink() and part not in (Path('/var'),Path('/tmp'),Path('/etc')):
                     raise UserError(f'数据根目录不能经过符号链接：{part}')
         self.root = Path(root).resolve()
+        # Explicit fixture roots stay isolated unless given a synthetic user home.
+        self.user_home = Path(user_home).resolve() if user_home is not None else (USER_HOME if self.root == DEFAULT_ROOT else None)
         self.external = Path(external).resolve()
         self.mounted = mounted
         forbidden=[Path.home()/'.codex',*[Path(p) for _,p in MACHINE.get('original_homes',{}).values()],
@@ -495,6 +499,7 @@ class Store:
 
     def prepare(self, ident, selection, model=None, *, launch_job=None):
         p=self.profile(ident)
+        explicit_model=model is not None
         storage=self.select_storage(selection)
         aliases=[m['alias'] for m in p['models']] if p['kind']=='api' else [m['id'] for m in model_options()]
         if model is None: model='gpt-6-luna' if 'gpt-6-luna' in aliases else aliases[0]
@@ -520,7 +525,8 @@ class Store:
             for name in ['.zshenv','.zprofile','.zshrc','.zlogin']:
                 if not (os_home/name).exists(): atomic_write(os_home/name,'# Codex Harbor private shell environment\n')
             return dict(id=ident,storage=storage,control=str(self.root),external=str(self.external),base=str(base),history=str(history),home=str(home),
-                        electron=str(electron),os_home=str(os_home),workspace=str(workspace),model=model,
+                        native_user_home=str(self.user_home) if self.user_home else None,
+                        electron=str(electron),os_home=str(os_home),workspace=str(workspace),model=model,explicit_model=explicit_model,
                         profile=p,storage_paths=self.registry.sensitive_paths(),existing_home=history!=base/'history')
 
 
@@ -529,6 +535,9 @@ def configure(prepared, proxy_url=None, proxy_token=None):
     if access_mode not in ['native','readonly','workspace']: raise UserError('实例权限模式无效。')
     permission='harbor-workspace' if access_mode=='workspace' else 'harbor-read-only'
     home=Path(prepared['home']); p=prepared['profile']
+    from native_defaults import refresh_resources, shell_environment
+    refresh_resources(prepared)
+    shell_environment(prepared)
     mapping=next((m for m in p['models'] if m['alias']==prepared['model']),None)
     models=copy.deepcopy(catalog())
     if p['kind']=='api':
@@ -550,7 +559,11 @@ def configure(prepared, proxy_url=None, proxy_token=None):
             configure_model(item,m)
         if not proxy_url or not proxy_token: raise UserError('API 转发器尚未启动。')
         write_json(home/'auth.json',{'auth_mode':'apikey','OPENAI_API_KEY':proxy_token})
-    write_json(home/'smart2-models.json',{'models':models})
+    model_file=home/'smart2-models.json'
+    model_text=json.dumps({'models':models},ensure_ascii=False,indent=2)+'\n'
+    if model_file.is_symlink(): raise UserError('模型配置不能是符号链接。')
+    if not model_file.exists() or model_file.read_text()!=model_text:
+        atomic_write(model_file,model_text)
     lines=[f'model = {json.dumps(prepared["model"])}', 'model_provider = "openai"',
            f'model_reasoning_effort = {json.dumps(mapping["effort"] if mapping else "low")}',
            f'sqlite_home = {json.dumps(prepared["history"])}',
@@ -562,7 +575,8 @@ def configure(prepared, proxy_url=None, proxy_token=None):
         # to Codex. Router transport keeps only required compatibility settings.
         if p['kind']=='api':
             lines.extend(['[features]','enable_request_compression = false','api_key_model_discovery = false'])
-        atomic_write(home/'config.toml','\n'.join(lines)+'\n')
+        from configuration import save
+        save(prepared,'\n'.join(lines)+'\n')
         return
     # Explicit isolated acceptance harnesses can still request test protection.
     lines.extend(['approval_policy = "on-request"', f'default_permissions = "{permission}"',
@@ -594,12 +608,13 @@ def configure(prepared, proxy_url=None, proxy_token=None):
                   'shell_snapshot = false','shell_snapshot_v2 = false',
                   '[memories]','generate_memories = false','use_memories = false',
                   '[otel]','exporter = "none"','trace_exporter = "none"','metrics_exporter = "none"'])
-    atomic_write(home/'config.toml','\n'.join(lines)+'\n')
+    from configuration import save
+    save(prepared,'\n'.join(lines)+'\n')
 
 
 def environment(prepared):
     osh=Path(prepared['os_home'])
-    return {'HOME':str(osh),'ZDOTDIR':str(osh),'CFFIXED_USER_HOME':str(osh),
+    env = {'HOME':str(osh),'ZDOTDIR':str(osh),'CFFIXED_USER_HOME':str(osh),
             'CFPREFERENCES_AVOID_DAEMON':'1','XDG_CONFIG_HOME':str(osh/'.config'),
             'XDG_CACHE_HOME':str(osh/'.cache'),'XDG_DATA_HOME':str(osh/'.local/share'),
             'TMPDIR':prepared.get('temporary',str(osh/'tmp')),'CODEX_HOME':prepared.get('short_home',prepared['home']),
@@ -610,3 +625,13 @@ def environment(prepared):
             'PATH':'/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin',
             'LANG':'zh_CN.UTF-8','LC_ALL':'en_US.UTF-8',
             'NO_PROXY':'127.0.0.1,localhost','no_proxy':'127.0.0.1,localhost'}
+    if prepared.get('native_user_home'):
+        env['HOME'] = prepared['native_user_home']
+        # Let Codex and tools discover normal per-user resources. Account auth,
+        # runtime caches and browser sessions still have separate explicit paths.
+        for k in ('CFFIXED_USER_HOME', 'CFPREFERENCES_AVOID_DAEMON', 'XDG_CONFIG_HOME', 'XDG_CACHE_HOME', 'XDG_DATA_HOME'):
+            env.pop(k, None)
+        user = pwd.getpwuid(os.getuid())
+        env.update(USER=user.pw_name, LOGNAME=user.pw_name, SHELL=user.pw_shell or '/bin/zsh')
+        env['PATH'] += ':' + str(Path(prepared['native_user_home']) / '.local/bin') + ':/usr/local/bin'
+    return env
