@@ -52,3 +52,10 @@ engine/machine-defaults.json
 public-export/
 release-artifacts/
 keychain-refs/
+
+# Private signing material and local updater state are never source.
+*.keychain
+*.keychain-db
+*.p12
+*.pfx
+signing/

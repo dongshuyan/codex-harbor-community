@@ -129,25 +129,6 @@ def main():
                 'refresh_token': 'SYNTHETIC_UNUSED_REFRESH_TOKEN', 'account_id': 'synthetic-account'},
                 'last_refresh': datetime.datetime.now(datetime.timezone.utc).isoformat()})
             original_auth = hashlib.sha256(canonical.read_bytes()).hexdigest()
-            tap = root / 'observe_paths.py'
-            tap.write_text('''import json, sys
-from pathlib import Path
-sys.path.insert(0, sys.argv.pop(1))
-import backend_guard
-original = backend_guard.rewrite_permission_paths
-def observe(raw, alias, home):
-    rewritten = original(raw, alias, home)
-    value = json.loads(raw)
-    if value.get('method') in ('command/exec', 'thread/start'):
-        def paths(raw):
-            params = json.loads(raw).get('params', {})
-            return {key: params[key] for key in ('cwd', 'runtimeWorkspaceRoots', 'environments', 'sandboxPolicy') if key in params}
-        with open(Path(home) / 'synthetic-path-observations.jsonl', 'a') as target:
-            target.write(json.dumps({'method': value['method'], 'before': paths(raw), 'after': paths(rewritten)}) + '\\n')
-    return rewritten
-backend_guard.rewrite_permission_paths = observe
-backend_guard.main()
-''')
             # This protection is independent of the native model/provider config.
             seatbelt = ('(version 1)(allow default)(deny network*)'
                 '(allow network-outbound (remote ip "localhost:*"))'
@@ -194,7 +175,7 @@ backend_guard.main()
                 native_args = [part for key, value in options.items()
                                for part in ('-c', key + '=' + json.dumps(value))] + ['app-server']
                 command = ['/usr/bin/sandbox-exec', '-p', seatbelt, sys.executable, '-I', '-B',
-                    str(tap), str(ENGINE), str(slot['control'] / 'backend.lock'),
+                    str(ENGINE / 'backend_guard.py'), str(slot['control'] / 'backend.lock'),
                     str(marker), job, str(core.CODEX), *native_args]
                 rpc = NativeRPC(command, env, workspace, root / ('native-' + str(index) + '.stderr'))
                 clients.append(rpc)
@@ -239,18 +220,12 @@ backend_guard.main()
             assert started['sandbox']['type'] == 'workspaceWrite', started['sandbox']
             rollout = Path(started['thread']['path']).resolve()
             assert rollout.is_relative_to(Path(second['history']) / 'sessions'), rollout
-            observations = [json.loads(line) for line in
-                (home / 'synthetic-path-observations.jsonl').read_text().splitlines()]
-            paths = observations[-1]['after']
-            expected_workspace = str(home / 'synthetic-workspace')
-            assert paths['cwd'] == expected_workspace
-            assert paths['runtimeWorkspaceRoots'] == [expected_workspace]
-            assert paths['environments'][0]['cwd'] == expected_workspace
-            assert paths['environments'][0]['runtimeWorkspaceRoots'] == [expected_workspace]
             for rpc, prepared in zip(clients, prepared_instances):
+                requirements = rpc.call('configRequirements/read', {})
+                assert isinstance(requirements, dict) and 'requirements' in requirements, requirements
                 native_config = rpc.call('config/read', {'includeLayers': False})
                 assert native_config['config']['sqlite_home'] == prepared['history']
-            result['thread_permission_roots_and_native_history_location'] = True
+            result['native_thread_cwd_and_history_location'] = True
 
             stage = 'native-command-write'
             execution = clients[1].call('command/exec', {
@@ -261,11 +236,8 @@ backend_guard.main()
             assert execution['exitCode'] == 0, execution
             assert (home / 'synthetic-workspace/native-proof.txt').read_text() == 'SYNTHETIC_NATIVE_WRITE\n'
             assert execution['stdout'].strip() == str(home / 'synthetic-workspace'), execution
-            observations = [json.loads(line) for line in
-                (home / 'synthetic-path-observations.jsonl').read_text().splitlines()]
-            assert observations[-1]['before']['cwd'] == alias_workspace
-            assert observations[-1]['after']['cwd'] == str(home / 'synthetic-workspace')
-            result['native_command_write_and_cwd_adapter'] = True
+            result['native_command_write_and_resolved_cwd'] = True
+            result['production_guardian_and_native_policy_read'] = True
 
             stage = 'logout-first'
             clients[0].call('account/logout', {})

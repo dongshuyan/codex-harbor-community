@@ -28,8 +28,10 @@ struct Distribution: Equatable {
             guard safeComponent(value), !community || !["codex harbor", "codex smart-2"].contains(value.lowercased()) else { return nil }
             return value
         } ?? fallbackName
-        let version = displayValue(object["version"], limit: 32) ??
-            displayValue(bundleInfo["CFBundleShortVersionString"], limit: 32) ?? (community ? "0.10.2" : "0.9.2")
+        let declaredVersion = displayValue(object["version"], limit: 32) ??
+            displayValue(bundleInfo["CFBundleShortVersionString"], limit: 32)
+        if declaredVersion == nil { NSLog("Harbor bundle version is missing; displaying unknown version") }
+        let version = declaredVersion ?? "版本未知"
         return Distribution(edition: community ? "community" : "private", appName: name, dataDirectory: directory, version: version)
     }
 

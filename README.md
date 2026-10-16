@@ -93,7 +93,7 @@ python3 -B -m unittest discover -s tests -p 'test_*.py'
 python3 -B build.py --community --universal
 ```
 
-Output is written to `build/<source hash>/`. Building does not install the app or read personal configuration. See the [build and compatibility notes](docs/USAGE.md#build-and-compatibility) and [contribution workflow](CONTRIBUTING.md).
+A verified ZIP is written to `release-artifacts/`. Builds clean up their temporary app bundles on normal exit, including handled failures; cleanup errors report the remaining path. After a forced termination, the next build reclaims owned inactive temporary directories. Building does not install the app or read personal configuration. See the [build and compatibility notes](docs/USAGE.md#build-and-compatibility) and [contribution workflow](CONTRIBUTING.md).
 
 ## Credits
 

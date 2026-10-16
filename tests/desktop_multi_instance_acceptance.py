@@ -5,13 +5,11 @@ are loopback; a rejecting proxy contains incidental desktop HTTP requests. Only
 the two exact launcher jobs are stopped. Shared macOS UI prefs use the launcher's
 normal read-only backup; this harness never restores or edits that domain.
 """
-import hashlib
 import ctypes
+import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
-import os
 from pathlib import Path
-import shlex
 import subprocess
 import sys
 import tempfile
@@ -31,7 +29,23 @@ import storage
 from accounts import account_home
 
 
+def assert_no_model_turns(lines):
+    if not lines:
+        raise AssertionError('Native desktop log is missing or empty')
+    if any('method=turn/start' in line for line in lines):
+        raise AssertionError('Unexpected model turn in native desktop log')
+
+
 def main():
+    # Positive/negative controls exercise the same external observer used below.
+    assert_no_model_turns(['response_routed method=config/read errorCode=null'])
+    for control in ([], ['request method=turn/start id=synthetic-unexpected']):
+        try:
+            assert_no_model_turns(control)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError('Native log observer failed its control')
     root = Path(tempfile.mkdtemp(prefix='harbor-desktop-multi-', dir='/private/tmp'))
     metadata_requests, blocked_requests, prepared_by_job = [], [], {}
     workers, jobs, snapshots = [], [], []
@@ -110,40 +124,6 @@ def main():
                 'refresh_token': 'SYNTHETIC_UNUSED_REFRESH_TOKEN', 'account_id': 'synthetic-account'},
                 'last_refresh': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())})
             original_auth = hashlib.sha256(canonical.read_bytes()).hexdigest()
-            evidence = root / 'backend-initializations.jsonl'
-            tap = root / 'observe_backend.py'
-            tap.write_text('''import ctypes, json, os, sys, time
-from pathlib import Path
-sys.path.insert(0, sys.argv.pop(1))
-import auth_bridge, backend_guard
-evidence = Path(''' + repr(str(evidence)) + ''')
-responsible = ctypes.CDLL('/usr/lib/libSystem.B.dylib').responsibility_get_pid_responsible_for_pid
-responsible.argtypes = [ctypes.c_int]
-responsible.restype = ctypes.c_int
-def record(event):
-    fd = os.open(evidence, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o600)
-    with os.fdopen(fd, 'a') as handle:
-        handle.write(json.dumps({'event': event, 'pid': os.getpid(), 'responsible_pid': responsible(os.getpid()), 'home': os.environ['CODEX_HOME'], 'time': time.time()}) + '\\n')
-client, server = auth_bridge.AuthBridge.client, auth_bridge.AuthBridge.server
-def receive_client(self, raw):
-    method = json.loads(raw).get('method')
-    if method in ('initialize', 'initialized', 'account/read'):
-        record('desktop-' + method)
-    if method == 'turn/start':
-        record('UNEXPECTED-TURN')
-        raise ValueError('No turns are allowed in this synthetic smoke')
-    return client(self, raw)
-def receive_native(self, raw):
-    ready = self.ready
-    result = server(self, raw)
-    if self.ready and not ready:
-        record('bridge-ready')
-    return result
-auth_bridge.AuthBridge.client = receive_client
-auth_bridge.AuthBridge.server = receive_native
-backend_guard.main()
-''')
-
             def fixture(prepared, env, args, job):
                 assert prepared['native_user_home'] is None
                 assert Path(env['HOME']).is_relative_to(root)
@@ -169,7 +149,10 @@ backend_guard.main()
                 configured = tomllib.loads(path.read_text())
                 configured.update(value)
                 core.atomic_write(path, configuration.patch_document(path.read_text(), configured))
-                env.update(HTTP_PROXY=proxy_url, HTTPS_PROXY=proxy_url, ALL_PROXY=proxy_url,
+                # The bundled CLI recognizes this override. Contain accidental
+                # refresh attempts in the synthetic fixture as well as inference.
+                env.update(CODEX_REFRESH_TOKEN_URL_OVERRIDE=base + '/refresh',
+                           HTTP_PROXY=proxy_url, HTTPS_PROXY=proxy_url, ALL_PROXY=proxy_url,
                            http_proxy=proxy_url, https_proxy=proxy_url, all_proxy=proxy_url,
                            NO_PROXY='127.0.0.1,localhost', no_proxy='127.0.0.1,localhost')
                 args.extend(['--proxy-server=' + proxy_url,
@@ -178,16 +161,7 @@ backend_guard.main()
                     '--disable-background-networking', '--disable-component-update'])
                 prepared_by_job[job] = prepared
 
-            original_write = launcher.atomic_write
-
-            def observed_wrapper(path, text):
-                if Path(path).name == 'codex-backend':
-                    target = shlex.quote(str(ENGINE / 'backend_guard.py'))
-                    assert target in text
-                    text = text.replace(target, shlex.quote(str(tap)) + ' ' + shlex.quote(str(ENGINE)), 1)
-                return original_write(path, text)
-
-            with patch.object(launcher, 'atomic_write', observed_wrapper), patch.object(launcher,'LAUNCH_HELPER',helper):
+            with patch.object(launcher,'LAUNCH_HELPER',helper):
                 start_barrier = threading.Barrier(3)
 
                 def launch(job):
@@ -223,21 +197,36 @@ backend_guard.main()
                     time.sleep(.2)
                 for field in ('home', 'electron', 'pid', 'instance_slot'):
                     assert len({state[field] for state in snapshots}) == 2, field
-                observed = [json.loads(line) for line in evidence.read_text().splitlines()] if evidence.exists() else []
                 for state in snapshots:
-                    events = {item['event'] for item in observed if item['home'] == state['home']}
-                    assert 'bridge-ready' in events and 'desktop-initialized' in events, events
-                    assert responsible(state['pid'])==state['pid'], 'Desktop must own its file access'
-                    # Some initial app-server connections close and restart.
-                    # Query responsibility inside the live backend, not after
-                    # its PID has disappeared or been recycled.
-                    for item in (item for item in observed if item['home']==state['home']):
-                        assert item['responsible_pid']==state['pid'], ('Backend attribution',item,state['pid'])
-                assert not any(item['event'] == 'UNEXPECTED-TURN' for item in observed)
+                    prepared = prepared_by_job[state['job']]
+                    logroot = Path(prepared['os_home']) / 'Library/Logs/com.openai.codex'
+                    lines = [line for path in logroot.rglob('*.log') for line in path.read_text().splitlines()]
+                    assert_no_model_turns(lines)
+                    assert not any('Desktop startup policy read failed' in line for line in lines)
+                    # Check observed desktop startup and renderer reads. The CLI
+                    # harness separately checks configRequirements/read; current
+                    # desktop builds do not always log that bootstrap RPC.
+                    assert any('Host startup critical-path phases completed' in line for line in lines)
+                    assert any('Codex CLI initialized' in line for line in lines)
+                    for method in ('account/read', 'config/read'):
+                        assert any('response_routed' in line and 'errorCode=null' in line and
+                                   ('method=' + method + ' ') in line for line in lines), method
+                    assert responsible(state['pid']) == state['pid'], 'Desktop must own its file access'
+                    # Observe child attribution externally; never replace the
+                    # production entrypoint or import its modules in an observer.
+                    process_rows = subprocess.check_output(['/bin/ps', '-ww', '-axo', 'pid=,ppid=,command='], text=True)
+                    guardians = []
+                    for row in process_rows.splitlines():
+                        parts = row.strip().split(None, 2)
+                        if len(parts) == 3 and 'backend_guard.py' in parts[2] and state['job'] in parts[2].split():
+                            guardians.append(int(parts[0]))
+                    assert guardians, 'No live production guardian observed'
+                    for pid in guardians:
+                        assert responsible(pid) == state['pid'], 'Backend must belong to its own desktop'
                 assert hashlib.sha256(canonical.read_bytes()).hexdigest() == original_auth
                 assert not any('responses' in item['path'] or 'refresh' in item['path'] for item in metadata_requests)
-                result.update(status='passed', native_backends_initialized=True,
-                    native_file_access_attribution=True,
+                result.update(status='passed', native_backends_initialized=True, production_entrypoint_used=True, desktop_startup_logs_observed=True,
+                    guardians_responsible_to_desktop=True,
                     canonical_auth_unchanged=True, distinct_slots_homes_electron_pids=True,
                     shared_synthetic_history=len({state['history'] for state in snapshots}) == 1)
     except Exception as error:

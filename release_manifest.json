@@ -92,7 +92,10 @@
     "tests/native_launch_responsibility_acceptance.swift",
     "tests/native_launch_responsibility_acceptance.py",
     "tests/native_launch_helper_acceptance.py",
-    "tests/test_launch_job_races.py"
+    "tests/test_launch_job_races.py",
+    "build_artifacts.py",
+    "tests/test_backend_entrypoint.py",
+    "tests/test_backend_paths.py"
   ],
   "documents": {
     "public/README.md": "README.md",
@@ -108,5 +111,6 @@
     "public/LICENSE": "LICENSE",
     "public/THIRD-PARTY-NOTICES.md": "THIRD-PARTY-NOTICES.md"
   },
-  "version": "0.10.2"
+  "version": "0.10.3",
+  "private_version": "0.9.3"
 }

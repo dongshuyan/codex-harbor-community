@@ -106,7 +106,11 @@ python3 -B -m unittest discover -s tests -p 'test_*.py'
 python3 -B build.py --community --universal
 ```
 
-Build output is placed in `build/<source hash>/`; building neither installs the app nor reads personal configuration. The native Keychain integration suite uses a disposable synthetic keychain and accepts an exact helper path with `--helper`. It makes no live account or model call.
+Build output is a verified ZIP in `release-artifacts/`. Normal exit, including handled build failures, attempts to remove temporary app bundles; cleanup errors report the remaining path. A forced termination can leave temporary files, which the next build reclaims only when their ownership marker is valid and no active build holds their lock. Building neither installs the app nor reads personal configuration. Custom `--output` paths must use real directories without symlink ancestors; on macOS use `/private/tmp`, rather than `/tmp`, for a temporary output.
+
+Optional `--identity` and `--keychain` arguments select an already-working user-supplied signing identity for Apple's `codesign` tool. They do not create or import certificates, change Keychain preferences or trust, or notarize the app. The default remains ad-hoc signing. Certificate-based signing is outside this release's validation.
+
+The native Keychain integration suite uses a disposable synthetic keychain and accepts an exact helper path with `--helper`. It makes no live account or model call.
 
 The universal release includes arm64 and x86_64 executables. Runtime acceptance has been performed on Apple Silicon, not a physical Intel Mac. Release builds are ad-hoc signed, not Apple Developer ID signed or notarized. Keychain authorization dialogs, other official Codex versions and every external model service are not implied to have passed acceptance.
 

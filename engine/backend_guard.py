@@ -9,6 +9,10 @@ import subprocess
 import sys
 import threading
 
+# -I excludes the script directory. Match the other bundled entrypoints: only
+# this trusted engine directory is added, never the caller's cwd or PYTHONPATH.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
 
 PATH_METHODS = {'thread/start', 'thread/resume', 'thread/fork', 'turn/start',
                 'thread/settings/update', 'command/exec'}
@@ -165,6 +169,7 @@ def main():
         # home. Every native child, including non-app-server helpers, is ephemeral.
         args=ephemeral_arguments(args)
         if bridge:
+            from auth_bridge import run
             from official_auth import credentials_for_instance
             store=Store(Path(os.environ['HARBOR_CONTROL_ROOT']))
             credentials=lambda **kwargs:credentials_for_instance(store,official,**kwargs)
@@ -176,7 +181,6 @@ def main():
     signal.signal(signal.SIGTERM,forward);signal.signal(signal.SIGINT,forward)
     failed=threading.Event()
     if bridge:
-        from auth_bridge import run
         try:
             rewrite=(lambda raw:rewrite_permission_paths(raw,alias,home)) if adapted else (lambda raw:raw)
             if not run(proc,credentials,rewrite=rewrite):failed.set()

@@ -93,7 +93,7 @@ python3 -B -m unittest discover -s tests -p 'test_*.py'
 python3 -B build.py --community --universal
 ```
 
-产物位于 `build/<source hash>/`。构建不会安装 App，也不读取个人配置。另见[构建与兼容性说明](docs/USAGE.md#build-and-compatibility)及[贡献流程](CONTRIBUTING.md)。
+产物位于 `release-artifacts/`。正常退出或处理构建错误时会清理临时 App；清理失败会报告剩余路径。若进程被强制终止，下次构建只回收本工具创建且已无活动构建占用的临时目录。构建不会安装 App，也不读取个人配置。另见[构建与兼容性说明](docs/USAGE.md#build-and-compatibility)及[贡献流程](CONTRIBUTING.md)。
 
 ## 致谢
 
