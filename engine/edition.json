@@ -2,5 +2,5 @@
   "edition": "community",
   "app_name": "Codex Harbor Community",
   "data_directory": "Codex Harbor Community",
-  "version": "0.10.1"
+  "version": "0.10.2"
 }

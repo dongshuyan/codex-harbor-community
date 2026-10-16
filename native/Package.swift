@@ -2,6 +2,8 @@
 import PackageDescription
 let package = Package(name: "CodexSmart2", platforms: [.macOS(.v14)], products: [
     .executable(name: "CodexSmart2", targets: ["CodexSmart2"]),
-    .executable(name: "HarborKeychain", targets: ["HarborKeychain"])
+    .executable(name: "HarborKeychain", targets: ["HarborKeychain"]),
+    .executable(name: "HarborLaunch", targets: ["HarborLaunch"])
 ], targets: [.executableTarget(name: "CodexSmart2", swiftSettings: [.swiftLanguageMode(.v5)]),
-             .executableTarget(name:"HarborKeychain",swiftSettings:[.swiftLanguageMode(.v5)])])
+             .executableTarget(name:"HarborKeychain",swiftSettings:[.swiftLanguageMode(.v5)]),
+             .executableTarget(name:"HarborLaunch",swiftSettings:[.swiftLanguageMode(.v5)])])

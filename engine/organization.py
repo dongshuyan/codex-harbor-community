@@ -155,14 +155,14 @@ class Organization:
         registry=self.store.registry.read()
         identities={s.get('volume_uuid','') for s in registry.get('history_bindings',[]) if s['path']==str(history)}
         for location in registry['storages']+registry.get('removed_storages',[]):
-            if (location.get('enabled') or location.get('volume_uuid')) and str(self.store.registry.history_path(location))==str(history):
+            if (location.get('enabled') or location.get('volume_uuid')) and str(self.store.registry.registered_history_path(location))==str(history):
                 identities.add(location.get('volume_uuid',''))
         return identities
 
     def scope(self,value,history,volume_uuid=None):
         if volume_uuid is None:
             matches=[s.get('volume_uuid','') for s in self.store.registry.entries()
-                     if str(self.store.registry.history_path(s))==str(history)]
+                     if str(self.store.registry.registered_history_path(s))==str(history)]
             if len(matches)!=1:raise UserError('项目组织目录归属不明确，已停止启动。')
             volume_uuid=matches[0]
         key=hashlib.sha256((str(history)+'\0'+volume_uuid).encode()).hexdigest()
@@ -173,18 +173,27 @@ class Organization:
         return dict(home=str(home),scope=key,baseline=baseline,phase=phase,
                     home_volume_uuid=volume_identity(Path(home)))
 
-    def adopt_legacy(self,value,known):
+    def adopt_legacy(self,value,known,current_home=None):
         # Before the first 0.8 launch, accounts/APIs can already have private
         # projects. Discover only Harbor-owned homes, including retired runtimes.
         candidates={home:[] for home in (self.store.root/'accounts').glob('*/codex')}
         for location in self.store.registry.credential_locations():
-            if self.store.registry.disk_available(location):
+            if location.get('history_path') in known and self.store.registry.disk_available(location):
                 for home in (Path(location['path'])/'instances').glob('*/codex'):
                     candidates.setdefault(home,[]).append(location)
         for home,locations in candidates.items():
             if not ID.fullmatch(home.parent.name) or str(home) in value['writers'] or not (home/'sessions').is_symlink():continue
-            prior=(home/'sessions').resolve().parent
-            if str(prior) not in known:continue
+            link=home/'sessions'
+            target=link.readlink()
+            prior=Path(os.path.normpath(target if target.is_absolute() else link.parent/target)).parent
+            if str(prior) not in known:
+                # A primary home can be retargeted. Preserve its old private
+                # edits before replacing its projection, without reading the
+                # former history or enumerating that storage's other homes.
+                registry=self.store.registry.read()
+                registered={str(self.store.registry.registered_history_path(s)) for s in registry['storages']}
+                registered.update(registry.get('retired_histories',[]))
+                if home!=current_home or str(prior) not in registered:continue
             bindings={s['history_volume_uuid'] for s in locations if s.get('history_path')==str(prior)}
             if not bindings:bindings=self.identities(prior)
             # A path reused by another disk cannot identify an old official
@@ -199,9 +208,10 @@ class Organization:
             scope['data']=merge_changes(scope['data'],{},data)
             value['writers'][str(home)]=self.writer(home,key,data,'ready')
 
-    def harvest(self,value):
+    def harvest(self,value,*,scope_key=None,home=None):
         # All paths were recorded by prepare, never accepted from UI input.
         for writer in value['writers'].values():
+            if (scope_key is not None or home is not None) and writer['scope']!=scope_key and writer['home']!=home:continue
             try:
                 from storage import volume_identity
                 mounted=volume_identity(Path(writer['home']))
@@ -225,11 +235,11 @@ class Organization:
     def prepare(self,home,history):
         home=Path(home);history=Path(history)
         with self.transaction() as value:
-            known={str(self.store.registry.history_path(s)) for s in self.store.registry.entries()}
-            known.update(self.store.registry.read().get('retired_histories',[]))
-            self.adopt_legacy(value,known)
-            self.harvest(value)
+            # Import an old location when it is selected, not by walking every
+            # registered disk during an unrelated launch. Preserve other scopes.
+            self.adopt_legacy(value,{str(history)},home)
             key,scope=self.scope(value,history)
+            self.harvest(value,scope_key=key,home=str(home))
             source=read_object(history/STATE)
             if source is not None:
                 observed=projection(source,history)
@@ -276,5 +286,5 @@ class Organization:
             write_json(home/STATE,private)
             value['writers'][str(home)]['phase']='ready'
 
-    def publish(self):
-        with self.transaction() as value:self.harvest(value)
+    def publish(self,home=None):
+        with self.transaction() as value:self.harvest(value,home=str(home) if home else None)

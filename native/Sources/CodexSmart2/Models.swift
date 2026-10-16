@@ -67,10 +67,12 @@ struct Job: Codable, Identifiable, Equatable {
     var pid: Int?
     var message: String?
     var exitCode: Int?
+    var desktopLaunchPhase: String?
     enum CodingKeys: String, CodingKey {
         case job, storage, status, pid, message
         case profileID = "id"
         case exitCode = "exit_code"
+        case desktopLaunchPhase = "desktop_launch_phase"
     }
 }
 
@@ -398,9 +400,9 @@ enum Engine {
                    message == "正在启动独立窗口，请等待运行状态更新。" {
                     message = "独立窗口已启动；模型和续聊效果请在窗口内验收。"
                 }
-                // The child records running before exec. Keep watching until
-                // its terminal state, including failures immediately after exec.
-                if job.status == "error" || (job.status == "exited" && job.exitCode != nil) {
+                // A projected exit can precede the worker's final error. Only
+                // stop watching a confirmed terminal state; NSWorkspace has no exit code.
+                if job.status == "error" || (job.status == "exited" && (job.exitCode != nil || job.desktopLaunchPhase == "exited")) {
                     watchedLaunches.remove(job.job); expectedStops.remove(job.job)
                 }
             }

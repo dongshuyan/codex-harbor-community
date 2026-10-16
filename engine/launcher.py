@@ -20,6 +20,8 @@ from recovery import snapshot,lifecycle_lock
 from proxy import Gateway
 from accounts import account_lock_paths,take_lock
 
+LAUNCH_HELPER=Path(__file__).resolve().parent.parent/'HarborLaunch'
+
 
 def launch_request(store, profile_id, storage, model=None, *, access_mode='native'):
     if access_mode not in ['native','readonly','workspace']:raise UserError('实例权限模式无效。')
@@ -48,8 +50,11 @@ def launch_request(store, profile_id, storage, model=None, *, access_mode='nativ
         data=json.loads(job_path.read_text())
         if data['status']!='starting': return data
         if proc.poll() is not None: break
+    # Observe worker exit before rereading its final intent. A prior snapshot
+    # can predate spawn even though the helper already owns the journal now.
+    worker_exited=proc.poll() is not None
     data=json.loads(job_path.read_text())
-    if data['status']=='starting' and proc.poll() is not None:
+    if data['status']=='starting' and worker_exited and not data.get('desktop_spawn_attempted'):
         data.update(status='error',message='启动进程提前退出，未启动会话。')
         write_json(job_path,data)
     return data
@@ -60,7 +65,7 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
     lock_path=store.lock_path(storage,profile_id)
     gateway=None;proc=None;life=None;account_lock=None;backend_switch=None;slot_guards=None
     state={'id':profile_id,'storage':storage,'job':job,'status':'starting',
-           'lifecycle_version':2,'desktop_spawn_attempted':False,'created_at':time.time()}
+           'lifecycle_version':3,'desktop_spawn_attempted':False,'created_at':time.time()}
     with lock_path.open('a') as lock:
         try:
             life=lifecycle_lock(store.root)
@@ -142,6 +147,7 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
                      lease,generation,job,str(CODEX)]
             from native_defaults import ROUTE_ENV
             atomic_write(wrapper,'#!/bin/sh\nunset '+' '.join(ROUTE_ENV)+'\n'+''.join('export '+k+'='+shlex.quote(v)+'\n' for k,v in pinned.items())+
+                         'cd '+shlex.quote(prepared['workspace'])+' || exit 1\n'+
                          'exec '+shlex.join(command)+' "$@"\n')
             wrapper.chmod(0o700)
             if backend_switch:backend_switch.close();backend_switch=None
@@ -150,47 +156,64 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
             if not binary.is_file():raise UserError('找不到已安装的官方 Codex 应用。')
             state.update(home=prepared['home'],history=prepared['history'],electron=prepared['electron'],
                          backup=backup,instance_slot=slot)
-            # Direct spawn avoids reusing another account's Launch Services instance.
-            # No secrets are present in argv or environment; Router key stays in this worker.
-            cmd=[sys.executable,'-I','-B',str(Path(__file__).with_name('desktop_child.py')),
-                 str(job_path),'--user-data-dir='+prepared['electron'],*args]
-            log=None
-            if lab:log=open(jobs/f'{job}.synthetic.stderr','wb')
+            # Reuse Codex Smart's NSWorkspace new-instance launch. Fork/exec
+            # makes macOS attribute Codex's file access to Harbor's changing
+            # ad-hoc signature. The signed Codex app must own its own access.
+            cmd=[str(LAUNCH_HELPER),str(job_path)]
             # Persist the attempt first: an interrupted spawn must never look
             # like a proven pre-desktop failure to a future login importer.
             state['desktop_spawn_attempted']=True
+            state['desktop_launch_phase']='pending'
             write_json(job_path,state)
-            proc=subprocess.Popen(cmd,env=env,cwd=prepared['workspace'],stdin=subprocess.DEVNULL,
-                                  stdout=subprocess.DEVNULL,stderr=log or subprocess.DEVNULL,
+            proc=subprocess.Popen(cmd,env={'PATH':'/usr/bin:/bin:/usr/sbin:/sbin','LANG':'en_US.UTF-8',
+                                          'HOME':env['HOME']},cwd=prepared['workspace'],stdin=subprocess.PIPE,
+                                  stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,
                                   start_new_session=True,close_fds=True,
                                   pass_fds=(lock.fileno(),life.fileno(),account_lock.fileno(),slot_claim.fileno()))
+            # Configuration travels through a private pipe, never process argv.
+            try:
+                proc.stdin.write(json.dumps({'app':str(binary.parents[2]),'environment':env,
+                    'arguments':['--user-data-dir='+prepared['electron'],*args]}).encode())
+            finally:proc.stdin.close()
             def terminate(_sig,_frame):
-                if proc.poll() is None:os.killpg(proc.pid,signal.SIGTERM)
+                if proc.poll() is None:proc.terminate()
             if __import__('threading').current_thread() is __import__('threading').main_thread():
                 signal.signal(signal.SIGTERM,terminate)
                 signal.signal(signal.SIGINT,terminate)
-            exit_code=proc.wait()
+            helper_exit=proc.wait()
             state.update(json.loads(job_path.read_text()))
-            state.update(status='exited' if exit_code==0 else 'error',exit_code=exit_code)
-            if exit_code:state['message']='Codex 未正常启动或异常退出；现有版本未受影响。'
-            if log:log.close()
+            if helper_exit and state.get('desktop_launch_phase') not in ('failed','exited'):
+                state.update(status='error',message='系统启动助手异常退出，已保留实例记录；请确认窗口状态。')
         except UserError as e:
             state.update(status='error',message=str(e))
         except Exception as e:
             state.update(status='error',message='启动失败（'+type(e).__name__+'）。配置与旧历史均未被迁移。')
         finally:
             if proc and proc.poll() is None:
-                os.killpg(proc.pid,signal.SIGTERM)
-                try:proc.wait(timeout=8)
-                except subprocess.TimeoutExpired:os.killpg(proc.pid,signal.SIGKILL);proc.wait()
+                proc.terminate()
+                try:proc.wait(timeout=12)
+                except subprocess.TimeoutExpired:
+                    # A pending LaunchServices request is not cancellable. Its
+                    # helper keeps the leases and handles the eventual callback.
+                    pass
+            # Decide ownership once. If the helper is still alive, it alone
+            # owns this journal even if it exits during organization cleanup.
+            can_write_job=not proc or proc.poll() is not None
+            if proc and can_write_job:
+                latest=json.loads(job_path.read_text())
+                if state.get('status')=='error' and latest.get('status')=='starting':
+                    latest.update(status=state['status'],message=state.get('message'))
+                state.update(latest)
+            elif not proc and state.get('desktop_launch_phase')=='pending':
+                state.update(desktop_launch_phase='failed',desktop_spawn_attempted=False)
             if gateway:gateway.close()
             try:
                 from organization import Organization
-                Organization(store).publish()
+                if state.get('home'):Organization(store).publish(home=state['home'])
             except (OSError,UserError):
                 state['warning']='项目组织状态尚未合并；私有窗口原文件已保留，下次启动会再读取。'
             if gateway and gateway.log_failed:state['warning']='API 请求记录写入失败；请求处理未因此停止。'
-            write_json(job_path,state)
+            if can_write_job:write_json(job_path,state)
             if life:life.close()
             if backend_switch:backend_switch.close()
             if slot_guards:slot_guards.close()

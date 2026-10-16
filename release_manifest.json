@@ -5,7 +5,6 @@
     "engine/backend_guard.py",
     "engine/core.py",
     "engine/configuration.py",
-    "engine/desktop_child.py",
     "engine/distribution.py",
     "engine/keychain_store.py",
     "engine/instances.py",
@@ -56,7 +55,8 @@
     "native/Sources/CodexSmart2/SidebarDragOrder.swift",
     "native/Sources/CodexSmart2/SortableSidebar.swift",
     "native/Sources/CodexSmart2/StorageEditor.swift",
-    "native/Sources/HarborKeychain/main.swift"
+    "native/Sources/HarborKeychain/main.swift",
+    "native/Sources/HarborLaunch/main.swift"
   ],
   "source": [
     "native/Package.swift",
@@ -86,7 +86,13 @@
     "tests/test_workspace_loading_v09.py",
     "tests/native_multi_instance_acceptance.py",
     "tests/desktop_multi_instance_acceptance.py",
-    "tests/test_auth_bridge_transport.py"
+    "tests/test_auth_bridge_transport.py",
+    "tests/test_unneeded_file_access_v092.py",
+    "tests/test_launch_uncertainty.py",
+    "tests/native_launch_responsibility_acceptance.swift",
+    "tests/native_launch_responsibility_acceptance.py",
+    "tests/native_launch_helper_acceptance.py",
+    "tests/test_launch_job_races.py"
   ],
   "documents": {
     "public/README.md": "README.md",
@@ -102,5 +108,5 @@
     "public/LICENSE": "LICENSE",
     "public/THIRD-PARTY-NOTICES.md": "THIRD-PARTY-NOTICES.md"
   },
-  "version": "0.10.1"
+  "version": "0.10.2"
 }

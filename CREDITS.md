@@ -25,6 +25,7 @@ The following projects and examples informed our design and compatibility resear
 | [CodeEdit](https://github.com/CodeEditApp/CodeEdit) | Native macOS sidebar organization and standard list-reordering patterns during the initial UI design. |
 | [Nate Thompson's NSTableView drag-and-drop guide](https://www.natethompson.io/2019/03/23/nstableview-drag-and-drop.html) | Native drag sessions, pasteboard validation and row reordering. |
 | [Apple AppKit](https://developer.apple.com/documentation/appkit/nstableview) | The final sidebar uses `NSTableView` drag previews, gap feedback, cancellation and row movement, integrated with SwiftUI cards. |
+| [Apple application launch API](https://developer.apple.com/documentation/appkit/nsworkspace/openconfiguration) and [file permissions guidance](https://developer.apple.com/forums/thread/678819) | Native application launches, independent instances and responsibility for filesystem access. The launch pattern also follows our earlier Codex Smart launcher. |
 
 Harbor communicates with the separately installed Codex through its [app-server protocol](https://learn.chatgpt.com/docs/app-server). Custom APIs use [OpenAI Responses](https://developers.openai.com/api/reference/resources/responses); Harbor does not claim support for a provider merely because it uses the same model name.
 

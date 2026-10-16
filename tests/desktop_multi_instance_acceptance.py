@@ -6,11 +6,13 @@ the two exact launcher jobs are stopped. Shared macOS UI prefs use the launcher'
 normal read-only backup; this harness never restores or edits that domain.
 """
 import hashlib
+import ctypes
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
 from pathlib import Path
 import shlex
+import subprocess
 import sys
 import tempfile
 import threading
@@ -38,6 +40,12 @@ def main():
               'simultaneous_start': True}
     stage = 'setup'
     store = None
+    helper=root/'HarborLaunch'
+    subprocess.run(['/usr/bin/swiftc','-swift-version','5',
+        str(ENGINE.parent/'native/Sources/HarborLaunch/main.swift'),'-o',str(helper)],check=True)
+    library=ctypes.CDLL('/usr/lib/libSystem.B.dylib')
+    responsible=library.responsibility_get_pid_responsible_for_pid
+    responsible.argtypes=[ctypes.c_int];responsible.restype=ctypes.c_int
 
     class Metadata(BaseHTTPRequestHandler):
         def log_message(self, *_):
@@ -104,15 +112,18 @@ def main():
             original_auth = hashlib.sha256(canonical.read_bytes()).hexdigest()
             evidence = root / 'backend-initializations.jsonl'
             tap = root / 'observe_backend.py'
-            tap.write_text('''import json, os, sys, time
+            tap.write_text('''import ctypes, json, os, sys, time
 from pathlib import Path
 sys.path.insert(0, sys.argv.pop(1))
 import auth_bridge, backend_guard
 evidence = Path(''' + repr(str(evidence)) + ''')
+responsible = ctypes.CDLL('/usr/lib/libSystem.B.dylib').responsibility_get_pid_responsible_for_pid
+responsible.argtypes = [ctypes.c_int]
+responsible.restype = ctypes.c_int
 def record(event):
     fd = os.open(evidence, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o600)
     with os.fdopen(fd, 'a') as handle:
-        handle.write(json.dumps({'event': event, 'pid': os.getpid(), 'home': os.environ['CODEX_HOME'], 'time': time.time()}) + '\\n')
+        handle.write(json.dumps({'event': event, 'pid': os.getpid(), 'responsible_pid': responsible(os.getpid()), 'home': os.environ['CODEX_HOME'], 'time': time.time()}) + '\\n')
 client, server = auth_bridge.AuthBridge.client, auth_bridge.AuthBridge.server
 def receive_client(self, raw):
     method = json.loads(raw).get('method')
@@ -176,7 +187,7 @@ backend_guard.main()
                     text = text.replace(target, shlex.quote(str(tap)) + ' ' + shlex.quote(str(ENGINE)), 1)
                 return original_write(path, text)
 
-            with patch.object(launcher, 'atomic_write', observed_wrapper):
+            with patch.object(launcher, 'atomic_write', observed_wrapper), patch.object(launcher,'LAUNCH_HELPER',helper):
                 start_barrier = threading.Barrier(3)
 
                 def launch(job):
@@ -216,10 +227,17 @@ backend_guard.main()
                 for state in snapshots:
                     events = {item['event'] for item in observed if item['home'] == state['home']}
                     assert 'bridge-ready' in events and 'desktop-initialized' in events, events
+                    assert responsible(state['pid'])==state['pid'], 'Desktop must own its file access'
+                    # Some initial app-server connections close and restart.
+                    # Query responsibility inside the live backend, not after
+                    # its PID has disappeared or been recycled.
+                    for item in (item for item in observed if item['home']==state['home']):
+                        assert item['responsible_pid']==state['pid'], ('Backend attribution',item,state['pid'])
                 assert not any(item['event'] == 'UNEXPECTED-TURN' for item in observed)
                 assert hashlib.sha256(canonical.read_bytes()).hexdigest() == original_auth
                 assert not any('responses' in item['path'] or 'refresh' in item['path'] for item in metadata_requests)
                 result.update(status='passed', native_backends_initialized=True,
+                    native_file_access_attribution=True,
                     canonical_auth_unchanged=True, distinct_slots_homes_electron_pids=True,
                     shared_synthetic_history=len({state['history'] for state in snapshots}) == 1)
     except Exception as error:

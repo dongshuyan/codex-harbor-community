@@ -162,6 +162,11 @@ def process_matches(job):
     return bool(job.get('pid_start') and process_stamp(job.get('pid'))==job['pid_start'])
 
 
+def launch_uncertain(job):
+    """An OS launch without its callback is not proof that no app was opened."""
+    return job.get('desktop_launch_phase') in ('pending','requested')
+
+
 class Store:
     def __init__(self, root=DEFAULT_ROOT, external=EXTERNAL, mounted=disk_mounted, *, community=None,keychain=None,user_home=None):
         self.community=EDITION['community'] if community is None else community
@@ -456,7 +461,7 @@ class Store:
         for f in (self.root/'jobs').glob('*.json'):
             if f.is_symlink():continue
             job=json.loads(f.read_text())
-            if job.get('id')==ident and job.get('storage')==storage and process_matches(job):return job
+            if job.get('id')==ident and job.get('storage')==storage and (process_matches(job) or launch_uncertain(job)):return job
         return None
 
     def instance_backend_lock(self,storage,ident,*,v2=False):

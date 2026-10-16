@@ -8,7 +8,7 @@ import sys
 import time
 
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from core import DEFAULT_ROOT,Store,UserError,model_options,process_matches,ID,directory,atomic_write
+from core import DEFAULT_ROOT,Store,UserError,model_options,process_matches,launch_uncertain,ID,directory,atomic_write
 from launcher import launch_request,run_instance,stop_instance
 
 
@@ -20,7 +20,12 @@ def status(store):
         try:
             j=json.loads(f.read_text())
             worker={'pid':j.get('worker_pid'),'pid_start':j.get('worker_pid_start')}
-            if j.get('status')=='starting':
+            if launch_uncertain(j):
+                helper={'pid':j.get('launch_helper_pid'),'pid_start':j.get('launch_helper_pid_start')}
+                if process_matches(worker) or process_matches(helper):
+                    j.update(status='starting',message='正在等待 macOS 确认启动，请勿重复点击。')
+                else:j.update(status='error',message='无法确认 macOS 启动结果；已保留窗口目录，请保留实例记录检查，勿重复启动。')
+            if j.get('status')=='starting' and not launch_uncertain(j):
                 created=j.get('created_at')
                 if not isinstance(created,(int,float)) or isinstance(created,bool) or not math.isfinite(created):
                     created=f.stat().st_mtime

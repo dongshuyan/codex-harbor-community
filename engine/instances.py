@@ -37,10 +37,12 @@ def slot_paths(store, ident, storage, slot):
 
 
 def reject_legacy_instance(store, ident):
-    from core import process_matches
+    from core import process_matches,launch_uncertain
     for path in (store.root/'jobs').glob('*.json'):
         if path.is_symlink():raise UserError('实例记录路径不安全。')
         value=json.loads(path.read_text())
+        if value.get('id')==ident and launch_uncertain(value):
+            raise UserError('macOS 的上一次启动尚无确认结果，请等待；若启动进程已退出，请保留实例记录检查，勿重复启动。')
         if value.get('id')==ident and value.get('lifecycle_version',1)<2 and process_matches(value):
             raise UserError('此账号/API 还有旧版窗口，请先退出该旧窗口；新版窗口可同时打开多个。')
 

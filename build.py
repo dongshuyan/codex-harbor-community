@@ -15,7 +15,7 @@ def build(community=False,universal=False):
     spec=json.loads((ROOT/'release_manifest.json').read_text())
     community=community or (ROOT/'engine/COMMUNITY').is_file()
     name='Codex Harbor Community' if community else 'Codex Harbor'
-    version=spec['version'] if community else '0.9.1'
+    version=spec['version'] if community else '0.9.2'
     ident='io.github.dongshuyan.codex-harbor-community' if community else 'local.dongshuyan.codex-harbor'
     inputs=sorted(set(spec['runtime']+spec['native']+['native/Package.swift','build.py','release_manifest.json',
         'assets/CodexHarborIcon.icns','assets/restore-macos.command','LICENSE-Codex','LICENSE-CHERRY-PROVIDER-REGISTRY','LICENSE-TOMLKIT']))
@@ -36,14 +36,14 @@ def build(community=False,universal=False):
         common=['/usr/bin/swiftc','-swift-version','5','-O','-whole-module-optimization','-sdk',sdk,
                 '-target',architecture+'-apple-macosx14.0','-debug-prefix-map',str(ROOT)+'=/src/harbor',
                 '-file-prefix-map',str(ROOT)+'=/src/harbor']
-        for product in ['CodexSmart2','HarborKeychain']:
+        for product in ['CodexSmart2','HarborKeychain','HarborLaunch']:
             sources=[str(ROOT/p) for p in spec['native'] if Path(p).parts[2]==product]
             if not sources:raise ValueError('Release source inventory is incomplete')
             subprocess.run(common+(['-parse-as-library'] if product=='CodexSmart2' else [])+
                            ['-module-name',product,*sources,'-o',str(target/product)],check=True)
     mac=output/'Contents/MacOS';res=output/'Contents/Resources'
     mac.mkdir(parents=True);res.mkdir()
-    for product,dest in [('CodexSmart2',mac/'CodexSmart2'),('HarborKeychain',res/'HarborKeychain')]:
+    for product,dest in [('CodexSmart2',mac/'CodexSmart2'),('HarborKeychain',res/'HarborKeychain'),('HarborLaunch',res/'HarborLaunch')]:
         slices=[str(compiled/a/product) for a in architectures]
         if universal:subprocess.run(['/usr/bin/lipo','-create',*slices,'-output',str(dest)],check=True)
         else:shutil.copyfile(slices[0],dest)
@@ -60,7 +60,7 @@ def build(community=False,universal=False):
     shutil.copyfile(ROOT/'assets/restore-macos.command',res/'restore-macos.command');(res/'restore-macos.command').chmod(0o700)
     info={'CFBundleName':name,'CFBundleDisplayName':name,'CFBundleIdentifier':ident,'CFBundleExecutable':'CodexSmart2',
           'CFBundlePackageType':'APPL','CFBundleIconFile':'AppIcon','CFBundleShortVersionString':version,
-          'CFBundleVersion':'25' if community else '24','LSMinimumSystemVersion':'14.0',
+          'CFBundleVersion':'27' if community else '26','LSMinimumSystemVersion':'14.0',
           'NSHighResolutionCapable':True,'NSPrincipalClass':'NSApplication','CFBundleDevelopmentRegion':'zh_CN'}
     (output/'Contents/Info.plist').write_bytes(plistlib.dumps(info))
     (res/'build-manifest.json').write_text(json.dumps({'source_sha256':digest,'app_name':name,'version':version,
@@ -69,9 +69,10 @@ def build(community=False,universal=False):
         'architectures':['arm64','x86_64'] if universal else [subprocess.check_output(['/usr/bin/uname','-m'],text=True).strip()]},indent=2)+'\n')
     for p in ['LICENSE','LICENSE-Codex','LICENSE-CHERRY-PROVIDER-REGISTRY','LICENSE-TOMLKIT','THIRD-PARTY-NOTICES.md','CREDITS.md']:
         if (ROOT/p).is_file():shutil.copyfile(ROOT/p,res/p)
-    subprocess.run(['/usr/bin/strip','-S','-x',str(mac/'CodexSmart2'),str(res/'HarborKeychain')],check=True)
+    subprocess.run(['/usr/bin/strip','-S','-x',str(mac/'CodexSmart2'),str(res/'HarborKeychain'),str(res/'HarborLaunch')],check=True)
     subprocess.run(['/usr/bin/xattr','-cr',str(output)],check=True)
     subprocess.run(['/usr/bin/codesign','--force','--sign','-','--identifier',ident+'.keychain','--timestamp=none',str(res/'HarborKeychain')],check=True)
+    subprocess.run(['/usr/bin/codesign','--force','--sign','-','--identifier',ident+'.launch','--timestamp=none',str(res/'HarborLaunch')],check=True)
     subprocess.run(['/usr/bin/codesign','--force','--sign','-','--timestamp=none',str(output)],check=True)
     subprocess.run(['/usr/bin/codesign','--verify','--deep','--strict',str(output)],check=True)
     return output

@@ -88,7 +88,10 @@ class StorageRegistry:
             key=item.get('runtime_key',item['id'])
             runtime=dict(id=item['id'], path=str(self.store.root/'stores'/key))
         else: runtime=dict(item)
-        return dict(runtime,history_path=str(self.history_path(item)),
+        # Registry metadata is already normalized on save. Deriving another
+        # location's identity must not stat it (or request Files & Folders
+        # access). Actual use still goes through select/open_history/safe_path.
+        return dict(runtime,history_path=str(self.registered_history_path(item)),
                     history_volume_uuid=item.get('volume_uuid',''))
 
     def layout(self, item):
@@ -96,6 +99,11 @@ class StorageRegistry:
 
     def history_path(self, item):
         path=self.checked_path(item['path'], item['id'])
+        return path if self.layout(item)=='native' else path/'history'
+
+    def registered_history_path(self, item):
+        """Pure metadata only; never use this as authorization to access a path."""
+        path=Path(item['path'])
         return path if self.layout(item)=='native' else path/'history'
 
     @contextmanager

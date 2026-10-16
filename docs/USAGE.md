@@ -87,6 +87,10 @@ Official logins remain native Codex credential files in isolated account homes, 
 
 Harbor does not inspect disabled or removed history locations during background status refreshes. An enabled Desktop or removable-drive location can still require macOS permission. macOS owns those decisions; because release builds use ad-hoc signing, an update may prompt again. Keep the installed app in a consistent location. Harbor does not reset system permissions or grant itself access.
 
+From Community 0.10.2, Harbor launches Codex through macOS `NSWorkspace` with a new application instance. Codex and its backend then own their file access, instead of inheriting Harbor's application identity. Launch preparation also avoids filesystem probes of unrelated registered locations. A native helper retains instance locks and records the exact process returned by macOS; an uncertain launch is not automatically retried.
+
+When updating from an earlier version, finish work and quit Codex windows opened by the old Harbor before opening new ones. Existing processes retain their old permission attribution until they exit. Keep account and history directories intact. This change does not require Full Disk Access, Accessibility, Automation or App Management permission. A location you explicitly enabled can still require its own macOS folder permission.
+
 Some official macOS UI preferences and the `codex://` handler are shared across native instances. Harbor captures a local recovery snapshot before the first desktop launch. Restoration is explicit, requires all Codex instances to be closed, and does not restore account or history files.
 
 Computer Use auxiliary-app refresh is skipped; that feature is outside the acceptance claim. App Management permission is not required merely to run this launcher.
