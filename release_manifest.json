@@ -73,6 +73,9 @@
     "tests/test_keychain_store.py",
     "tests/keychain_acceptance.py",
     "tests/native_distribution_acceptance.swift",
+    "tests/native_icon_readonly_acceptance.swift",
+    "tests/native_icon_readonly_interpose.c",
+    "tests/native_icon_readonly_acceptance.py",
     "LICENSE-TOMLKIT",
     "tests/test_native_defaults.py",
     "tests/test_auth_bridge.py",
@@ -99,5 +102,5 @@
     "public/LICENSE": "LICENSE",
     "public/THIRD-PARTY-NOTICES.md": "THIRD-PARTY-NOTICES.md"
   },
-  "version": "0.10.0"
+  "version": "0.10.1"
 }

@@ -91,6 +91,8 @@ Some official macOS UI preferences and the `codex://` handler are shared across 
 
 Computer Use auxiliary-app refresh is skipped; that feature is outside the acceptance claim. App Management permission is not required merely to run this launcher.
 
+Community 0.10.1 reads official-account icon bytes before decoding them. Earlier versions passed another app's icon URL to AppKit, which also queried its file-access attributes and could trigger an App Management notification. Harbor does not need permission to update or delete other apps to display an icon. Leave that permission disabled; this fix changes no account, history, or system permission settings.
+
 ## Build and compatibility
 
 Use the Swift 6 toolchain and Python 3.11+:

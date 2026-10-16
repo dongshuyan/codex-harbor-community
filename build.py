@@ -15,7 +15,7 @@ def build(community=False,universal=False):
     spec=json.loads((ROOT/'release_manifest.json').read_text())
     community=community or (ROOT/'engine/COMMUNITY').is_file()
     name='Codex Harbor Community' if community else 'Codex Harbor'
-    version=spec['version'] if community else '0.9.0'
+    version=spec['version'] if community else '0.9.1'
     ident='io.github.dongshuyan.codex-harbor-community' if community else 'local.dongshuyan.codex-harbor'
     inputs=sorted(set(spec['runtime']+spec['native']+['native/Package.swift','build.py','release_manifest.json',
         'assets/CodexHarborIcon.icns','assets/restore-macos.command','LICENSE-Codex','LICENSE-CHERRY-PROVIDER-REGISTRY','LICENSE-TOMLKIT']))
@@ -60,7 +60,7 @@ def build(community=False,universal=False):
     shutil.copyfile(ROOT/'assets/restore-macos.command',res/'restore-macos.command');(res/'restore-macos.command').chmod(0o700)
     info={'CFBundleName':name,'CFBundleDisplayName':name,'CFBundleIdentifier':ident,'CFBundleExecutable':'CodexSmart2',
           'CFBundlePackageType':'APPL','CFBundleIconFile':'AppIcon','CFBundleShortVersionString':version,
-          'CFBundleVersion':'23' if community else '22','LSMinimumSystemVersion':'14.0',
+          'CFBundleVersion':'25' if community else '24','LSMinimumSystemVersion':'14.0',
           'NSHighResolutionCapable':True,'NSPrincipalClass':'NSApplication','CFBundleDevelopmentRegion':'zh_CN'}
     (output/'Contents/Info.plist').write_bytes(plistlib.dumps(info))
     (res/'build-manifest.json').write_text(json.dumps({'source_sha256':digest,'app_name':name,'version':version,

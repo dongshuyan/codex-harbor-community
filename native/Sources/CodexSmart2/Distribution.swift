@@ -29,7 +29,7 @@ struct Distribution: Equatable {
             return value
         } ?? fallbackName
         let version = displayValue(object["version"], limit: 32) ??
-            displayValue(bundleInfo["CFBundleShortVersionString"], limit: 32) ?? (community ? "0.10.0" : "0.9.0")
+            displayValue(bundleInfo["CFBundleShortVersionString"], limit: 32) ?? (community ? "0.10.1" : "0.9.1")
         return Distribution(edition: community ? "community" : "private", appName: name, dataDirectory: directory, version: version)
     }
 
@@ -126,6 +126,15 @@ enum CodexApplicationResources {
         }) else { return nil }
         let icon = app.appendingPathComponent("Contents/Resources/" + (dark ? "icon-codex-dark-color.png" : "icon-codex-light.png"))
         return isFile(icon) ? icon : nil
+    }
+
+    static func iconData(dark: Bool, applications: [URL] = candidates()) -> Data? {
+        guard let icon = iconURL(dark: dark, applications: applications) else { return nil }
+        // NSImage(contentsOf:) asks NSURL for USERACCESS resource attributes.
+        // On another app's bundle that can trigger App Management approval,
+        // even though displaying its icon only requires a read. Decode bytes
+        // instead so AppKit never receives the foreign bundle's file URL.
+        return try? Data(contentsOf: icon)
     }
 
     private static func isFile(_ url: URL) -> Bool {

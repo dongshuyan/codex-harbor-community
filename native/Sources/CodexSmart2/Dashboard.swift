@@ -512,7 +512,7 @@ struct AccountSourceIcon: View {
     var official: Bool
     @Environment(\.colorScheme) private var scheme
     private var vendorIcon: NSImage? {
-        CodexApplicationResources.iconURL(dark: scheme == .dark).flatMap(NSImage.init(contentsOf:))
+        CodexApplicationResources.iconData(dark: scheme == .dark).flatMap(NSImage.init(data:))
     }
     var body: some View {
         if official, let icon=vendorIcon {
