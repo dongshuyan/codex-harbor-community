@@ -166,7 +166,8 @@ class BackendPaths(unittest.TestCase):
             child = root/'fake-native'
             child.write_text('#!'+sys.executable+'\nimport sys\nfor line in sys.stdin: sys.stdout.write(line); sys.stdout.flush()\n')
             child.chmod(0o700)
-            env = dict(os.environ, CODEX_HOME=str(home), HARBOR_DESKTOP_CODEX_HOME_ALIAS=str(alias))
+            env = dict({k:v for k,v in os.environ.items() if not k.startswith('HARBOR_')},
+                       CODEX_HOME=str(home), HARBOR_DESKTOP_CODEX_HOME_ALIAS=str(alias))
             payload = {'id':1, 'method':'turn/start', 'params':{
                 'runtimeWorkspaceRoots':[str(alias/'visualizations/thread')],
                 'environments':[{'environmentId':'local', 'cwd':str(alias),
@@ -190,7 +191,8 @@ class BackendPaths(unittest.TestCase):
             child = root/'fake-native'
             child.write_text('#!'+sys.executable+'\nimport time\ntime.sleep(0.2)\n')
             child.chmod(0o700)
-            env = dict(os.environ, CODEX_HOME=str(home), HARBOR_DESKTOP_CODEX_HOME_ALIAS=str(alias))
+            env = dict({k:v for k,v in os.environ.items() if not k.startswith('HARBOR_')},
+                       CODEX_HOME=str(home), HARBOR_DESKTOP_CODEX_HOME_ALIAS=str(alias))
             command = [sys.executable, '-I', '-B', str(Path(backend_guard.__file__)), '-', '-', '-', str(child), 'app-server']
             proc = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
             try:
@@ -215,7 +217,8 @@ class BackendPaths(unittest.TestCase):
                 child = root/'fake-native'
                 child.write_text('#!'+sys.executable+'\nfrom pathlib import Path\nPath('+repr(str(marker))+').touch()\n')
                 child.chmod(0o700)
-                env = dict(os.environ, CODEX_HOME=str(home), HARBOR_DESKTOP_CODEX_HOME_ALIAS=str(alias))
+                env = dict({k:v for k,v in os.environ.items() if not k.startswith('HARBOR_')},
+                           CODEX_HOME=str(home), HARBOR_DESKTOP_CODEX_HOME_ALIAS=str(alias))
                 command = [sys.executable, '-I', '-B', str(Path(backend_guard.__file__)), '-', '-', '-', str(child), 'app-server']
                 result = subprocess.run(command, input=b'', capture_output=True, env=env, timeout=8)
                 self.assertNotEqual(result.returncode, 0)

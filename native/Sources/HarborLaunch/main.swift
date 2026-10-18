@@ -15,6 +15,9 @@ private func processStamp(_ pid: pid_t) throws -> String? {
     let process = Process(), pipe = Pipe()
     process.executableURL = URL(fileURLWithPath: "/bin/ps")
     process.arguments = ["-p", String(pid), "-o", "lstart="]
+    var environment = ProcessInfo.processInfo.environment
+    environment["LANG"] = "C"; environment["LC_ALL"] = "C"
+    process.environment = environment
     process.standardOutput = pipe
     process.standardError = FileHandle.nullDevice
     try process.run()

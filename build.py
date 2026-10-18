@@ -21,7 +21,7 @@ def _build(community, universal, output_root, identity, keychain, certificate_sh
     version=spec['version'] if community else spec['private_version']
     ident='io.github.dongshuyan.codex-harbor-community' if community else 'local.dongshuyan.codex-harbor'
     inputs=sorted(set(spec['runtime']+spec['native']+['native/Package.swift','build.py','build_artifacts.py','release_manifest.json',
-        'assets/CodexHarborIcon.icns','assets/restore-macos.command','LICENSE-Codex','LICENSE-CHERRY-PROVIDER-REGISTRY','LICENSE-TOMLKIT']))
+        'assets/CodexHarborIcon.icns','assets/restore-macos.command','LICENSE-Codex','LICENSE-CHERRY-PROVIDER-REGISTRY','LICENSE-TOMLKIT','LICENSE-MAGPIE']))
     inputs += [p for p in ['LICENSE','THIRD-PARTY-NOTICES.md','CREDITS.md'] if (ROOT/p).is_file()]
     if not community and (ROOT/'engine/machine-defaults.json').is_file():inputs.append('engine/machine-defaults.json')
     digest=hashlib.sha256((name+str(universal)).encode()+b''.join(p.encode()+b'\0'+(ROOT/p).read_bytes() for p in inputs)).hexdigest()
@@ -60,19 +60,26 @@ def _build(community, universal, output_root, identity, keychain, certificate_sh
     shutil.copyfile(ROOT/'assets/restore-macos.command',res/'restore-macos.command');(res/'restore-macos.command').chmod(0o700)
     info={'CFBundleName':name,'CFBundleDisplayName':name,'CFBundleIdentifier':ident,'CFBundleExecutable':'CodexSmart2',
           'CFBundlePackageType':'APPL','CFBundleIconFile':'AppIcon','CFBundleShortVersionString':version,
-          'CFBundleVersion':'29' if community else '28','LSMinimumSystemVersion':'14.0',
+          'CFBundleVersion':'32','LSMinimumSystemVersion':'14.0',
           'NSHighResolutionCapable':True,'NSPrincipalClass':'NSApplication','CFBundleDevelopmentRegion':'zh_CN'}
     (output/'Contents/Info.plist').write_bytes(plistlib.dumps(info))
     (res/'build-manifest.json').write_text(json.dumps({'source_sha256':digest,'app_name':name,'version':version,
         'edition':'community' if community else 'private','existing_configuration_imported':False,
         'requires_python':'>=3.11','codex_catalog_source_commit':'740e5af33c71225640e0c1c1555c514c2c93ab74',
         'architectures':['arm64','x86_64'] if universal else [subprocess.check_output(['/usr/bin/uname','-m'],text=True).strip()]},indent=2)+'\n')
-    for p in ['LICENSE','LICENSE-Codex','LICENSE-CHERRY-PROVIDER-REGISTRY','LICENSE-TOMLKIT','THIRD-PARTY-NOTICES.md','CREDITS.md']:
+    for p in ['LICENSE','LICENSE-Codex','LICENSE-CHERRY-PROVIDER-REGISTRY','LICENSE-TOMLKIT','LICENSE-MAGPIE','THIRD-PARTY-NOTICES.md','CREDITS.md']:
         if (ROOT/p).is_file():shutil.copyfile(ROOT/p,res/p)
     subprocess.run(['/usr/bin/strip','-S','-x',str(mac/'CodexSmart2'),str(res/'HarborKeychain'),str(res/'HarborLaunch')],check=True)
     subprocess.run(['/usr/bin/xattr','-cr',str(output)],check=True)
     signing=['--sign',identity]+(['--keychain',str(keychain)] if keychain else [])
     for product, identifier in [(res/'HarborKeychain', ident+'.keychain'), (res/'HarborLaunch', ident+'.launch'), (output, ident)]:
+        if product==output:
+            from engine.runtime_payload import NOTICES, write_manifest
+            runtime_paths=[*spec['runtime'],'engine/edition.json','HarborLaunch','HarborKeychain']
+            runtime_paths.extend(name for name in NOTICES if (res/name).is_file())
+            if (res/'engine/COMMUNITY').exists():runtime_paths.append('engine/COMMUNITY')
+            if (res/'engine/machine-defaults.json').exists():runtime_paths.append('engine/machine-defaults.json')
+            write_manifest(res,runtime_paths)
         requirement = f'identifier "{identifier}" and certificate leaf = H"{certificate_sha1}"' if certificate_sha1 else None
         flags=['--requirements','=designated => '+requirement] if requirement else []
         subprocess.run(['/usr/bin/codesign','--force',*signing,'--identifier',identifier,*flags,'--timestamp=none',str(product)],check=True,timeout=30)

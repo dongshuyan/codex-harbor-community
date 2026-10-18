@@ -209,7 +209,9 @@ def check_zip(path):
 def make_archive(app, destination):
     inventory(app)
     safe_components(destination)
-    subprocess.run(['/usr/bin/ditto', '-c', '-k', '--sequesterRsrc', '--keepParent',
+    # Program archives keep bytes and modes, never machine-local xattrs/ACLs.
+    # macOS may attach provenance again after the build clears attributes.
+    subprocess.run(['/usr/bin/ditto', '-c', '-k', '--norsrc', '--noextattr', '--noacl', '--noqtn', '--keepParent',
                     str(app), str(destination)], check=True)
     Path(destination).chmod(0o600)
     check_zip(destination)

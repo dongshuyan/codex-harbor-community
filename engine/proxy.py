@@ -55,6 +55,10 @@ class Gateway:
 
             def do_GET(self):
                 if not self.authorized(): return self.error(401,'Harbor 本地请求身份不匹配。')
+                if self.path=='/v1/responses' and self.headers.get('Upgrade','').lower()=='websocket':
+                    # Current native Codex ignores prefer_websockets=False and
+                    # uses 426 to select HTTP immediately (404 causes retries).
+                    return self.error(426,'请使用 HTTP Responses 传输。')
                 if self.path!='/v1/models': return self.error(404,'不支持这个接口。')
                 data=json.dumps({'object':'list','data':[{'id':m['alias'],'object':'model'}
                                   for m in gateway.profile['models']]}).encode()

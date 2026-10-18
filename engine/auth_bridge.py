@@ -18,8 +18,9 @@ def encode(value):
 
 
 class AuthBridge:
-    def __init__(self,credentials,to_client,to_native):
+    def __init__(self,credentials,to_client,to_native,*,on_logout=lambda:None):
         self.credentials=credentials
+        self.on_logout=on_logout
         self.to_client=to_client;self.to_native=to_native
         self.login_id='harbor-auth-'+uuid.uuid4().hex
         self.initialize_id=None;self.initialize_response=None
@@ -45,6 +46,7 @@ class AuthBridge:
             return
         if method=='account/logout':
             self.detached=True;self.access_token=None
+            self.on_logout()
         if not self.ready:
             self.to_client(self.error(value.get('id'),'Harbor 尚未完成此窗口的官方账号连接。'))
             return
@@ -96,14 +98,14 @@ class AuthBridge:
         self.to_client(raw)
 
 
-def run(proc,credentials,*,input_fd=0,output_fd=1,rewrite=lambda value:value):
+def run(proc,credentials,*,input_fd=0,output_fd=1,rewrite=lambda value:value,on_logout=lambda:None):
     """Bounded, nonblocking duplex transport; all tokens stay in private pipes."""
     native_in=proc.stdin.fileno();native_out=proc.stdout.fileno()
     queued={output_fd:bytearray(),native_in:bytearray()}
     received={input_fd:bytearray(),native_out:bytearray()}
     for fd in {input_fd,output_fd,native_in,native_out}:os.set_blocking(fd,False)
     bridge=AuthBridge(credentials,lambda raw:queued[output_fd].extend(raw),
-                      lambda raw:queued[native_in].extend(rewrite(raw)))
+                      lambda raw:queued[native_in].extend(rewrite(raw)),on_logout=on_logout)
     deadline=time.monotonic()+35
     input_closed=False
     try:

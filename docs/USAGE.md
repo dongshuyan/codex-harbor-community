@@ -22,6 +22,8 @@ Official windows receive access tokens in memory. One native refresh owner maint
 
 Windows using the same location share native session history. The account/API selected for the current window supplies that window's requests. Finish the current turn before continuing the same conversation elsewhere; avoid simultaneous writes to one conversation. Continuing private history through a Router sends the context to that provider.
 
+From Community 0.10.6, returning from a Router to an official account also handles hosted web-search records that the native Responses Lite request would otherwise omit a tool declaration for. Harbor adds the missing declaration to the outgoing request while preserving the conversation ID and stored history. The declaration uses cached search, with external web access disabled. Existing search declarations and tool-choice constraints are preserved; when no tools were offered, Harbor disables selection of the added declaration. Inconsistent forced-tool requests are left unchanged for native validation. Model limits and other provider capabilities still apply. Official Codex performs any needed conversation compaction normally. No new conversation or manual history cleanup is required for this compatibility fix. Launch a new Codex window after upgrading, then reopen the existing chat; windows already running keep their previous components.
+
 Session lists and project organization may require reopening the target window. Different locations are independent and never synchronize automatically.
 
 Local projects, membership, pins and ordering are read from the selected native Codex home. Harbor merges organization changes only into its own cache; it does not write those changes back to the original desktop global state. Cloud-account projects and unrelated UI preferences are excluded.
@@ -114,6 +116,14 @@ The native Keychain integration suite uses a disposable synthetic keychain and a
 
 The universal release includes arm64 and x86_64 executables. Runtime acceptance has been performed on Apple Silicon, not a physical Intel Mac. Release builds are ad-hoc signed, not Apple Developer ID signed or notarized. Keychain authorization dialogs, other official Codex versions and every external model service are not implied to have passed acceptance.
 
-Multi-instance official authentication uses Codex's experimental external-token app-server protocol, verified against bundled CLI `0.162.0-alpha.17.2`. An incompatible version stops with a login/compatibility error rather than falling back to concurrent refresh-token files. Recheck this integration when updating Codex.
+Multi-instance official authentication uses Codex's experimental external-token app-server protocol. Cross-source continuation was verified against bundled CLI `0.163.0-alpha.10.2`, including native Lite requests, encrypted compaction, and subsequent continuation through the configured Router. An incompatible version stops with a login/compatibility error rather than falling back to concurrent refresh-token files. Recheck this integration when updating Codex; these tests do not cover every provider or future native version.
 
 Development and acceptance take place in a separate private development repository. The public repository receives reviewed snapshots and release artifacts; private Git history and acceptance evidence are not mirrored. See [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+## Updating while Codex is open
+
+Harbor keeps each launched instance on its own verified runtime version, outside the replaceable app bundle. Closing the Harbor window leaves those compatibility processes running until the corresponding Codex instance exits. They handle Router translation, official token refresh and same-thread continuation.
+
+Current launch components live under `runtime-payloads.noindex/` in the Community data folder. They contain program files and license notices, not accounts or conversation copies. Harbor retains active versions and one recent fallback; it removes only verified inactive versions during a later launch. Unresolved startup records and unknown files are retained for inspection.
+
+Older Harbor instances that still use files inside the app must be closed for the first transition. Future incompatible runtime protocols also require closing existing instances. These guarantees concern Harbor updates; Python and the installed Codex remain external dependencies.

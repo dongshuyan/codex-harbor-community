@@ -12,14 +12,17 @@
     "engine/login.py",
     "engine/main.py",
     "engine/model_metadata.py",
+    "engine/native_cli.py",
     "engine/organization.py",
     "engine/official_auth.py",
+    "engine/official_responses.py",
     "engine/probe.py",
     "engine/profile_order.py",
     "engine/proxy.py",
     "engine/quota.py",
     "engine/reasoning.py",
     "engine/recovery.py",
+    "engine/runtime_payload.py",
     "engine/storage.py",
     "engine/models.json",
     "engine/context-catalog.json",
@@ -65,6 +68,8 @@
     ".gitignore",
     "LICENSE-Codex",
     "LICENSE-CHERRY-PROVIDER-REGISTRY",
+    "LICENSE-MAGPIE",
+    "tests/test_official_responses.py",
     "assets/CodexHarborIcon.icns",
     "assets/make_icon.swift",
     "assets/restore-macos.command",
@@ -94,8 +99,12 @@
     "tests/native_launch_helper_acceptance.py",
     "tests/test_launch_job_races.py",
     "build_artifacts.py",
+    "tests/test_release_archive.py",
     "tests/test_backend_entrypoint.py",
-    "tests/test_backend_paths.py"
+    "tests/test_backend_paths.py",
+    "tests/test_native_cli.py",
+    "tests/test_native_cli_arguments.py",
+    "tests/test_runtime_payload.py"
   ],
   "documents": {
     "public/README.md": "README.md",
@@ -112,6 +121,6 @@
     "public/docs/images/details.en.png": "docs/images/details.en.png",
     "public/docs/images/details.zh-CN.png": "docs/images/details.zh-CN.png"
   },
-  "version": "0.10.3",
-  "private_version": "0.9.3"
+  "version": "0.10.6",
+  "private_version": "0.9.6"
 }

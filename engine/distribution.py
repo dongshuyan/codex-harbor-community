@@ -3,6 +3,15 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import pwd
+
+DATA_DIRECTORIES = {False: 'Codex Harbor', True: 'Codex Harbor Community'}
+
+
+def default_root(*, community=None):
+    """Use the login user's home, independent of an isolated process HOME."""
+    name = EDITION['data_directory'] if community is None else DATA_DIRECTORIES[community]
+    return Path(pwd.getpwuid(os.getuid()).pw_dir) / 'Library/Application Support' / name
 
 
 def settings(engine=None):
@@ -15,8 +24,9 @@ def settings(engine=None):
     manifest=engine/'edition.json'
     value=json.loads(manifest.read_text()) if manifest.is_file() else {}
     public=public or value.get('edition')=='community'
-    name='Codex Harbor Community' if public else 'Codex Harbor'
-    # Edition identity is fixed; a damaged manifest cannot redirect private data.
+    name=DATA_DIRECTORIES[public]
+    # Packaged markers/metadata select the edition. Never accept an arbitrary
+    # data_directory from JSON; installed metadata is covered by bundle/runtime verification.
     machine={}
     if not public and (engine/'machine-defaults.json').is_file():
         machine=json.loads((engine/'machine-defaults.json').read_text())

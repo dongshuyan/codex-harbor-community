@@ -12,11 +12,13 @@ import threading
 # -I excludes the script directory. Match the other bundled entrypoints: only
 # this trusted engine directory is added, never the caller's cwd or PYTHONPATH.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import runtime_payload
+if __name__=='__main__':runtime_payload.activate(Path(__file__).resolve().parent)
+from native_cli import VALUE_OPTIONS, app_server_index
 
 
 PATH_METHODS = {'thread/start', 'thread/resume', 'thread/fork', 'turn/start',
                 'thread/settings/update', 'command/exec'}
-VALUE_OPTIONS = {'-c', '--config', '--enable', '--disable', '-p', '--profile'}
 MAX_RPC_LINE = 64 * 1024 * 1024
 
 
@@ -42,16 +44,8 @@ def ephemeral_arguments(args):
 
 def is_stdio_app_server(args):
     """Recognize only the supported stdio command shapes; leave other CLI uses alone."""
-    i = 0
-    while i < len(args):
-        value = args[i]
-        if value in VALUE_OPTIONS:
-            i += 2
-        elif value.startswith('-c') and len(value)>2 or any(value.startswith(option+'=') for option in VALUE_OPTIONS if option.startswith('--')):
-            i += 1
-        else:
-            break
-    if i >= len(args) or args[i] != 'app-server':
+    i = app_server_index(args)
+    if i is None:
         return False
     i += 1
     while i < len(args):
@@ -161,6 +155,11 @@ def main():
     if adapted:validate_home_alias(alias,home)
     official=os.environ.get('HARBOR_OFFICIAL_PROFILE')
     bridge=bool(official and is_stdio_app_server(args))
+    transport=None
+    child_env=None
+    if is_stdio_app_server(args):
+        from official_responses import loopback_environment
+        child_env=loopback_environment(os.environ)
     credentials=None
     if official:
         from core import ID, Store
@@ -171,11 +170,22 @@ def main():
         if bridge:
             from auth_bridge import run
             from official_auth import credentials_for_instance
+            from official_responses import OfficialResponsesBridge,native_arguments
             store=Store(Path(os.environ['HARBOR_CONTROL_ROOT']))
-            credentials=lambda **kwargs:credentials_for_instance(store,official,**kwargs)
-    proc=subprocess.Popen([binary,*args],close_fds=True,stdin=subprocess.PIPE if adapted or bridge else None,
-                          stdout=subprocess.PIPE if bridge else None,
-                          pass_fds=tuple(item.fileno() for item in ([handle] if handle else [])+extra))
+            transport=OfficialResponsesBridge()
+            def credentials(**kwargs):
+                payload=credentials_for_instance(store,official,**kwargs)
+                transport.set_credentials(payload['accessToken'],payload['chatgptAccountId'])
+                return payload
+            args=native_arguments(args,transport.url)
+            transport.start()
+    try:
+        proc=subprocess.Popen([binary,*args],close_fds=True,stdin=subprocess.PIPE if adapted or bridge else None,
+                              stdout=subprocess.PIPE if bridge else None,env=child_env,
+                              pass_fds=tuple(item.fileno() for item in ([handle] if handle else [])+extra))
+    except BaseException:
+        if transport:transport.close()
+        raise
     def forward(sig,_frame):
         if proc.poll() is None: proc.send_signal(sig)
     signal.signal(signal.SIGTERM,forward);signal.signal(signal.SIGINT,forward)
@@ -183,7 +193,7 @@ def main():
     if bridge:
         try:
             rewrite=(lambda raw:rewrite_permission_paths(raw,alias,home)) if adapted else (lambda raw:raw)
-            if not run(proc,credentials,rewrite=rewrite):failed.set()
+            if not run(proc,credentials,rewrite=rewrite,on_logout=transport.revoke):failed.set()
         except (OSError,ValueError,TimeoutError):
             failed.set()
             print('Harbor: official account connection closed; check login in Harbor.',file=sys.stderr)
@@ -192,6 +202,7 @@ def main():
                 proc.terminate()
                 try:proc.wait(timeout=3)
                 except subprocess.TimeoutExpired:proc.kill();proc.wait()
+            if transport:transport.close()
     elif adapted:
         def pump():
             try:

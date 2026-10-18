@@ -18,6 +18,8 @@ import time
 from urllib.parse import urlsplit
 
 sys.path.insert(0,str(Path(__file__).resolve().parent))
+import runtime_payload
+if __name__=='__main__':runtime_payload.activate(Path(__file__).resolve().parent)
 from core import CODEX, DEFAULT_ROOT, ID, Store, UserError, directory, process_matches, process_stamp, write_json
 from accounts import account_home, take_lock
 
@@ -218,9 +220,14 @@ def run_flow(store, ident, publish, *, command=None, timeout=300):
 def start(store,ident):
     if store.running_profile(ident):raise UserError('请先退出此账号的窗口或后台任务，再重新授权。')
     store.profile(ident)
-    proc=subprocess.Popen([sys.executable,'-I','-B',str(Path(__file__).resolve()),str(store.root),str(store.external),ident],
-        stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,start_new_session=True,
-        env={'HOME':str(Path.home()),'PATH':'/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin','LANG':'en_US.UTF-8'})
+    try:
+        with runtime_payload.for_launch(Path(__file__).resolve().parent,store.root,community=store.community) as payload:
+            proc=subprocess.Popen([sys.executable,'-I','-B',str(payload.engine/'login.py'),str(store.root),str(store.external),ident],
+                stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.DEVNULL,start_new_session=True,
+                cwd=store.root,pass_fds=payload.pass_fds,
+                env={'HOME':str(Path.home()),'PATH':'/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin','LANG':'en_US.UTF-8',**payload.environment()})
+    except runtime_payload.PayloadError as error:raise UserError(str(error)) from None
+    except OSError:raise UserError('无法准备独立运行组件，尚未打开授权网页；请检查磁盘空间和目录权限后重试。') from None
     try:
         ready,_,_=select.select([proc.stdout],[],[],24)
         if not ready:

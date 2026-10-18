@@ -17,10 +17,10 @@ from urllib.parse import urlsplit
 import uuid
 
 ENGINE = Path(__file__).resolve().parent
-from distribution import EDITION,discover_app
+from distribution import EDITION,discover_app,default_root
 MACHINE=EDITION['machine']
 USER_HOME = Path(pwd.getpwuid(os.getuid()).pw_dir)
-DEFAULT_ROOT = USER_HOME / 'Library/Application Support' / EDITION['data_directory']
+DEFAULT_ROOT = default_root()
 VOLUME = Path(MACHINE.get('volume','/Volumes/HarborExternal'))
 VOLUME_UUID = MACHINE.get('volume_uuid','')
 EXTERNAL = Path(MACHINE.get('external',str(DEFAULT_ROOT/'stores/external')))
@@ -154,7 +154,7 @@ def process_stamp(pid):
     """PID plus kernel start time prevents acting on a recycled PID. No argv/env read."""
     if not isinstance(pid,int) or pid<2: return None
     result=subprocess.run(['/bin/ps','-p',str(pid),'-o','lstart='],capture_output=True,
-                          text=True,timeout=3)
+                          text=True,timeout=3,env={**os.environ,'LANG':'C','LC_ALL':'C'})
     return result.stdout.strip() if result.returncode==0 else None
 
 

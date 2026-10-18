@@ -18,9 +18,11 @@ Native settings are retained in each instance's `config.toml`. Selecting an exis
 
 The preservation backup and tracking files (`.harbor-config-before-preservation.toml`, `.harbor-managed-config.toml`, `.harbor-native-resources.json`) can contain private configuration, paths and MCP settings, including secrets already present in a user's MCP definitions. They are protected and excluded from source/release exports. Plugin and MCP OAuth credential files are not copied from another account. See [saved Codex settings](docs/USAGE.md#saved-codex-settings) for the scope of persistence.
 
+The `runtime-payloads.noindex/` directory stores verified program versions used by running instances. It contains no copied account or history data. Private and Community editions use separate roots. Content hashes check integrity; they do not protect against malicious code running as the same macOS user. Running versions and unresolved launch intents are retained when old program files are cleaned up.
+
 ## Network
 
-- Official login, quota reads and official model calls communicate with OpenAI through the installed Codex.
+- Official login and quota reads use the installed Codex. Official desktop model calls pass through a process-local, authenticated loopback bridge to the fixed OpenAI Codex endpoint. The bridge forwards the native access token and account ID over HTTPS; it receives no refresh token and records no conversation bodies or headers. It preserves upstream error bodies for native error handling, refuses redirects, and adds a cached search-tool declaration only when needed to replay prior hosted-search history. Stored history is not rewritten.
 - API discovery sends authenticated GET requests to the URL the user selected. A probe or Router conversation sends a model request to that provider. Continuing an old conversation can include its prior context.
 - The local gateway listens on loopback, requires a per-instance token, rebuilds upstream authentication headers, rejects redirects and hides raw upstream error bodies.
 - Harbor does not synchronize these files to GitHub. Publishing a repository/release is a separate maintainer operation, never an app feature.

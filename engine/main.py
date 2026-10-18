@@ -8,6 +8,8 @@ import sys
 import time
 
 sys.path.insert(0,str(Path(__file__).resolve().parent))
+import runtime_payload
+if __name__=='__main__':runtime_payload.activate(Path(__file__).resolve().parent)
 from core import DEFAULT_ROOT,Store,UserError,model_options,process_matches,launch_uncertain,ID,directory,atomic_write
 from launcher import launch_request,run_instance,stop_instance
 

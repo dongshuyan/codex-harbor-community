@@ -77,9 +77,9 @@ def stamp(pid):
     return result.stdout.strip()
 handles=[]
 try:
-    for name in ('combo','lifecycle','account','slot'):
+    for name in ('combo','lifecycle','account','slot','runtime'):
         handle=(case/(name+'.lock')).open('a')
-        fcntl.flock(handle,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        fcntl.flock(handle,(fcntl.LOCK_SH if name=='runtime' else fcntl.LOCK_EX)|fcntl.LOCK_NB)
         handles.append(handle)
     state={'job':spec['job'],'id':'a'*32,'storage':'local','status':'starting',
            'created_at':time.time(),'worker_pid':os.getpid(),'worker_pid_start':stamp(os.getpid()),
@@ -134,7 +134,7 @@ def executable(pid):
 
 def held_locks(case):
     held = set()
-    for name in ('combo', 'lifecycle', 'account', 'slot'):
+    for name in ('combo', 'lifecycle', 'account', 'slot', 'runtime'):
         with (case / (name + '.lock')).open('a') as handle:
             try:
                 fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -214,7 +214,7 @@ def main():
             assert executable(entered['pid']) == str(target)
             assert entered['env'] == {key: request['environment'][key] for key in entered['env']}
             assert request['arguments'][0] in entered['args']
-            assert held_locks(case) == {'combo', 'lifecycle', 'account', 'slot'}, 'A running app lost leases'
+            assert held_locks(case) == {'combo', 'lifecycle', 'account', 'slot', 'runtime'}, 'A running app lost leases'
             return entered, state
 
         def finished(case, worker, target_pid=None, *, read_state=True):
@@ -249,7 +249,7 @@ def main():
         assert not pending.get('pid'), 'Delayed check-in did not exercise the pending-callback window'
         before_worker.terminate()
         before_worker.wait(timeout=3)
-        assert held_locks(before) == {'combo', 'lifecycle', 'account', 'slot'}, 'Helper dropped pending-launch leases'
+        assert held_locks(before) == {'combo', 'lifecycle', 'account', 'slot', 'runtime'}, 'Helper dropped pending-launch leases'
         finished(before, before_worker, before_pid)
         assert executable(bystander_pid) == str(target)
 

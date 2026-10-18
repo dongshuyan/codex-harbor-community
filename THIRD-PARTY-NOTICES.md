@@ -31,3 +31,13 @@ macOS frameworks, Swift and the separately installed Python/Codex runtimes remai
 `engine/context-catalog.json` contains model identifiers and context-window numbers from OpenRouter's public models endpoint. Its source URL and snapshot date are embedded in the file. It includes no provider credentials or user API configuration. No OpenRouter SDK is bundled.
 
 See [Credits](CREDITS.md) for design, protocol and interaction references, which are distinct from the model data included above.
+
+## Magpie hosted-search replay compatibility
+
+The search-declaration logic in `engine/official_responses.py` adapts Magpie's
+`DeclareSearch` implementation at commit `c4aeaec740b98a3f0f772f60dcea517ed144354b`.
+It supplies a missing tool declaration when official Codex replays hosted search
+history. Stored conversation records are not rewritten. Magpie is MIT licensed;
+the copyright notice and license are retained in [LICENSE-MAGPIE](LICENSE-MAGPIE).
+
+Source: https://github.com/yetone/magpie/blob/c4aeaec740b98a3f0f772f60dcea517ed144354b/internal/provider/codex_request.go

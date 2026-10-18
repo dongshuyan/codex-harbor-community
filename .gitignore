@@ -26,6 +26,7 @@ storage-paths.json
 .credentials.json
 *.zip
 # Runtime history, credential caches and local rollback copies are never source.
+runtime-payloads.noindex/
 stores/
 storage-cache/
 sessions/

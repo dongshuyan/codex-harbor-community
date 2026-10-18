@@ -24,14 +24,14 @@
 
 ## More accounts, the history you already have
 
-Use a ChatGPT account or a Responses-compatible API with any registered Codex history folder. Switch accounts while keeping the same history location, or open separate windows for different work.
+Use a ChatGPT account or a Responses-compatible API with any registered Codex history folder. Continue the same chat when switching between an account and an API, or open separate windows for different work.
 
 - **Keep accounts ready to use.** Sign in once per account. Open multiple Codex windows, including several from the same account, without signing out of the others.
 - **Choose where your chats live.** Use a folder on your Mac or an external drive. Automatic selection follows your preferred order; manual selection is always available. Harbor leaves history in place.
 - **See quota before you start.** Compare the remaining quota and reset dates returned for each ChatGPT account. Reset times currently use Beijing time (Asia/Shanghai).
 - **Spend less time configuring models.** Context and reasoning settings fill in automatically, with their sources shown. Your manual edits survive refreshes. Check one model or all models in an API; checks may be billed.
 
-Existing local projects, pinned chats, supported settings and skills carry over from the selected Codex folder. Models and permissions remain native Codex controls. [Shared history](docs/USAGE.md#windows-and-shared-history) · [Saved settings and skills](docs/USAGE.md#saved-codex-settings)
+Existing local projects, pinned chats, supported settings and skills carry over from the selected Codex folder. Models and permissions remain native Codex controls. After launch, you can close Harbor and keep working in Codex. [Shared history](docs/USAGE.md#windows-and-shared-history) · [Saved settings and skills](docs/USAGE.md#saved-codex-settings)
 
 ![Illustrated account quota bars with reset dates, beside model settings with automatic sources, protected manual edits and a check button.](docs/images/details.en.png)
 

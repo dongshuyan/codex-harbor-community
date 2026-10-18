@@ -52,6 +52,15 @@ class AuthBridgeTests(unittest.TestCase):
         self.assertIn('error',self.native[-1])
         self.assertEqual(len(self.calls),1)
 
+    def test_logout_revokes_transport_before_forwarding_native_logout(self):
+        order=[]
+        bridge=AuthBridge(lambda **kwargs:{},lambda raw:None,
+                          lambda raw:order.append(json.loads(raw)['method']),
+                          on_logout=lambda:order.append('revoked'))
+        bridge.ready=True
+        bridge.client(b'{"id":1,"method":"account/logout"}')
+        self.assertEqual(order,['revoked','account/logout'])
+
     def test_direct_login_cannot_replace_the_harbor_account(self):
         self.login()
         before=len(self.native)

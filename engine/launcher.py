@@ -19,6 +19,7 @@ from distribution import discover_app
 from recovery import snapshot,lifecycle_lock
 from proxy import Gateway
 from accounts import account_lock_paths,take_lock
+import runtime_payload
 
 LAUNCH_HELPER=Path(__file__).resolve().parent.parent/'HarborLaunch'
 
@@ -34,17 +35,24 @@ def launch_request(store, profile_id, storage, model=None, *, access_mode='nativ
     jobs=directory(store.root/'jobs')
     job_path=jobs/f'{job}.json'
     write_json(job_path,{'status':'starting','id':profile_id,'storage':selection,'storage_path':pinned_path,'job':job,'created_at':time.time(),'access_mode':access_mode})
-    command=[sys.executable,'-I','-B',str(Path(__file__).resolve().with_name('main.py')),
-             '--root',str(store.root),'--worker',job,'--profile',profile_id,
-             '--storage',selection]
-    if model: command.extend(['--model',model])
-    if store.external!=EXTERNAL:
-        flag='--external' if Path('/Volumes') in store.external.parents else '--test-external'
-        command.extend([flag,str(store.external)])
-    proc=subprocess.Popen(command,stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,
-                          stderr=subprocess.DEVNULL,start_new_session=True,close_fds=True,
-                          env={'PATH':'/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin',
-                               'HOME':str(Path.home()),'LANG':'en_US.UTF-8'})
+    try:
+        with runtime_payload.for_launch(Path(__file__).resolve().parent,store.root,community=store.community) as payload:
+            command=[sys.executable,'-I','-B',str(payload.engine/'main.py'),
+                     '--root',str(store.root),'--worker',job,'--profile',profile_id,'--storage',selection]
+            if model: command.extend(['--model',model])
+            if store.external!=EXTERNAL:
+                flag='--external' if Path('/Volumes') in store.external.parents else '--test-external'
+                command.extend([flag,str(store.external)])
+            proc=subprocess.Popen(command,stdin=subprocess.DEVNULL,stdout=subprocess.DEVNULL,
+                                  stderr=subprocess.DEVNULL,start_new_session=True,close_fds=True,
+                                  pass_fds=payload.pass_fds,cwd=store.root,
+                                  env={'PATH':'/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin',
+                                       'HOME':str(Path.home()),'LANG':'en_US.UTF-8',**payload.environment()})
+    except (runtime_payload.PayloadError,OSError) as error:
+        data=json.loads(job_path.read_text())
+        data.update(status='error',message=str(error) if isinstance(error,runtime_payload.PayloadError) else '无法准备独立运行组件，尚未启动 Codex。')
+        write_json(job_path,data)
+        return data
     for _ in range(35):
         time.sleep(.1)
         data=json.loads(job_path.read_text())
@@ -66,6 +74,7 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
     gateway=None;proc=None;life=None;account_lock=None;backend_switch=None;slot_guards=None
     state={'id':profile_id,'storage':storage,'job':job,'status':'starting',
            'lifecycle_version':3,'desktop_spawn_attempted':False,'created_at':time.time()}
+    if runtime_payload.runtime_id():state['runtime_id']=runtime_payload.runtime_id()
     with lock_path.open('a') as lock:
         try:
             life=lifecycle_lock(store.root)
@@ -138,6 +147,7 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
             pinned['HARBOR_DESKTOP_CODEX_HOME_ALIAS']=prepared['short_home']
             pinned['HARBOR_BACKEND_SHARED_LEASES']=json.dumps([
                 str(account_path),str(store.instance_backend_lock(storage,profile_id,v2=True))])
+            pinned.update(runtime_payload.environment())
             if p['kind']=='official':
                 pinned['HARBOR_OFFICIAL_PROFILE']=profile_id
                 pinned['HARBOR_CONTROL_ROOT']=str(store.root)
@@ -169,7 +179,8 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
                                           'HOME':env['HOME']},cwd=prepared['workspace'],stdin=subprocess.PIPE,
                                   stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL,
                                   start_new_session=True,close_fds=True,
-                                  pass_fds=(lock.fileno(),life.fileno(),account_lock.fileno(),slot_claim.fileno()))
+                                  pass_fds=(lock.fileno(),life.fileno(),account_lock.fileno(),slot_claim.fileno(),
+                                            *runtime_payload.inherited_fds()))
             # Configuration travels through a private pipe, never process argv.
             try:
                 proc.stdin.write(json.dumps({'app':str(binary.parents[2]),'environment':env,
