@@ -649,11 +649,14 @@ def environment(prepared):
             'TMPDIR':prepared.get('temporary',str(osh/'tmp')),'CODEX_HOME':prepared.get('short_home',prepared['home']),
             'CODEX_SQLITE_HOME':prepared['history'],
             'CODEX_ELECTRON_USER_DATA_PATH':prepared['electron'],
-            'CODEX_SPARKLE_ENABLED':'false',
-            'CODEX_ELECTRON_SKIP_COMPUTER_USE_CANONICAL_REFRESH':'1',
             'PATH':'/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin',
             'LANG':'zh_CN.UTF-8','LC_ALL':'en_US.UTF-8',
             'NO_PROXY':'127.0.0.1,localhost','no_proxy':'127.0.0.1,localhost'}
+    if prepared.get('access_mode', 'native') != 'native':
+        # Explicit restricted acceptance modes never perform application updates.
+        # Daily launches leave both lifecycles to the signed native desktop.
+        env.update(CODEX_SPARKLE_ENABLED='false',
+                   CODEX_ELECTRON_SKIP_COMPUTER_USE_CANONICAL_REFRESH='1')
     if prepared.get('native_user_home'):
         env['HOME'] = prepared['native_user_home']
         # Let Codex and tools discover normal per-user resources. Account auth,

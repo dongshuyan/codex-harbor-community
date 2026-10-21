@@ -30,6 +30,8 @@ Local projects, membership, pins and ordering are read from the selected native 
 
 The model and permission menus are native Codex controls. Harbor does not add a testing permission preset to normal launches. Installing or updating the official Codex app can change compatibility and requires fresh verification.
 
+From Community 0.10.7, Harbor leaves the native **Check for Updates…** menu enabled. Before updating Codex, finish your work and quit the other Codex instances. After the update, reopen the desired account and history location from Harbor. The native updater’s automatic relaunch does not retain Harbor’s launch settings; do not treat that window as the previous Harbor instance.
+
 ## History-location availability
 
 Drag location cards to change the automatic-selection order. **Automatic** chooses the first available enabled location. You can always select a specific local or external location instead.
@@ -58,6 +60,8 @@ Normal launches use your real user home. Codex discovers global `~/.agents/skill
 Global `AGENTS.md`, `AGENTS.override.md` and `rules/*.rules` from the selected directory get private working copies; local edits are preserved and the sources are never written by Harbor. Their tracking file, `.harbor-native-resources.json`, is private. MCP configuration may contain local secrets, so treat the entire private data root as confidential. MCP OAuth credentials and plugin account sessions stay separate; services that require authorization for the new account may still request it.
 
 Your zsh startup files are loaded normally, followed by a small routing guard that restores this window's `CODEX_HOME` and history path and removes conflicting model-provider credential variables. Harbor does not edit your shell files. Installed plugins are still managed by Codex for the selected account; Harbor does not copy another account's plugin cache or credentials. Browser login state remains isolated per instance.
+
+Community 0.10.7 fixes bundled-plugin errors caused by different path spellings for the same instance directory. The adapter normalizes only local plugin read/install paths and retains native source validation. Per-home bundled marketplace registrations are created by Codex for the current instance instead of inherited from another home. Manually edited registrations and plugin preferences remain protected. These paths were checked against bundled CLI `0.163.0-alpha.11`; the native update menu, browser settings and existing project organization were also accepted in the private build with the same runtime sources.
 
 ## Model parameters and probes
 
@@ -95,7 +99,7 @@ When updating from an earlier version, finish work and quit Codex windows opened
 
 Some official macOS UI preferences and the `codex://` handler are shared across native instances. Harbor captures a local recovery snapshot before the first desktop launch. Restoration is explicit, requires all Codex instances to be closed, and does not restore account or history files.
 
-Computer Use auxiliary-app refresh is skipped; that feature is outside the acceptance claim. App Management permission is not required merely to run this launcher.
+From Community 0.10.7, normal launches leave native updates and Computer Use auxiliary-app refresh enabled. Harbor does not grant system permissions. Auxiliary-app refresh and signature checks passed in isolated desktop tests; Computer Use permission actions were not tested. App Management permission is not required merely to run this launcher.
 
 Community 0.10.1 reads official-account icon bytes before decoding them. Earlier versions passed another app's icon URL to AppKit, which also queried its file-access attributes and could trigger an App Management notification. Harbor does not need permission to update or delete other apps to display an icon. Leave that permission disabled; this fix changes no account, history, or system permission settings.
 

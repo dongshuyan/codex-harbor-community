@@ -10,6 +10,7 @@ import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -36,7 +37,7 @@ def assert_no_model_turns(lines):
         raise AssertionError('Unexpected model turn in native desktop log')
 
 
-def main():
+def main(*, native_features=False):
     # Positive/negative controls exercise the same external observer used below.
     assert_no_model_turns(['response_routed method=config/read errorCode=null'])
     for control in ([], ['request method=turn/start id=synthetic-unexpected']):
@@ -52,6 +53,7 @@ def main():
     result = {'status': 'running', 'root': str(root), 'real_credentials_loaded': False,
               'model_turns_sent': 0, 'ui_automation_used': False, 'observation_seconds': 14,
               'simultaneous_start': True}
+    result['native_features'] = native_features
     stage = 'setup'
     store = None
     helper=root/'HarborLaunch'
@@ -145,6 +147,9 @@ def main():
                     'memories': {'generate_memories': False, 'use_memories': False},
                     'otel': {'exporter': 'none', 'trace_exporter': 'none', 'metrics_exporter': 'none'},
                 }
+                if native_features:
+                    for feature in ('plugins', 'computer_use'):
+                        value['features'].pop(feature)
                 import tomllib
                 configured = tomllib.loads(path.read_text())
                 configured.update(value)
@@ -152,6 +157,7 @@ def main():
                 # The bundled CLI recognizes this override. Contain accidental
                 # refresh attempts in the synthetic fixture as well as inference.
                 env.update(CODEX_REFRESH_TOKEN_URL_OVERRIDE=base + '/refresh',
+                           CODEX_SPARKLE_ENABLED='false',
                            HTTP_PROXY=proxy_url, HTTPS_PROXY=proxy_url, ALL_PROXY=proxy_url,
                            http_proxy=proxy_url, https_proxy=proxy_url, all_proxy=proxy_url,
                            NO_PROXY='127.0.0.1,localhost', no_proxy='127.0.0.1,localhost')
@@ -159,6 +165,8 @@ def main():
                     '--proxy-bypass-list=127.0.0.1;localhost',
                     '--host-resolver-rules=MAP * ~NOTFOUND, EXCLUDE 127.0.0.1, EXCLUDE localhost',
                     '--disable-background-networking', '--disable-component-update'])
+                if not native_features:
+                    env['CODEX_ELECTRON_SKIP_COMPUTER_USE_CANONICAL_REFRESH'] = '1'
                 prepared_by_job[job] = prepared
 
             with patch.object(launcher,'LAUNCH_HELPER',helper):
@@ -211,6 +219,30 @@ def main():
                     for method in ('account/read', 'config/read'):
                         assert any('response_routed' in line and 'errorCode=null' in line and
                                    ('method=' + method + ' ') in line for line in lines), method
+                    if native_features:
+                        assert not any('reserved and cannot be loaded from this source' in line for line in lines)
+                        assert not any('bundled_plugins_marketplace_install_failed' in line for line in lines)
+                        import tomllib
+                        home = Path(prepared['home'])
+                        manifest = home / '.tmp/bundled-marketplaces/openai-bundled/.agents/plugins/marketplace.json'
+                        if manifest.exists():
+                            config = tomllib.loads((home / 'config.toml').read_text())
+                            assert config['marketplaces']['openai-bundled']['source'] == str(home / '.tmp/bundled-marketplaces/openai-bundled')
+                            plugin_observation = 'native_marketplace_registered'
+                        else:
+                            # A synthetic identity cannot obtain account feature
+                            # availability while remote HTTP is blocked. Record
+                            # that limit instead of claiming browser acceptance.
+                            assert any('bundled_plugins_reconcile_skipped_features_unavailable' in line for line in lines)
+                            plugin_observation = 'not_tested_offline_feature_availability_missing'
+                        helper_app = home / 'computer-use/Codex Computer Use.app'
+                        assert helper_app.is_dir(), 'Native computer-use helper refresh did not run'
+                        subprocess.run(['/usr/bin/codesign', '--verify', '--strict', str(helper_app)], check=True,
+                                       stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+                        result.setdefault('native_feature_checks', []).append({
+                            'plugin_observation': plugin_observation, 'computer_use_helper_signature_valid': True,
+                            'computer_use_permission_actions_tested': False,
+                            'updater_disabled_in_synthetic_test_only': True})
                     assert responsible(state['pid']) == state['pid'], 'Desktop must own its file access'
                     # Observe child attribution externally; never replace the
                     # production entrypoint or import its modules in an observer.
@@ -244,6 +276,15 @@ def main():
             worker.join(timeout=12)
         if any(worker.is_alive() for worker in workers):
             result.update(status='failed', cleanup_incomplete=True)
+        elif all(not core.process_matches(state) for state in snapshots):
+            # Retain JSON evidence, not copied application bundles in /tmp.
+            for prepared in prepared_by_job.values():
+                helper_app = Path(prepared['home']) / 'computer-use/Codex Computer Use.app'
+                if helper_app.is_relative_to(root):
+                    if helper_app.is_symlink():
+                        helper_app.unlink()
+                    elif helper_app.is_dir():
+                        shutil.rmtree(helper_app)
         result['instances'] = [{key: state.get(key) for key in
             ('job', 'pid', 'pid_start', 'home', 'history', 'electron', 'instance_slot')} for state in snapshots]
         result['metadata_requests'] = metadata_requests
@@ -257,4 +298,4 @@ def main():
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    raise SystemExit(main(native_features='--native-features' in sys.argv))

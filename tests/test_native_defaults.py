@@ -8,6 +8,7 @@ import sys
 import tempfile
 import tomllib
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'engine'))
 import core
@@ -37,6 +38,59 @@ class NativeDefaults(unittest.TestCase):
         prepared = prepared or self.prepared
         core.configure(prepared)
         return tomllib.loads((Path(prepared['home']) / 'config.toml').read_text())
+
+    def test_bundled_marketplace_registration_belongs_to_current_native_home(self):
+        source = str(self.source / '.tmp/bundled-marketplaces/openai-bundled')
+        original = ('[marketplaces.openai-bundled]\nsource_type="local"\nsource=' + json.dumps(source) +
+                    '\n[marketplaces.custom]\nsource_type="local"\nsource="custom-market"\n'
+                    '[plugins."browser@openai-bundled"]\nenabled=false\n')
+        self.source_config.write_text(original)
+        value = self.configure()
+        self.assertNotIn('openai-bundled', value.get('marketplaces', {}))
+        self.assertEqual(value['marketplaces']['custom']['source'], str(self.source / 'custom-market'))
+        self.assertFalse(value['plugins']['browser@openai-bundled']['enabled'])
+        self.assertEqual(self.source_config.read_text(), original)
+
+    def test_stale_native_bundled_registration_from_another_home_is_not_inherited(self):
+        for name in ('openai-bundled', 'openai-bundled-alpha'):
+            with self.subTest(name=name):
+                original = configuration.dumps({'marketplaces': {name: {
+                    'source_type': 'local',
+                    'source': '/previous/home/.tmp/bundled-marketplaces/' + name,
+                }}})
+                self.source_config.write_text(original)
+                self.assertNotIn(name, self.configure().get('marketplaces', {}))
+                self.assertEqual(self.source_config.read_text(), original)
+
+    def test_explicit_nonstandard_reserved_name_source_is_not_silently_removed(self):
+        entry = {'source_type': 'local', 'source': '/user/explicit/custom-source'}
+        self.source_config.write_text(configuration.dumps({'marketplaces': {'openai-bundled': entry}}))
+        self.assertEqual(self.configure()['marketplaces']['openai-bundled'], entry)
+
+    def test_withdraw_only_unchanged_ledger_proven_bundled_registration(self):
+        entry = {'source_type': 'local', 'source': str(self.source / '.tmp/bundled-marketplaces/openai-bundled')}
+        previous = {'marketplaces': {'openai-bundled': entry}}
+        # Reproduce the old Harbor inheritance without touching original files.
+        with patch.object(native_defaults, 'source_configuration', return_value=previous):
+            self.configure()
+        self.assertNotIn('openai-bundled', self.configure().get('marketplaces', {}))
+        self.assertEqual(self.configure(), self.configure())
+
+    def test_changed_bundled_registration_is_preserved_as_a_whole(self):
+        entry = {'source_type': 'local', 'source': str(self.source / '.tmp/bundled-marketplaces/openai-bundled')}
+        with patch.object(native_defaults, 'source_configuration', return_value={'marketplaces': {'openai-bundled': entry}}):
+            self.configure()
+        path = self.home / 'config.toml'
+        changed = dict(entry, source='/user/explicit/custom-source')
+        value = tomllib.loads(path.read_text()); value['marketplaces']['openai-bundled'] = changed
+        core.atomic_write(path, configuration.patch_document(path.read_text(), value))
+        self.assertEqual(self.configure()['marketplaces']['openai-bundled'], changed)
+        self.assertEqual(self.configure()['marketplaces']['openai-bundled'], changed)
+
+    def test_untracked_bundled_registration_is_not_removed(self):
+        entry = {'source_type': 'local', 'source': str(self.source / '.tmp/bundled-marketplaces/openai-bundled')}
+        (self.home / 'config.toml').write_text(configuration.dumps({'marketplaces': {'openai-bundled': entry}}))
+        self.assertEqual(self.configure()['marketplaces']['openai-bundled'], entry)
 
     def test_source_defaults_and_route_isolation_without_original_writes(self):
         self.source_config.write_text('''model = "gpt-6-astra"

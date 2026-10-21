@@ -19,6 +19,7 @@ from native_cli import VALUE_OPTIONS, app_server_index
 
 PATH_METHODS = {'thread/start', 'thread/resume', 'thread/fork', 'turn/start',
                 'thread/settings/update', 'command/exec'}
+PLUGIN_PATH_METHODS = {'plugin/read', 'plugin/install'}
 MAX_RPC_LINE = 64 * 1024 * 1024
 
 
@@ -67,7 +68,7 @@ def is_stdio_app_server(args):
 
 
 def rewrite_permission_paths(raw, alias, home):
-    """Replace this launch's home prefix in local permission paths, never in text.
+    """Normalize typed desktop permission/plugin paths for this instance only.
 
     Do not realpath suffixes: child symlinks must still reach Codex's native
     validation. Old aliases and non-local environment paths stay untouched.
@@ -77,7 +78,7 @@ def rewrite_permission_paths(raw, alias, home):
         value = json.loads(raw)
     except (ValueError, RecursionError):
         return raw
-    if not isinstance(value, dict) or not isinstance(value.get('method'), str) or value['method'] not in PATH_METHODS:
+    if not isinstance(value, dict) or not isinstance(value.get('method'), str) or value['method'] not in PATH_METHODS | PLUGIN_PATH_METHODS:
         return raw
     params = value.get('params')
     if not isinstance(params, dict): return raw
@@ -93,6 +94,14 @@ def rewrite_permission_paths(raw, alias, home):
             return item
         changed = True
         return home+suffix
+    if value['method'] in PLUGIN_PATH_METHODS:
+        # Native marketplace/add already canonicalizes and validates its source.
+        # read/install instead compare the supplied manifest path with CODEX_HOME.
+        # Send the same identity there; leave validation and registration native.
+        item = params.get('marketplacePath')
+        if params.get('remoteMarketplaceName') is None and isinstance(item, str) and '\x00' not in item and '//' not in item:
+            params['marketplacePath'] = path(item)
+        return json.dumps(value, separators=(',', ':')).encode()+b'\n' if changed else raw
     if 'cwd' in params: params['cwd'] = path(params['cwd'])
     if isinstance(params.get('runtimeWorkspaceRoots'), list):
         params['runtimeWorkspaceRoots'] = [path(item) for item in params['runtimeWorkspaceRoots']]

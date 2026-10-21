@@ -51,6 +51,7 @@ ChatGPT 账号或兼容 Responses 的 API，都可以搭配已登记的 Codex �
 - API 必须支持 **Responses** 协议。Harbor 不转换 Chat Completions 或 Anthropic Messages 协议。
 - 各位置的历史独立保存，不迁移、不合并、不自动同步。同一会话换窗口续聊前，请先结束上一轮生成。
 - 插着移动硬盘时，仍可手动选择本地目录。弹出硬盘前，请先关闭正在使用它的窗口。
+- 通过原生菜单更新 Codex 前，请结束生成并退出其他 Codex 实例。更新完成后，从 Harbor 重新选择账号与会话位置启动；更新器自动重开的窗口不会保留 Harbor 的启动设置。
 - Codex 更新后、使用不同 API 服务商时，可能需要重新核对兼容性。测活通过表示完成了一次短回复，不代表所有桌面功能均已验证。
 
 完整安装、多窗口与[源码构建说明](docs/USAGE.md#build-and-compatibility)见[使用指南（英文）](docs/USAGE.md)。

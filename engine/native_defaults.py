@@ -25,6 +25,17 @@ ROUTE_ENV = ('CODEX_HOME', 'CODEX_SQLITE_HOME', 'CODEX_API_KEY', 'CODEX_ACCESS_T
              'OPENAI_PROJECT_ID', 'CODEX_REFRESH_TOKEN_URL_OVERRIDE', 'CODEX_REVOKE_TOKEN_URL_OVERRIDE')
 
 
+def bundled_registration(name, entry):
+    """Recognize native per-home registrations without probing other directories."""
+    if name not in ('openai-bundled', 'openai-bundled-alpha') or not isinstance(entry, dict):
+        return False
+    path = entry.get('source')
+    if entry.get('source_type') != 'local' or not isinstance(path, str) or not path.startswith('/'):
+        return False
+    suffix = '/.tmp/bundled-marketplaces/' + name
+    return path.endswith(suffix)
+
+
 def read_source(path, limit=4 * 1024 * 1024, *, follow=False):
     """Read only; sources may use dotfile links, private destinations may not."""
     try:
@@ -85,6 +96,14 @@ def source_configuration(prepared):
     for item in value.get('marketplaces', {}).values():
         if isinstance(item, dict) and item.get('source_type') == 'local':
             absolute(item, 'source')
+    # The signed desktop materializes and registers bundled plugins for its own
+    # home. Copying another home's registration prevents native marketplace/add.
+    markets = value.get('marketplaces', {})
+    for name, item in list(markets.items()):
+        if bundled_registration(name, item):
+            del markets[name]
+    if not markets:
+        value.pop('marketplaces', None)
     return value
 
 
@@ -92,12 +111,24 @@ def inherit_configuration(prepared, value, ledger):
     """Three-way defaults: refresh unchanged inherited fields; keep local edits."""
     from configuration import ABSENT, leaves, lookup, put, remove
     source = source_configuration(prepared)
-    previous = ledger.get('inherited', {})
+    previous = copy.deepcopy(ledger.get('inherited', {}))
     protected = ledger.get('protected', [])
     if not isinstance(previous, dict) or not isinstance(protected, list) or any(
             not isinstance(p, list) or not p or any(not isinstance(k, str) for k in p) for p in protected):
         raise UserError('Harbor 原生设置记录无效，未覆盖配置。')
     blocked = {tuple(p) for p in protected}
+    # Withdraw only a proven Harbor copy. Preserve a changed/deleted table as a
+    # whole so removing an unchanged source_type cannot corrupt a user's edit.
+    markets = previous.get('marketplaces', {})
+    for name, item in list(markets.items()) if isinstance(markets, dict) else []:
+        if not bundled_registration(name, item):
+            continue
+        path = ('marketplaces', name)
+        if lookup(value, path) == item and not any(path[:len(p)] == p or p[:len(path)] == path for p in blocked):
+            remove(value, path)
+        else:
+            blocked.add(path)
+        remove(previous, path)
     for path, old in leaves(previous):
         if lookup(value, path) == old:
             remove(value, path)

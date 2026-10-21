@@ -51,6 +51,7 @@ A fresh installation has **no saved accounts, API settings or paths**. The unive
 - APIs must support **Responses**. Harbor does not convert Chat Completions or Anthropic Messages.
 - History locations remain independent; Harbor does not migrate, merge or automatically synchronize them. Finish a turn before continuing the same conversation in another window.
 - Choose a local folder even when an external drive is connected. Close windows using an external drive before ejecting it.
+- Before updating Codex through its native menu, finish your work and quit the other Codex instances. After the update, reopen your account and history pairing from Harbor. The updater’s automatic relaunch does not preserve Harbor’s launch settings.
 - Codex updates and individual API providers may need compatibility checks. A successful model check confirms a short reply, not every desktop feature.
 
 See the [full guide](docs/USAGE.md) for installation, window behavior and [building from source](docs/USAGE.md#build-and-compatibility).

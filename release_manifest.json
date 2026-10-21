@@ -102,6 +102,7 @@
     "tests/test_release_archive.py",
     "tests/test_backend_entrypoint.py",
     "tests/test_backend_paths.py",
+    "tests/test_native_plugin_paths.py",
     "tests/test_native_cli.py",
     "tests/test_native_cli_arguments.py",
     "tests/test_runtime_payload.py"
@@ -121,6 +122,6 @@
     "public/docs/images/details.en.png": "docs/images/details.en.png",
     "public/docs/images/details.zh-CN.png": "docs/images/details.zh-CN.png"
   },
-  "version": "0.10.6",
-  "private_version": "0.9.6"
+  "version": "0.10.7",
+  "private_version": "0.9.7"
 }
