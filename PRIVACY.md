@@ -18,6 +18,8 @@ Native settings are retained in each instance's `config.toml`. Selecting an exis
 
 The preservation backup and tracking files (`.harbor-config-before-preservation.toml`, `.harbor-managed-config.toml`, `.harbor-native-resources.json`) can contain private configuration, paths and MCP settings, including secrets already present in a user's MCP definitions. They are protected and excluded from source/release exports. Plugin and MCP OAuth credential files are not copied from another account. See [saved Codex settings](docs/USAGE.md#saved-codex-settings) for the scope of persistence.
 
+MCP OAuth uses per-home files by default. An explicit native `auto`/`keyring` policy, or deleting Harbor's managed default to use native `auto`, can share ordinary MCP Keychain authorization for the same server name and URL. Refresh and logout then affect that shared entry. Explicitly shared log directories can also combine native logs. Harbor preserves these choices without migrating existing credentials or changing source files.
+
 The `runtime-payloads.noindex/` directory stores verified program versions used by running instances. It contains no copied account or history data. Private and Community editions use separate roots. Content hashes check integrity; they do not protect against malicious code running as the same macOS user. Running versions and unresolved launch intents are retained when old program files are cleaned up.
 
 ## Network

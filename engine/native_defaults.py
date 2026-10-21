@@ -17,9 +17,12 @@ from core import UserError, atomic_write, directory
 FILES = '.harbor-native-resources.json'
 # These select identity, transport or persistence. Everything else stays native.
 ROUTING = frozenset('''model_provider model_providers profile profiles openai_base_url
-chatgpt_base_url model_catalog_json cli_auth_credentials_store mcp_oauth_credentials_store
-forced_login_method forced_chatgpt_workspace_id sqlite_home log_dir history
+chatgpt_base_url model_catalog_json cli_auth_credentials_store
+forced_login_method forced_chatgpt_workspace_id sqlite_home
 api_key access_token refresh_token experimental_bearer_token auth_mode codex_home'''.split())
+# Shell customizations may configure other tools' credentials and proxies. Only
+# the selected Codex locations must survive subsequent user startup files.
+SHELL_ROUTE_ENV = ('CODEX_HOME', 'CODEX_SQLITE_HOME')
 ROUTE_ENV = ('CODEX_HOME', 'CODEX_SQLITE_HOME', 'CODEX_API_KEY', 'CODEX_ACCESS_TOKEN',
              'OPENAI_API_KEY', 'OPENAI_BASE_URL', 'OPENAI_ORG_ID', 'OPENAI_ORGANIZATION',
              'OPENAI_PROJECT_ID', 'CODEX_REFRESH_TOKEN_URL_OVERRIDE', 'CODEX_REVOKE_TOKEN_URL_OVERRIDE')
@@ -74,6 +77,8 @@ def source_configuration(prepared):
         for k in ('model', 'model_reasoning_effort', 'model_context_window', 'model_auto_compact_token_limit'):
             value.pop(k, None)
     env = value.get('shell_environment_policy', {}).get('set', {})
+    # Do not replicate source routing credentials into every account's config
+    # and ledger. User shell exports remain available in their original files.
     for k in ROUTE_ENV:
         env.pop(k, None)
     # Account-scoped remote plugin provisioning must be resolved by this login.
@@ -85,7 +90,8 @@ def source_configuration(prepared):
         item = table.get(key)
         if isinstance(item, str) and item and not item.startswith(('~', '/')):
             table[key] = str(source / item)
-    for key in ('model_instructions_file', 'experimental_instructions_file'):
+    for key in ('model_instructions_file', 'experimental_instructions_file',
+                'experimental_compact_prompt_file', 'log_dir'):
         absolute(value, key)
     for item in value.get('skills', {}).get('config', []):
         absolute(item, 'path')
@@ -234,6 +240,7 @@ def shell_environment(prepared):
     if not user:
         return
     osh = Path(prepared['os_home'])
+    cleared = SHELL_ROUTE_ENV if prepared.get('access_mode', 'native') == 'native' else ROUTE_ENV
     pinned = {'HOME': user, 'ZDOTDIR': str(osh), 'CODEX_HOME': prepared['home'],
               'CODEX_SQLITE_HOME': prepared['history']}
     for name in ('.zshenv', '.zprofile', '.zshrc', '.zlogin'):
@@ -242,7 +249,7 @@ def shell_environment(prepared):
                 'export ZDOTDIR=${HARBOR_USER_ZDOTDIR:-' + shlex.quote(user) + '}\n'
                 'if [[ -r "$ZDOTDIR/' + name + '" ]]; then source "$ZDOTDIR/' + name + '"; fi\n'
                 'export HARBOR_USER_ZDOTDIR="$ZDOTDIR"\n'
-                + 'unset ' + ' '.join(ROUTE_ENV) + '\n'
+                + 'unset ' + ' '.join(cleared) + '\n'
                 + ''.join('export ' + k + '=' + shlex.quote(v) + '\n' for k, v in pinned.items()))
         path = osh / name
         current = read_source(path)

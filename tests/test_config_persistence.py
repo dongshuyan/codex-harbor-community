@@ -78,7 +78,7 @@ args = ["--example"]
         other = self.store.save_profile({'kind': 'official', 'name': 'Synthetic B'})
         value = self.configure(self.store.prepare(other['id'], 'local'))
         self.assertNotIn('desktop', value)
-        self.assertEqual(value['model_reasoning_effort'], 'low')
+        self.assertNotIn('model_reasoning_effort', value)
         self.assertEqual(history_config.read_text(), '# Original history configuration stays intact\n')
 
     def test_router_keeps_preferences_but_refreshes_transport_and_catalog(self):
@@ -113,7 +113,7 @@ args = ["--example"]
         self.edited(first)
         value = self.configure(self.store.prepare(self.account['id'], 'local', 'gpt-6-luna'))
         self.assertEqual(value['model'], 'gpt-6-luna')
-        self.assertEqual(value['model_reasoning_effort'], 'low')
+        self.assertEqual(value['model_reasoning_effort'], 'max')
         self.assertIn('max', value['desktop']['enabled-reasoning-efforts'])
 
     def test_removed_router_model_or_effort_falls_back_to_current_mapping(self):

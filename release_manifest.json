@@ -83,6 +83,7 @@
     "tests/native_icon_readonly_acceptance.py",
     "LICENSE-TOMLKIT",
     "tests/test_native_defaults.py",
+    "tests/test_backend_shell_defaults.py",
     "tests/test_auth_bridge.py",
     "tests/test_instance_slots.py",
     "tests/test_official_auth.py",
@@ -122,6 +123,6 @@
     "public/docs/images/details.en.png": "docs/images/details.en.png",
     "public/docs/images/details.zh-CN.png": "docs/images/details.zh-CN.png"
   },
-  "version": "0.10.7",
-  "private_version": "0.9.7"
+  "version": "0.10.8",
+  "private_version": "0.9.8"
 }

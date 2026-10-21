@@ -10,6 +10,7 @@ import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -37,7 +38,7 @@ def assert_no_model_turns(lines):
         raise AssertionError('Unexpected model turn in native desktop log')
 
 
-def main(*, native_features=False):
+def main(*, native_features=False, native_defaults=False):
     # Positive/negative controls exercise the same external observer used below.
     assert_no_model_turns(['response_routed method=config/read errorCode=null'])
     for control in ([], ['request method=turn/start id=synthetic-unexpected']):
@@ -54,6 +55,7 @@ def main(*, native_features=False):
               'model_turns_sent': 0, 'ui_automation_used': False, 'observation_seconds': 14,
               'simultaneous_start': True}
     result['native_features'] = native_features
+    result['native_defaults'] = native_defaults
     stage = 'setup'
     store = None
     helper=root/'HarborLaunch'
@@ -116,8 +118,12 @@ def main(*, native_features=False):
     try:
         with patch.object(storage, 'EXISTING_HOMES', {}):
             store = core.Store(root / 'control', root / 'external', mounted=lambda: True,
-                               community=False)
+                               community=False, user_home=core.directory(root / 'synthetic-user') if native_defaults else None)
             store.initialize_storage('local')
+            if native_defaults:
+                (Path(store.user_home) / '.zshrc').write_text(
+                    'export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"\n'
+                    'export HARBOR_SYNTHETIC_NATIVE_PATH=loaded\n')
             profile = store.save_profile({'kind': 'official', 'name': 'Synthetic desktop smoke'})
             canonical = account_home(store, profile['id']) / 'auth.json'
             token = synthetic_jwt()
@@ -127,9 +133,13 @@ def main(*, native_features=False):
                 'last_refresh': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())})
             original_auth = hashlib.sha256(canonical.read_bytes()).hexdigest()
             def fixture(prepared, env, args, job):
-                assert prepared['native_user_home'] is None
+                assert bool(prepared['native_user_home']) == native_defaults
                 assert Path(env['HOME']).is_relative_to(root)
-                assert Path(env['CFFIXED_USER_HOME']).is_relative_to(root)
+                if native_defaults:
+                    assert not any(k in env for k in ('CFFIXED_USER_HOME', 'PATH', 'LANG', 'LC_ALL', 'NO_PROXY', 'USER', 'LOGNAME', 'SHELL'))
+                    assert Path(prepared['native_user_home']).is_relative_to(root)
+                else:
+                    assert Path(env['CFFIXED_USER_HOME']).is_relative_to(root)
                 assert Path(prepared['home']).is_relative_to(root)
                 assert Path(prepared['history']).is_relative_to(root)
                 assert Path(prepared['electron']).is_relative_to(root)
@@ -207,7 +217,7 @@ def main(*, native_features=False):
                     assert len({state[field] for state in snapshots}) == 2, field
                 for state in snapshots:
                     prepared = prepared_by_job[state['job']]
-                    logroot = Path(prepared['os_home']) / 'Library/Logs/com.openai.codex'
+                    logroot = Path(prepared['native_user_home'] or prepared['os_home']) / 'Library/Logs/com.openai.codex'
                     lines = [line for path in logroot.rglob('*.log') for line in path.read_text().splitlines()]
                     assert_no_model_turns(lines)
                     assert not any('Desktop startup policy read failed' in line for line in lines)
@@ -255,6 +265,35 @@ def main(*, native_features=False):
                     assert guardians, 'No live production guardian observed'
                     for pid in guardians:
                         assert responsible(pid) == state['pid'], 'Backend must belong to its own desktop'
+                    if native_defaults:
+                        native_children = []
+                        for row in process_rows.splitlines():
+                            parts = row.strip().split(None, 2)
+                            if len(parts) == 3 and int(parts[1]) in guardians and str(core.CODEX) in parts[2]:
+                                native_children.append(int(parts[0]))
+                        assert native_children, 'Native app-server child must be externally observed'
+                        for pid in native_children:
+                            stamp = core.process_stamp(pid)
+                            # Do not retain the full process environment. Only
+                            # observe this owned synthetic child's PATH/cwd and
+                            # our synthetic startup marker; never print secrets.
+                            raw = subprocess.check_output(['/bin/ps', 'eww', '-p', str(pid), '-o', 'command='], text=True)
+                            match = re.search(r'(?:^| )PATH=([^ ]*)', raw)
+                            actual_path = match.group(1) if match else ''
+                            assert 'HARBOR_SYNTHETIC_NATIVE_PATH=loaded' in raw
+                            del raw
+                            assert '/opt/homebrew/bin' in actual_path.split(':')
+                            cwd_rows = subprocess.check_output(['/usr/sbin/lsof', '-a', '-p', str(pid), '-d', 'cwd', '-Fn'], text=True)
+                            cwd = next(line[1:] for line in cwd_rows.splitlines() if line.startswith('n'))
+                            assert stamp and core.process_stamp(pid) == stamp
+                            npx = shutil.which('npx', path=actual_path)
+                            assert npx, 'Native shell discovery must retain npx in PATH'
+                            probe = subprocess.run([npx, '--version'], env={'HOME': prepared['native_user_home'], 'PATH': actual_path},
+                                                   cwd=root, capture_output=True, timeout=10)
+                            assert probe.returncode == 0
+                            result.setdefault('native_environment_observations', []).append({
+                                'pid': pid, 'cwd': cwd, 'path': actual_path, 'synthetic_shell_loaded': True,
+                                'npx_resolved_and_started': True, 'full_environment_retained': False})
                 assert hashlib.sha256(canonical.read_bytes()).hexdigest() == original_auth
                 assert not any('responses' in item['path'] or 'refresh' in item['path'] for item in metadata_requests)
                 result.update(status='passed', native_backends_initialized=True, production_entrypoint_used=True, desktop_startup_logs_observed=True,
@@ -298,4 +337,4 @@ def main(*, native_features=False):
 
 
 if __name__ == '__main__':
-    raise SystemExit(main(native_features='--native-features' in sys.argv))
+    raise SystemExit(main(native_features='--native-features' in sys.argv, native_defaults='--native-defaults' in sys.argv))

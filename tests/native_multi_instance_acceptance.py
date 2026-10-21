@@ -132,8 +132,19 @@ def main():
             # This protection is independent of the native model/provider config.
             seatbelt = ('(version 1)(allow default)(deny network*)'
                 '(allow network-outbound (remote ip "localhost:*"))'
+                # The production compatibility bridge owns a loopback listener.
+                # External destinations remain denied. The bridge itself binds
+                # 127.0.0.1 explicitly (macOS local-bind filters include wildcard).
+                '(allow network-bind (local ip "localhost:*"))'
+                '(allow network-inbound (local ip "localhost:*"))'
                 '(deny file-write*)(allow file-write* (subpath ' + json.dumps(str(root)) + '))'
                 '(allow file-write* (literal "/dev/null") (literal "/dev/tty"))')
+            probe = subprocess.run(['/usr/bin/sandbox-exec', '-p', seatbelt, sys.executable, '-I', '-B', '-c',
+                'import socket\n'
+                'try: socket.create_connection(("192.0.2.1", 9), timeout=1)\n'
+                'except PermissionError: pass\n'
+                'else: raise SystemExit("Sandbox network boundary failed")\n'], capture_output=True)
+            assert probe.returncode == 0, 'Sandbox must still reject external requests'
             for index, selected in enumerate(('local', 'local', 'external'), 1):
                 stage = 'prepare-' + str(index)
                 job = str(index) * 32

@@ -164,8 +164,10 @@ def save(prepared, generated_text):
                    or not isinstance(ledger.get('before'), dict)):
         raise UserError('Harbor 配置记录格式无效，未覆盖 Codex 配置。')
     previous, before = ledger.get('applied', {}), ledger.get('before', {})
+    mcp_key = 'mcp_oauth_credentials_store'
+    deleted_mcp_default = mcp_key in previous and mcp_key not in value
     generated = tomllib.loads(generated_text)
-    defaults = {k: generated.pop(k) for k in ('model', 'model_reasoning_effort')}
+    defaults = {k: generated.pop(k) for k in ('model', 'model_reasoning_effort') if k in generated}
     # Undo unchanged owned fields before applying the next overlay. Restore the
     # prior user value, not just absence. A user edit since launch wins here.
     for field, old in leaves(previous):
@@ -180,6 +182,15 @@ def save(prepared, generated_text):
             put(value, field, {})
     from native_defaults import inherit_configuration
     inherited, protected = inherit_configuration(prepared, value, ledger)
+    if prepared.get('access_mode', 'native') == 'native':
+        if deleted_mcp_default:
+            # A deliberate deletion chooses native storage semantics. Do not
+            # refill it from either the source or our per-home safety default.
+            value.pop(mcp_key, None)
+            inherited.pop(mcp_key, None)
+            if [mcp_key] not in protected: protected = sorted([*protected, [mcp_key]])
+        if mcp_key in value or [mcp_key] in protected:
+            generated.pop(mcp_key, None)
     if prepared['profile']['kind'] == 'official':
         for field in ('openai_base_url', 'model_catalog_json'):
             value.pop(field, None)
@@ -189,7 +200,8 @@ def save(prepared, generated_text):
     for k, v in defaults.items():
         if explicit or k not in value:
             value[k] = v
-        if not isinstance(value[k], str) or not value[k]:
+    for k in ('model', 'model_reasoning_effort'):
+        if k in value and (not isinstance(value[k], str) or not value[k]):
             raise UserError('Codex 的默认模型或推理程度格式无效，未覆盖原文件。')
     if prepared['profile']['kind'] == 'api':
         mappings = {m['alias']: m for m in prepared['profile']['models']}

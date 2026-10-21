@@ -592,11 +592,15 @@ def configure(prepared, proxy_url=None, proxy_token=None):
     if model_file.is_symlink(): raise UserError('模型配置不能是符号链接。')
     if not model_file.exists() or model_file.read_text()!=model_text:
         atomic_write(model_file,model_text)
-    lines=[f'model = {json.dumps(prepared["model"])}', 'model_provider = "openai"',
-           f'model_reasoning_effort = {json.dumps(mapping["effort"] if mapping else "low")}',
-           f'sqlite_home = {json.dumps(prepared["history"])}',
+    lines=['model_provider = "openai"', f'sqlite_home = {json.dumps(prepared["history"])}',
            'cli_auth_credentials_store = '+json.dumps('ephemeral' if p['kind']=='official' and prepared.get('multi_instance') else 'file'),
            'mcp_oauth_credentials_store = "file"']
+    # Official defaults belong to Codex. A Router needs a configured alias and
+    # effort; an explicit official model request changes only the selected model.
+    if p['kind']=='api' or prepared.get('explicit_model'):
+        lines.append(f'model = {json.dumps(prepared["model"])}')
+    if mapping:
+        lines.append(f'model_reasoning_effort = {json.dumps(mapping["effort"])}')
     if p['kind']=='api': lines.append(f'model_catalog_json = {json.dumps(str(home/"smart2-models.json"))}')
     if proxy_url: lines.append('openai_base_url = '+json.dumps(proxy_url))
     if access_mode=='native':
@@ -666,4 +670,9 @@ def environment(prepared):
         user = pwd.getpwuid(os.getuid())
         env.update(USER=user.pw_name, LOGNAME=user.pw_name, SHELL=user.pw_shell or '/bin/zsh')
         env['PATH'] += ':' + str(Path(prepared['native_user_home']) / '.local/bin') + ':/usr/local/bin'
+        if prepared.get('access_mode', 'native') == 'native':
+            # NSWorkspace/native shell discovery supplies these ordinary user
+            # defaults. Only the backend's loopback transport needs proxy bypass.
+            for key in ('PATH', 'LANG', 'LC_ALL', 'USER', 'LOGNAME', 'SHELL', 'NO_PROXY', 'no_proxy'):
+                env.pop(key, None)
     return env

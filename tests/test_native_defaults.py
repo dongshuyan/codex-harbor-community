@@ -39,6 +39,93 @@ class NativeDefaults(unittest.TestCase):
         core.configure(prepared)
         return tomllib.loads((Path(prepared['home']) / 'config.toml').read_text())
 
+    def test_fresh_official_account_leaves_model_effort_to_native_and_isolates_mcp(self):
+        value = self.configure()
+        for key in ('model', 'model_reasoning_effort'):
+            self.assertNotIn(key, value)
+        self.assertEqual(value['mcp_oauth_credentials_store'], 'file')
+
+    def test_mcp_default_yields_to_source_and_returns_after_source_removal(self):
+        key = 'mcp_oauth_credentials_store'
+        self.assertEqual(self.configure()[key], 'file')
+        for mode in ('keyring', 'auto'):
+            self.source_config.write_text(f'{key}="{mode}"\n')
+            self.assertEqual(self.configure()[key], mode)
+        self.source_config.write_text('')
+        self.assertEqual(self.configure()[key], 'file')
+
+    def test_mcp_user_deletion_is_protected_for_owned_and_inherited_values(self):
+        key = 'mcp_oauth_credentials_store'
+        for inherited in (False, True):
+            with self.subTest(inherited=inherited):
+                account = self.store.save_profile({'kind': 'official', 'name': 'Synthetic deletion'})
+                prepared = self.store.prepare(account['id'], 'local')
+                self.source_config.write_text(f'{key}="keyring"\n' if inherited else '')
+                self.configure(prepared)
+                path = Path(prepared['home']) / 'config.toml'
+                value = tomllib.loads(path.read_text()); del value[key]
+                path.write_text(configuration.patch_document(path.read_text(), value))
+                self.assertNotIn(key, self.configure(prepared))
+                self.source_config.write_text(f'{key}="auto"\n')
+                self.assertNotIn(key, self.configure(prepared))
+
+    def test_restricted_mcp_policy_is_file_even_for_explicit_keyring(self):
+        self.source_config.write_text('mcp_oauth_credentials_store="keyring"\n')
+        self.prepared['access_mode'] = 'readonly'
+        self.assertEqual(self.configure()['mcp_oauth_credentials_store'], 'file')
+        self.prepared['access_mode'] = 'native'
+        self.assertEqual(self.configure()['mcp_oauth_credentials_store'], 'keyring')
+
+    def test_source_route_secrets_are_not_replicated_to_accounts_or_ledger(self):
+        values = {key: 'SYNTHETIC_SOURCE_' + key for key in native_defaults.ROUTE_ENV}
+        self.source_config.write_text(configuration.dumps({'shell_environment_policy': {'set': values}}))
+        for name in ('Synthetic A', 'Synthetic B'):
+            account = self.store.save_profile({'kind': 'official', 'name': name})
+            prepared = self.store.prepare(account['id'], 'local')
+            value = self.configure(prepared)
+            self.assertFalse(value.get('shell_environment_policy', {}).get('set', {}))
+            ledger = (Path(prepared['home']) / configuration.MANAGED).read_text()
+            for marker in values.values(): self.assertNotIn(marker, ledger)
+
+    def test_mcp_policy_and_history_options_follow_source_without_credentials_copy(self):
+        original = 'mcp_oauth_credentials_store="keyring"\nlog_dir="logs"\n[history]\npersistence="none"\n'
+        self.source_config.write_text(original)
+        (self.source / '.credentials.json').write_text('SYNTHETIC_DO_NOT_COPY')
+        value = self.configure()
+        self.assertEqual(value['mcp_oauth_credentials_store'], 'keyring')
+        self.assertEqual(value['log_dir'], str(self.source / 'logs'))
+        self.assertEqual(value['history']['persistence'], 'none')
+        self.assertFalse((self.home / '.credentials.json').exists())
+        self.assertEqual(self.source_config.read_text(), original)
+
+    def test_old_managed_mcp_file_override_withdraws_but_user_edit_survives(self):
+        original = 'mcp_oauth_credentials_store="keyring"\n'
+        self.source_config.write_text(original)
+        from unittest.mock import patch
+        with patch.object(native_defaults, 'source_configuration', return_value={}):
+            configuration.save(self.prepared, 'model="gpt-6-luna"\nmodel_reasoning_effort="low"\nmcp_oauth_credentials_store="file"\n')
+        self.assertEqual(self.configure()['mcp_oauth_credentials_store'], 'keyring')
+        path = self.home / 'config.toml'
+        path.write_text(path.read_text().replace('mcp_oauth_credentials_store = "keyring"', 'mcp_oauth_credentials_store = "auto"'))
+        self.assertEqual(self.configure()['mcp_oauth_credentials_store'], 'auto')
+        self.assertEqual(self.source_config.read_text(), original)
+
+    def test_untracked_saved_defaults_are_not_deleted_by_value_guessing(self):
+        original = ('model="gpt-6-luna"\nmodel_reasoning_effort="low"\n'
+                    'mcp_oauth_credentials_store="file"\n')
+        (self.home / 'config.toml').write_text(original)
+        value = self.configure()
+        self.assertEqual(value['model'], 'gpt-6-luna')
+        self.assertEqual(value['model_reasoning_effort'], 'low')
+        self.assertEqual(value['mcp_oauth_credentials_store'], 'file')
+
+    def test_daily_launch_does_not_replace_native_locale_path_or_proxy_policy(self):
+        value = core.environment(self.prepared)
+        for key in ('PATH', 'LANG', 'LC_ALL', 'USER', 'LOGNAME', 'SHELL', 'NO_PROXY', 'no_proxy'):
+            self.assertNotIn(key, value)
+        self.prepared['access_mode'] = 'readonly'
+        self.assertIn('PATH', core.environment(self.prepared))
+
     def test_bundled_marketplace_registration_belongs_to_current_native_home(self):
         source = str(self.source / '.tmp/bundled-marketplaces/openai-bundled')
         original = ('[marketplaces.openai-bundled]\nsource_type="local"\nsource=' + json.dumps(source) +
@@ -208,7 +295,13 @@ remote_plugin_id = "SYNTHETIC_OTHER_ACCOUNT_PLUGIN"
         self.assertNotIn('CFFIXED_USER_HOME', env)
         result = subprocess.run(['/bin/zsh', '-lic', 'print -r -- "$HOME|$CODEX_HOME|${OPENAI_API_KEY:-absent}|$HARBOR_SYNTHETIC_GLOBAL|$HARBOR_SYNTHETIC_INTERACTIVE"'],
                                 env=env, capture_output=True, text=True, timeout=10, check=True)
-        self.assertEqual(result.stdout.strip(), f'{self.user}|{self.home}|absent|loaded|loaded')
+        self.assertEqual(result.stdout.strip(), f'{self.user}|{self.home}|SYNTHETIC_WRONG_KEY|loaded|loaded')
+        for mode in ('readonly', 'workspace'):
+            self.prepared['access_mode'] = mode
+            self.configure()
+            result = subprocess.run(['/bin/zsh', '-lic', 'print -r -- "${OPENAI_API_KEY:-absent}|$CODEX_HOME|$HARBOR_SYNTHETIC_INTERACTIVE"'],
+                                    env=core.environment(self.prepared), capture_output=True, text=True, timeout=10, check=True)
+            self.assertEqual(result.stdout.strip(), f'absent|{self.home}|loaded')
 
     def test_invalid_source_is_preserved_and_dotfile_links_are_read_only(self):
         (self.home / 'config.toml').write_text('# KEEP\n')
