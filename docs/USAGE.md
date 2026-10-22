@@ -22,7 +22,9 @@ Official windows receive access tokens in memory. One native refresh owner maint
 
 Windows using the same location share native session history. The account/API selected for the current window supplies that window's requests. Finish the current turn before continuing the same conversation elsewhere; avoid simultaneous writes to one conversation. Continuing private history through a Router sends the context to that provider.
 
-From Community 0.10.6, returning from a Router to an official account also handles hosted web-search records that the native Responses Lite request would otherwise omit a tool declaration for. Harbor adds the missing declaration to the outgoing request while preserving the conversation ID and stored history. The declaration uses cached search, with external web access disabled. Existing search declarations and tool-choice constraints are preserved; when no tools were offered, Harbor disables selection of the added declaration. Inconsistent forced-tool requests are left unchanged for native validation. Model limits and other provider capabilities still apply. Official Codex performs any needed conversation compaction normally. No new conversation or manual history cleanup is required for this compatibility fix. Launch a new Codex window after upgrading, then reopen the existing chat; windows already running keep their previous components.
+Official-account model requests connect directly through Codex's native transport. Harbor does not forward those requests, add tool declarations, or override native compaction, WebSocket or reconnection behavior. Account coordination still keeps concurrent windows from refreshing the same credential independently. Only custom APIs use the local Router bridge for model and parameter mapping.
+
+Community 0.10.9 replaces the earlier official HTTP bridge. Tests with the bundled CLI `0.163.0-alpha.11` passed Router-to-official continuation, hosted-search history and native compaction without modifying stored conversations. Launch a new Codex window after upgrading, then reopen the existing chat; windows already running keep their previous components. Model limits and provider capabilities still apply.
 
 Session lists and project organization may require reopening the target window. Different locations are independent and never synchronize automatically.
 
@@ -31,6 +33,16 @@ Local projects, membership, pins and ordering are read from the selected native 
 The model and permission menus are native Codex controls. Harbor does not add a testing permission preset to normal launches. Installing or updating the official Codex app can change compatibility and requires fresh verification.
 
 From Community 0.10.7, Harbor leaves the native **Check for Updates…** menu enabled. Before updating Codex, finish your work and quit the other Codex instances. After the update, reopen the desired account and history location from Harbor. The native updater’s automatic relaunch does not retain Harbor’s launch settings; do not treat that window as the previous Harbor instance.
+
+## Interrupted connections
+
+Official connections use Codex's native network handling. Sleep, network changes or an unavailable service can still interrupt a turn. Restoring native transport removes Harbor's HTTP bridge from this path; it does not guarantee uninterrupted generation.
+
+Each Router request uses its own upstream connection. When Codex disconnects or the instance closes, Harbor cancels the corresponding connection and releases its request slot. A later request uses a fresh connection. Complete response lengths are preserved, and incomplete streams remain detectable by the client.
+
+Router connections have a 30-second timeout per TCP/TLS setup operation and a 120-second read-inactivity timeout. Cancellation during DNS, TCP or TLS setup waits for setup to return or fail; DNS and attempts across multiple addresses can exceed 30 seconds in total. These are not whole-request time limits. Harbor does not replay model requests automatically; Codex may apply its own retry policy. After an interruption, check the turn's outcome before sending it again.
+
+Local gateway events contain fixed failure categories such as timeout or incomplete response, without request bodies, key values or upstream error text. A completed HTTP transfer does not by itself prove the model emitted `response.completed`.
 
 ## History-location availability
 
@@ -130,7 +142,7 @@ Development and acceptance take place in a separate private development reposito
 
 ## Updating while Codex is open
 
-Harbor keeps each launched instance on its own verified runtime version, outside the replaceable app bundle. Closing the Harbor window leaves those compatibility processes running until the corresponding Codex instance exits. They handle Router translation, official token refresh and same-thread continuation.
+Harbor keeps each launched instance on its own verified runtime version, outside the replaceable app bundle. Closing the Harbor window leaves those compatibility processes running until the corresponding Codex instance exits. They handle Router translation and official account coordination. Official model traffic goes directly from Codex to the official service.
 
 Current launch components live under `runtime-payloads.noindex/` in the Community data folder. They contain program files and license notices, not accounts or conversation copies. Harbor retains active versions and one recent fallback; it removes only verified inactive versions during a later launch. Unresolved startup records and unknown files are retained for inspection.
 

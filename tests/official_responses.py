@@ -1,4 +1,4 @@
-"""Official Responses replay compatibility, without changing stored history.
+"""Legacy development control; not shipped or used by the Harbor launcher.
 
 The search declaration follows yetone/magpie (MIT), codex_request.go at
 c4aeaec740b98a3f0f772f60dcea517ed144354b. See LICENSE-MAGPIE.
@@ -11,7 +11,6 @@ import hmac
 import http.client
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
-import selectors
 import socket
 import threading
 import time
@@ -19,7 +18,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from proxy import MAX_BODY, NoRedirect
+from proxy import MAX_BODY
+from http_transport import Exchange as _Exchange, loopback_environment
 from native_cli import app_server_config_scope
 
 OFFICIAL_BASE = 'https://chatgpt.com/backend-api/codex'
@@ -101,76 +101,11 @@ def native_arguments(args, url):
     return app_server_config_scope(['--disable', 'enable_request_compression', *result, *pinned])
 
 
-def loopback_environment(environment):
-    """Keep OAuth/local gateway credentials away from ambient HTTP proxies."""
-    result = dict(environment)
-    entries = [value.strip() for key in ('NO_PROXY', 'no_proxy')
-               for value in result.get(key, '').split(',') if value.strip()]
-    bypass = ','.join(dict.fromkeys([*entries, '127.0.0.1', 'localhost']))
-    result.update(NO_PROXY=bypass, no_proxy=bypass)
-    return result
-
-
 def _headers(headers, *, request=False):
     excluded = HOP_HEADERS | {part.strip().lower() for value in headers.get_all('Connection', [])
                              for part in value.split(',')}
     if request: excluded |= {'host', 'content-length'}
     return [(key, value) for key, value in headers.items() if key.lower() not in excluded]
-
-
-class _Exchange:
-    """Own duplicate transport descriptors so cancellation interrupts blocking IO."""
-    def __init__(self, downstream):
-        self.downstream = downstream
-        self.sockets = []
-        self.lock = threading.Lock()
-        self.done = threading.Event()
-
-    def connected(self, sock):
-        # SSL sockets cannot be dup()ed, but duplicating their underlying fd for
-        # shutdown is safe; TLS bytes are read/written only by urllib itself.
-        duplicate = socket.fromfd(sock.fileno(), sock.family, sock.type, sock.proto)
-        with self.lock:
-            if self.done.is_set():
-                duplicate.close()
-                raise OSError('Request cancelled')
-            self.sockets.append(duplicate)
-        sock.settimeout(600)  # Native long-response inactivity budget, not a turn deadline.
-
-    def cancel(self, *, downstream=False):
-        self.done.set()
-        with self.lock:
-            sockets, self.sockets = self.sockets, []
-        for sock in sockets + ([self.downstream] if downstream else []):
-            try: sock.shutdown(socket.SHUT_RDWR)
-            except OSError: pass
-            if sock is not self.downstream: sock.close()
-
-    def watch(self):
-        try:
-            with selectors.DefaultSelector() as selector:
-                selector.register(self.downstream, selectors.EVENT_READ)
-                while not self.done.wait(.2):
-                    if selector.select(0) and not self.downstream.recv(1, socket.MSG_PEEK):
-                        self.cancel(); return
-        except (OSError, ValueError):
-            self.cancel()
-
-    def opener(self):
-        owner = self
-        class Tracked:
-            def connect(self):
-                super().connect()
-                owner.connected(self.sock)
-        class HTTP(Tracked, http.client.HTTPConnection): pass
-        class HTTPS(Tracked, http.client.HTTPSConnection): pass
-        class HTTPHandler(urllib.request.HTTPHandler):
-            def http_open(self, req): return self.do_open(HTTP, req)
-        class HTTPSHandler(urllib.request.HTTPSHandler):
-            def https_open(self, req): return self.do_open(HTTPS, req, context=self._context)
-        # Match the user's existing proxy environment for the official HTTPS
-        # destination; the native child's loopback hop separately bypasses it.
-        return urllib.request.build_opener(urllib.request.ProxyHandler(), NoRedirect(), HTTPHandler(), HTTPSHandler())
 
 
 class OfficialResponsesBridge:

@@ -62,7 +62,7 @@ See the [full guide](docs/USAGE.md) for installation, window behavior and [build
 
 API keys are stored in **macOS Keychain**. Official login files use user-only file permissions; names, URLs, model mappings and paths are local files, **not encrypted**. Community keeps its own data folder and has no configuration-upload, account-sync or analytics service.
 
-Requests go to the account or API you select. Continuing a conversation through an API also sends its history context to that provider. [Privacy and storage details →](PRIVACY.md)
+Official-account model requests connect directly through Codex. Custom APIs use Harbor’s local compatibility bridge. Account coordination stays active while Codex runs, so quitting Harbor does not sign out your windows. Continuing a conversation through an API sends its history context to that provider. [Privacy and storage details →](PRIVACY.md)
 
 ## Credits and community
 

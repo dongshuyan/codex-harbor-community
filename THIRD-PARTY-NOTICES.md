@@ -34,10 +34,11 @@ See [Credits](CREDITS.md) for design, protocol and interaction references, which
 
 ## Magpie hosted-search replay compatibility
 
-The search-declaration logic in `engine/official_responses.py` adapts Magpie's
-`DeclareSearch` implementation at commit `c4aeaec740b98a3f0f772f60dcea517ed144354b`.
-It supplies a missing tool declaration when official Codex replays hosted search
-history. Stored conversation records are not rewritten. Magpie is MIT licensed;
-the copyright notice and license are retained in [LICENSE-MAGPIE](LICENSE-MAGPIE).
+The historical search-declaration adapter in `tests/official_responses.py` adapts
+Magpie’s `DeclareSearch` implementation at commit
+`c4aeaec740b98a3f0f772f60dcea517ed144354b`. It is retained as a regression-test
+control and is not included in the app runtime. Official model requests use
+Codex’s native transport. Magpie is MIT licensed; the copyright notice and
+license remain in [LICENSE-MAGPIE](LICENSE-MAGPIE).
 
 Source: https://github.com/yetone/magpie/blob/c4aeaec740b98a3f0f772f60dcea517ed144354b/internal/provider/codex_request.go

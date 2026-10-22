@@ -60,7 +60,7 @@ def _build(community, universal, output_root, identity, keychain, certificate_sh
     shutil.copyfile(ROOT/'assets/restore-macos.command',res/'restore-macos.command');(res/'restore-macos.command').chmod(0o700)
     info={'CFBundleName':name,'CFBundleDisplayName':name,'CFBundleIdentifier':ident,'CFBundleExecutable':'CodexSmart2',
           'CFBundlePackageType':'APPL','CFBundleIconFile':'AppIcon','CFBundleShortVersionString':version,
-          'CFBundleVersion':'34','LSMinimumSystemVersion':'14.0',
+          'CFBundleVersion':'35','LSMinimumSystemVersion':'14.0',
           'NSHighResolutionCapable':True,'NSPrincipalClass':'NSApplication','CFBundleDevelopmentRegion':'zh_CN'}
     (output/'Contents/Info.plist').write_bytes(plistlib.dumps(info))
     (res/'build-manifest.json').write_text(json.dumps({'source_sha256':digest,'app_name':name,'version':version,

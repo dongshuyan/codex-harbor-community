@@ -132,11 +132,6 @@ def main():
             # This protection is independent of the native model/provider config.
             seatbelt = ('(version 1)(allow default)(deny network*)'
                 '(allow network-outbound (remote ip "localhost:*"))'
-                # The production compatibility bridge owns a loopback listener.
-                # External destinations remain denied. The bridge itself binds
-                # 127.0.0.1 explicitly (macOS local-bind filters include wildcard).
-                '(allow network-bind (local ip "localhost:*"))'
-                '(allow network-inbound (local ip "localhost:*"))'
                 '(deny file-write*)(allow file-write* (subpath ' + json.dumps(str(root)) + '))'
                 '(allow file-write* (literal "/dev/null") (literal "/dev/tty"))')
             probe = subprocess.run(['/usr/bin/sandbox-exec', '-p', seatbelt, sys.executable, '-I', '-B', '-c',
@@ -185,8 +180,14 @@ def main():
                 }
                 native_args = [part for key, value in options.items()
                                for part in ('-c', key + '=' + json.dumps(value))] + ['app-server']
+                # Only this isolated fixture supplies account-discovery data.
+                # Production pins both official URLs; native_direct_acceptance
+                # separately verifies those pins and actual CONNECT hosts.
+                bootstrap = ('import sys;sys.path.insert(0,sys.argv.pop(1));'
+                    'import native_cli;native_cli.OFFICIAL_CHATGPT_URL=sys.argv.pop(1);'
+                    'import backend_guard;backend_guard.main()')
                 command = ['/usr/bin/sandbox-exec', '-p', seatbelt, sys.executable, '-I', '-B',
-                    str(ENGINE / 'backend_guard.py'), str(slot['control'] / 'backend.lock'),
+                    '-c', bootstrap, str(ENGINE), base, str(slot['control'] / 'backend.lock'),
                     str(marker), job, str(core.CODEX), *native_args]
                 rpc = NativeRPC(command, env, workspace, root / ('native-' + str(index) + '.stderr'))
                 clients.append(rpc)

@@ -163,11 +163,10 @@ def main():
     home=os.environ.get('CODEX_HOME','')
     if adapted:validate_home_alias(alias,home)
     official=os.environ.get('HARBOR_OFFICIAL_PROFILE')
-    bridge=bool(official and is_stdio_app_server(args))
-    transport=None
+    auth_rpc=bool(official and is_stdio_app_server(args))
     child_env=None
-    if is_stdio_app_server(args):
-        from official_responses import loopback_environment
+    if not official:
+        from http_transport import loopback_environment
         child_env=loopback_environment(os.environ)
     credentials=None
     if official:
@@ -176,33 +175,25 @@ def main():
         # Ignore the canonical refresh-token file even when using the primary
         # home. Every native child, including non-app-server helpers, is ephemeral.
         args=ephemeral_arguments(args)
-        if bridge:
+        if auth_rpc:
             from auth_bridge import run
             from official_auth import credentials_for_instance
-            from official_responses import OfficialResponsesBridge,native_arguments
+            from native_cli import official_arguments
             store=Store(Path(os.environ['HARBOR_CONTROL_ROOT']))
-            transport=OfficialResponsesBridge()
             def credentials(**kwargs):
-                payload=credentials_for_instance(store,official,**kwargs)
-                transport.set_credentials(payload['accessToken'],payload['chatgptAccountId'])
-                return payload
-            args=native_arguments(args,transport.url)
-            transport.start()
-    try:
-        proc=subprocess.Popen([binary,*args],close_fds=True,stdin=subprocess.PIPE if adapted or bridge else None,
-                              stdout=subprocess.PIPE if bridge else None,env=child_env,
-                              pass_fds=tuple(item.fileno() for item in ([handle] if handle else [])+extra))
-    except BaseException:
-        if transport:transport.close()
-        raise
+                return credentials_for_instance(store,official,**kwargs)
+            args=official_arguments(args)
+    proc=subprocess.Popen([binary,*args],close_fds=True,stdin=subprocess.PIPE if adapted or auth_rpc else None,
+                          stdout=subprocess.PIPE if auth_rpc else None,env=child_env,
+                          pass_fds=tuple(item.fileno() for item in ([handle] if handle else [])+extra))
     def forward(sig,_frame):
         if proc.poll() is None: proc.send_signal(sig)
     signal.signal(signal.SIGTERM,forward);signal.signal(signal.SIGINT,forward)
     failed=threading.Event()
-    if bridge:
+    if auth_rpc:
         try:
             rewrite=(lambda raw:rewrite_permission_paths(raw,alias,home)) if adapted else (lambda raw:raw)
-            if not run(proc,credentials,rewrite=rewrite,on_logout=transport.revoke):failed.set()
+            if not run(proc,credentials,rewrite=rewrite):failed.set()
         except (OSError,ValueError,TimeoutError):
             failed.set()
             print('Harbor: official account connection closed; check login in Harbor.',file=sys.stderr)
@@ -211,7 +202,6 @@ def main():
                 proc.terminate()
                 try:proc.wait(timeout=3)
                 except subprocess.TimeoutExpired:proc.kill();proc.wait()
-            if transport:transport.close()
     elif adapted:
         def pump():
             try:

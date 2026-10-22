@@ -1,6 +1,22 @@
 """Keep native app-server configuration in one CLI argument scope."""
 
 VALUE_OPTIONS = {'-c', '--config', '--enable', '--disable', '-p', '--profile'}
+OFFICIAL_RESPONSES_URL = 'https://chatgpt.com/backend-api/codex'
+OFFICIAL_CHATGPT_URL = 'https://chatgpt.com/backend-api/'
+
+
+def official_arguments(args):
+    """Select native official identity/endpoint; leave its transport defaults alone.
+
+    The URL is Codex's native ChatgptAuthTokens default. Pinning it prevents a
+    stale Router override from receiving official access credentials. These are
+    process arguments, never edits to a user's config or persisted history.
+    """
+    return app_server_config_scope([
+        *args, '-c', 'model_provider="openai"',
+        '-c', 'openai_base_url="' + OFFICIAL_RESPONSES_URL + '"',
+        '-c', 'chatgpt_base_url="' + OFFICIAL_CHATGPT_URL + '"',
+        '-c', 'cli_auth_credentials_store="ephemeral"'])
 
 
 def app_server_index(args):

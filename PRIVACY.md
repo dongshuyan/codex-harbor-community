@@ -24,9 +24,9 @@ The `runtime-payloads.noindex/` directory stores verified program versions used 
 
 ## Network
 
-- Official login and quota reads use the installed Codex. Official desktop model calls pass through a process-local, authenticated loopback bridge to the fixed OpenAI Codex endpoint. The bridge forwards the native access token and account ID over HTTPS; it receives no refresh token and records no conversation bodies or headers. It preserves upstream error bodies for native error handling, refuses redirects, and adds a cached search-tool declaration only when needed to replay prior hosted-search history. Stored history is not rewritten.
+- Official login and quota reads use the installed Codex. Official desktop model calls use Codex’s native transport directly to the official service. Harbor does not listen on an HTTP port or forward model traffic for official accounts. Its account coordinator supplies native ephemeral authentication over private pipes and serializes refreshes; original conversation history is not rewritten.
 - API discovery sends authenticated GET requests to the URL the user selected. A probe or Router conversation sends a model request to that provider. Continuing an old conversation can include its prior context.
-- The local gateway listens on loopback, requires a per-instance token, rebuilds upstream authentication headers, rejects redirects and hides raw upstream error bodies.
+- The Router-only local gateway listens on loopback, requires a per-instance token, rebuilds upstream authentication headers, rejects redirects and hides raw upstream error bodies. It records request metadata and fixed transport-failure categories, not conversation bodies, key/header values or exception strings. Interrupted connections are closed without automatic replay by Harbor; Codex may retry under its own policy.
 - Harbor does not synchronize these files to GitHub. Publishing a repository/release is a separate maintainer operation, never an app feature.
 
 The source/release process uses an explicit file allowlist, a fresh public Git history and scans the exported tree, app and extracted archive. Runtime directories, logs, evidence, credentials and machine defaults are excluded. Scanning is a release check, not a claim that arbitrary downstream changes cannot leak data.
