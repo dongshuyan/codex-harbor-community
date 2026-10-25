@@ -31,6 +31,12 @@ import storage
 from accounts import account_home
 
 
+def require_fresh_synthetic_auth(value):
+    from official_auth import _fresh
+    if not _fresh(value):
+        raise AssertionError('Synthetic access token is missing or expired; desktop launch blocked')
+
+
 def assert_no_model_turns(lines):
     if not lines:
         raise AssertionError('Native desktop log is missing or empty')
@@ -127,10 +133,12 @@ def main(*, native_features=False, native_defaults=False):
             profile = store.save_profile({'kind': 'official', 'name': 'Synthetic desktop smoke'})
             canonical = account_home(store, profile['id']) / 'auth.json'
             token = synthetic_jwt()
-            core.write_json(canonical, {'auth_mode': 'chatgpt', 'tokens': {
+            credentials = {'auth_mode': 'chatgpt', 'tokens': {
                 'access_token': token, 'id_token': token,
                 'refresh_token': 'SYNTHETIC_UNUSED_REFRESH_TOKEN', 'account_id': 'synthetic-account'},
-                'last_refresh': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())})
+                'last_refresh': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}
+            require_fresh_synthetic_auth(credentials)
+            core.write_json(canonical, credentials)
             original_auth = hashlib.sha256(canonical.read_bytes()).hexdigest()
             def fixture(prepared, env, args, job):
                 assert bool(prepared['native_user_home']) == native_defaults

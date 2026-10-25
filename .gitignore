@@ -18,6 +18,7 @@ instances/
 instance-slots/
 login/
 jobs/
+startup-checks/
 events/
 bindings/
 recovery/
@@ -48,6 +49,8 @@ organization/
 .harbor-organization-before.json
 .harbor-managed-config.toml
 .harbor-native-resources.json
+.harbor-catalog-binding.json
+.harbor-catalog-receipt.json
 .harbor-config-before-preservation.toml
 engine/machine-defaults.json
 public-export/

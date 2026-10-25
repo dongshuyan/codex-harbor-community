@@ -14,6 +14,19 @@ from core import DEFAULT_ROOT,Store,UserError,model_options,process_matches,laun
 from launcher import launch_request,run_instance,stop_instance
 
 
+def job_status(store,ident):
+    from organization import read_object
+    if not isinstance(ident,str) or not ID.fullmatch(ident):raise UserError('启动记录标识无效。')
+    row=read_object(store.root/'jobs'/(ident+'.json'))
+    if row is None:raise UserError('启动记录暂不可用；请核对后再操作。')
+    if row.get('status')=='running' and not process_matches(row):row['status']='exited'
+    if row.get('startup_check_version')==1:
+        try:check=read_object(store.root/'startup-checks'/(ident+'.json'))
+        except (UserError,OSError):check=None
+        row['catalog_readiness']=check or {'status':'loading','message':'正在核对会话目录。'}
+    return row
+
+
 def status(store):
     import math
     jobs=[]
@@ -37,10 +50,16 @@ def status(store):
                     j.update(status='error',message='启动未完成，请检查后重新启动。')
             if j.get('status')=='running':
                 if not process_matches(j):j['status']='exited'
+                elif j.get('native_default_profile'):pass  # This entry has no lifetime guardian.
                 elif not worker['pid_start']:
                     j['message']='窗口仍在运行，但旧记录无法核对监护进程身份。请先退出此实例再重开。'
                 elif not process_matches(worker):
                     j['message']='窗口仍在运行，但监护进程已退出。请先退出此实例再重开。'
+            if j.get('startup_check_version')==1:
+                from organization import read_object
+                try:checked=read_object(store.root/'startup-checks'/(j['job']+'.json'))
+                except (UserError,OSError):checked=None
+                j['catalog_readiness']=checked or {'status':'unverified','message':'会话目录核对结果尚不可用。'}
             jobs.append(j)
         except (OSError,ValueError):continue
     storage=store.storage_snapshot()
@@ -64,6 +83,7 @@ def main():
     external.add_argument('--test-external')
     external.add_argument('--external')
     parser.add_argument('--worker');parser.add_argument('--profile');parser.add_argument('--storage');parser.add_argument('--model')
+    parser.add_argument('--native-worker',action='store_true')
     parser.add_argument('--restore-macos',action='store_true')
     args=parser.parse_args()
     try:
@@ -82,10 +102,15 @@ def main():
             from recovery import restore
             print(json.dumps(restore(store.root),ensure_ascii=False));return
         if args.worker:
-            run_instance(store,args.worker,args.profile,args.storage,args.model);return
+            if args.native_worker:
+                from native_entry import run
+                run(store,args.worker,args.storage)
+            else:run_instance(store,args.worker,args.profile,args.storage,args.model)
+            return
         data=json.loads(sys.stdin.read() or '{"action":"status"}')
         action=data.get('action')
         if action=='status':result=status(store)
+        elif action=='job_status':result=job_status(store,data['job'])
         elif action=='save':result=store.save_profile(data['profile'])
         elif action=='remove':result=store.remove_profile(data['id'],data['revision'])
         elif action=='restore':result=store.restore_profile(data['id'],data['revision'])
@@ -110,6 +135,15 @@ def main():
         elif action=='quota_read':
             from quota import fetch
             result=fetch(store,data['id'])
+        elif action in ('organization_conflicts','resolve_organization'):
+            from native_contract import require_supported
+            require_supported()
+            from organization import Organization
+            selected=store.select_storage(data['storage'])
+            history=store.registry.history_path(store.registry.entry(selected))
+            org=Organization(store)
+            if action=='resolve_organization':org.resolve(history,data['conflict'],data['choice'],data['revision'])
+            result=org.conflict_view(history)
         elif action=='cancel_probe':
             token=data.get('probe_id','')
             if not ID.fullmatch(token):raise UserError('测活标识无效。')
@@ -127,6 +161,21 @@ def main():
             finally:
                 if marker:marker.unlink(missing_ok=True)
         elif action=='launch':result=launch_request(store,data['id'],data['storage'],access_mode=data.get('access_mode','native'))
+        elif action=='native_launch':
+            selection=data.get('storage')
+            if 'history_path' in data:
+                from storage import safe_path
+                requested=safe_path(data['history_path'])
+                matches=[s['id'] for s in store.registry.entries() if store.registry.registered_history_path(s)==requested]
+                if len(matches)!=1:raise UserError('请先在 Harbor 登记这个会话位置，再使用共享原生入口。')
+                selection=matches[0]
+            result=launch_request(store,None,selection,native_entry=True)
+        elif action=='native_status':
+            from native_profile import classify
+            from organization import Organization,read_object
+            coordinator=read_object(Organization(store).path) or {}
+            processes=classify(store.root,known_roots=coordinator.get('control_roots',[]))
+            result={'original_pids':[p['pid'] for p in processes if p['private_home'] is None]}
         elif action=='stop':result=stop_instance(store,data['job'])
         else:raise UserError('未知操作。')
         print(json.dumps({'ok':True,'result':result},ensure_ascii=False))

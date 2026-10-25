@@ -539,6 +539,8 @@ class Store:
                 home=account_home(self,ident,launch_job) if official else directory(base/'instances'/ident/'codex')
                 electron=directory(base/'instances'/ident/'desktop')
                 os_home=directory(base/'instances'/ident/'os-home')
+            from sidebar_catalog import prepare_catalog
+            catalog_check=prepare_catalog(home,history)
             from organization import Organization
             Organization(self).prepare(home,history)
             if official and slot in (None,'primary'): bind_account_cache(self,ident,storage,home)
@@ -555,7 +557,7 @@ class Store:
                         native_user_home=str(self.user_home) if self.user_home else None,
                         electron=str(electron),os_home=str(os_home),workspace=str(workspace),model=model,explicit_model=explicit_model,
                         profile=p,storage_paths=self.registry.sensitive_paths(),existing_home=history!=base/'history',
-                        multi_instance=bool(slot),instance_slot=slot)
+                        multi_instance=bool(slot),instance_slot=slot,catalog_check=catalog_check)
 
 
 def configure(prepared, proxy_url=None, proxy_token=None):

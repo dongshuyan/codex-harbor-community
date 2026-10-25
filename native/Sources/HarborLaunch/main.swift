@@ -9,6 +9,7 @@ private struct Request: Decodable {
     let environment: [String: String]
     let arguments: [String]
     let activates: Bool?
+    let launchOnly: Bool?
 }
 
 private func processStamp(_ pid: pid_t) throws -> String? {
@@ -127,6 +128,9 @@ private final class Launch {
                     self.state["status"] = "running"
                     self.save()
                 }
+                // A controlled original entry only needs the verified macOS
+                // callback. Native Codex owns its account and process lifetime.
+                if request.launchOnly == true && !self.failedToWrite { exit(0) }
                 self.tick()
             }
         }

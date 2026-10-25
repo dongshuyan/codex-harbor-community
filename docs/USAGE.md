@@ -28,7 +28,13 @@ Community 0.10.9 replaces the earlier official HTTP bridge. Tests with the bundl
 
 Session lists and project organization may require reopening the target window. Different locations are independent and never synchronize automatically.
 
-Local projects, membership, pins and ordering are read from the selected native Codex home. Harbor merges organization changes only into its own cache; it does not write those changes back to the original desktop global state. Cloud-account projects and unrelated UI preferences are excluded.
+New windows using the same resolved history directory and volume share local projects, pins and ordering. Open windows keep their current view. Changes merge automatically without a confirmation dialog: independent pins are kept, unchanged older windows cannot undo newer changes, and conflicting older edits keep the committed shared value. Conflicting reorders keep the committed relative order while retaining new entries. Selection and expansion remain individual window preferences.
+
+Harbor verifies the native sidebar cache at startup and requests a native rebuild when needed. A running window is not treated as proof of a complete catalog. Missing file references, unindexed rollout files and incomplete scans remain visible as unverified results; the original history is not repaired or deleted automatically.
+
+The common local organization record lives under `~/Library/Application Support/Codex Harbor Shared/organization/`. Credentials, API configuration and cloud-account projects remain separate. Integrated native entry points may update only allowlisted local organization fields in an idle original profile. Directly opening the official app bypasses this check and does not guarantee the latest shared organization.
+
+The shared-startup adapter is verified for desktop `26.1021.31345`, build `21828`. An unverified desktop version stops the affected launch before shared-state projection. Existing windows continue to work. Check Harbor compatibility before updating the official app. Smart integration and native shortcut installation are separate opt-in delivery steps; Community does not install either automatically.
 
 The model and permission menus are native Codex controls. Harbor does not add a testing permission preset to normal launches. Installing or updating the official Codex app can change compatibility and requires fresh verification.
 

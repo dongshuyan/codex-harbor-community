@@ -11,6 +11,7 @@ import shlex
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import uuid
 
@@ -34,13 +35,14 @@ def backend_script(prepared, pinned, command):
     return text + 'exec ' + shlex.join(command) + ' "$@"\n'
 
 
-def launch_request(store, profile_id, storage, model=None, *, access_mode='native'):
+def launch_request(store, profile_id, storage, model=None, *, access_mode='native',native_entry=False):
     if access_mode not in ['native','readonly','workspace']:raise UserError('实例权限模式无效。')
     # Preparation runs inside the worker's lifetime lock, never in the caller.
     with store.registry.guard():
         selection=store.select_storage(storage)
         pinned_path=store.registry.entry(selection)['path']
-        store.profile(profile_id)
+        if native_entry:profile_id='native'
+        else:store.profile(profile_id)
     job=uuid.uuid4().hex
     jobs=directory(store.root/'jobs')
     job_path=jobs/f'{job}.json'
@@ -48,7 +50,9 @@ def launch_request(store, profile_id, storage, model=None, *, access_mode='nativ
     try:
         with runtime_payload.for_launch(Path(__file__).resolve().parent,store.root,community=store.community) as payload:
             command=[sys.executable,'-I','-B',str(payload.engine/'main.py'),
-                     '--root',str(store.root),'--worker',job,'--profile',profile_id,'--storage',selection]
+                     '--root',str(store.root),'--worker',job,'--storage',selection]
+            if native_entry:command.append('--native-worker')
+            else:command.extend(['--profile',profile_id])
             if model: command.extend(['--model',model])
             if store.external!=EXTERNAL:
                 flag='--external' if Path('/Volumes') in store.external.parents else '--test-external'
@@ -82,12 +86,18 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
     jobs=directory(store.root/'jobs');job_path=jobs/f'{job}.json'
     lock_path=store.lock_path(storage,profile_id)
     gateway=None;proc=None;life=None;account_lock=None;backend_switch=None;slot_guards=None
+    checker=None;check_cancel=threading.Event()
+    entry_gate=None
     state={'id':profile_id,'storage':storage,'job':job,'status':'starting',
            'lifecycle_version':3,'desktop_spawn_attempted':False,'created_at':time.time()}
     if runtime_payload.runtime_id():state['runtime_id']=runtime_payload.runtime_id()
     with lock_path.open('a') as lock:
         try:
+            from native_contract import require_supported
+            require_supported(APP)
             life=lifecycle_lock(store.root)
+            from startup_gate import acquire
+            entry_gate=acquire(store,job)
             try:fcntl.flock(lock,fcntl.LOCK_SH|fcntl.LOCK_NB)
             except BlockingIOError:raise UserError('该组合仍有旧版窗口或配置修改进行中，请退出旧窗口后重试。') from None
             with store.operation_guard(profile_id,shared=True),store.registry.guard():
@@ -172,7 +182,8 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
             binary=discover_app([APP])[2]
             if not binary.is_file():raise UserError('找不到已安装的官方 Codex 应用。')
             state.update(home=prepared['home'],history=prepared['history'],electron=prepared['electron'],
-                         backup=backup,instance_slot=slot)
+                         catalog_check=prepared.get('catalog_check'),
+                         backup=backup,instance_slot=slot,startup_check_version=1)
             # Reuse Codex Smart's NSWorkspace new-instance launch. Fork/exec
             # makes macOS attribute Codex's file access to Harbor's changing
             # ad-hoc signature. The signed Codex app must own its own access.
@@ -191,8 +202,20 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
             # Configuration travels through a private pipe, never process argv.
             try:
                 proc.stdin.write(json.dumps({'app':str(binary.parents[2]),'environment':env,
-                    'arguments':['--user-data-dir='+prepared['electron'],*args]}).encode())
+                    'arguments':['--user-data-dir='+prepared['electron'],*args],'activates':lab is None}).encode())
             finally:proc.stdin.close()
+            from startup_check import run as check_startup
+            checker=threading.Thread(target=check_startup,args=(job_path,
+                directory(store.root/'startup-checks')/(job+'.json'),check_cancel),daemon=True)
+            checker.start()
+            # Keep the common startup gate until macOS reports a definitive
+            # callback. Already-running windows never retain this gate.
+            callback_deadline=time.monotonic()+30
+            while proc.poll() is None and time.monotonic()<callback_deadline:
+                callback=json.loads(job_path.read_text())
+                if callback.get('desktop_launch_phase') in ('running','failed','exited'):break
+                time.sleep(.1)
+            entry_gate.close();entry_gate=None
             def terminate(_sig,_frame):
                 if proc.poll() is None:proc.terminate()
             if __import__('threading').current_thread() is __import__('threading').main_thread():
@@ -204,9 +227,17 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
                 state.update(status='error',message='系统启动助手异常退出，已保留实例记录；请确认窗口状态。')
         except UserError as e:
             state.update(status='error',message=str(e))
+            from organization import OrganizationConflictError
+            if isinstance(e,OrganizationConflictError):state['error_code']='organization_conflict'
         except Exception as e:
             state.update(status='error',message='启动失败（'+type(e).__name__+'）。配置与旧历史均未被迁移。')
         finally:
+            check_cancel.set()
+            # Do not release a reusable slot while a verification read/write is
+            # still using it. Cancellation stops the bounded check at its next
+            # I/O boundary; other accounts/slots remain independent.
+            if checker:checker.join()
+            if entry_gate:entry_gate.close()
             if proc and proc.poll() is None:
                 proc.terminate()
                 try:proc.wait(timeout=12)
@@ -227,7 +258,9 @@ def run_instance(store, job, profile_id, storage, model, *, lab=None):
             if gateway:gateway.close()
             try:
                 from organization import Organization
-                if state.get('home'):Organization(store).publish(home=state['home'])
+                if state.get('home'):
+                    require_supported(APP)
+                    Organization(store).publish(home=state['home'])
             except (OSError,UserError):
                 state['warning']='项目组织状态尚未合并；私有窗口原文件已保留，下次启动会再读取。'
             if gateway and gateway.log_failed:state['warning']='API 请求记录写入失败；请求处理未因此停止。'

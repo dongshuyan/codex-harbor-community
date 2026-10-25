@@ -68,12 +68,21 @@ struct Job: Codable, Identifiable, Equatable {
     var message: String?
     var exitCode: Int?
     var desktopLaunchPhase: String?
+    var catalogReadiness: CatalogReadiness?
+    var errorCode: String?
     enum CodingKeys: String, CodingKey {
         case job, storage, status, pid, message
         case profileID = "id"
         case exitCode = "exit_code"
         case desktopLaunchPhase = "desktop_launch_phase"
+        case catalogReadiness = "catalog_readiness"
+        case errorCode = "error_code"
     }
+}
+
+struct CatalogReadiness: Codable, Equatable {
+    var status: String
+    var message: String?
 }
 
 struct StorageLocation: Codable, Identifiable, Equatable {
@@ -397,8 +406,10 @@ enum Engine {
                     error = job.message ?? "独立窗口异常退出。"; message = nil
                 }
                 if job.status == "running", latestLaunch == job.job,
-                   message == "正在启动独立窗口，请等待运行状态更新。" {
-                    message = "独立窗口已启动；模型和续聊效果请在窗口内验收。"
+                   ["正在启动独立窗口，请等待运行状态更新。", "独立窗口已启动，正在核对会话目录。"].contains(message ?? "") {
+                    message = job.catalogReadiness?.status == "verified" ? "独立窗口已启动，会话目录已核对。" :
+                        job.catalogReadiness?.status == "unverified" ? job.catalogReadiness?.message :
+                        "独立窗口已启动，正在核对会话目录。"
                 }
                 // A projected exit can precede the worker's final error. Only
                 // stop watching a confirmed terminal state; NSWorkspace has no exit code.
@@ -478,7 +489,7 @@ enum Engine {
             let job = try JSONDecoder().decode(Job.self, from: await invoke(["action":"launch","id":selection,"storage":storage]))
             if job.status == "error" { throw EngineError(message: job.message ?? "启动失败。") }
             watchedLaunches.insert(job.job); latestLaunch = job.job
-            message = job.status == "starting" ? "正在启动独立窗口，请等待运行状态更新。" : "独立窗口已启动；模型和续聊效果请在窗口内验收。"
+            message = job.status == "starting" ? "正在启动独立窗口，请等待运行状态更新。" : "独立窗口已启动，正在核对会话目录。"
             await refresh()
         } catch { self.error = error.localizedDescription }
     }

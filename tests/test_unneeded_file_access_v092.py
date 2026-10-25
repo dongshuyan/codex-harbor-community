@@ -82,7 +82,7 @@ class UnneededFileAccess(unittest.TestCase):
     def test_project_metadata_does_not_scan_desktop_project_roots(self):
         history = self.store.registry.history_path(self.store.registry.entry('external'))
         core.write_json(history / STATE, {'local-projects': {
-            'synthetic-project': {'id': 'synthetic-project', 'rootPaths': [str(self.desktop)]}},
+            'synthetic-project': {'id': 'synthetic-project', 'name':'Synthetic', 'rootPaths': [str(self.desktop)]}},
             'project-order': ['synthetic-project'], 'electron-saved-workspace-roots': [str(self.desktop)]})
 
         with accesses_under(self.desktop) as accesses:

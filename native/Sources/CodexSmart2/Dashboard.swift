@@ -437,6 +437,11 @@ struct Dashboard: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(model.snapshot?.profiles.first { $0.id == j.profileID }?.name ?? "独立窗口")
                             Text(model.snapshot?.storages.first { $0.id == j.storage }?.name ?? j.storage).font(.caption).foregroundStyle(.secondary)
+                            if let check = j.catalogReadiness {
+                                Text(check.message ?? "正在核对会话目录")
+                                    .font(.caption).foregroundStyle(check.status == "verified" ? Color.secondary : Color.orange)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
                         }
                         Spacer()
                         Button("退出实例") { Task { await model.action(["action":"stop","job":j.job], message:"已请求退出这个实例。") } }.disabled(model.busy || j.status == "starting")

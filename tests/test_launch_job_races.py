@@ -56,8 +56,12 @@ class LaunchJobRaces(unittest.TestCase):
             def __init__(self):
                 self.stdin = io.BytesIO()
                 self.exited = False
+                self.failed_poll = False
 
             def poll(self):
+                if not self.failed_poll:
+                    self.failed_poll = True
+                    raise OSError('Synthetic worker-side callback observation failure')
                 return 0 if self.exited else None
 
             def terminate(self):
@@ -84,6 +88,7 @@ class LaunchJobRaces(unittest.TestCase):
                     'CODEX_HOME': prepared['home'], 'CODEX_SQLITE_HOME': prepared['history']}
 
         with patch.object(launcher, 'APP', app), \
+                patch('native_contract.require_supported',return_value=('synthetic','fixture')), \
                 patch.object(launcher, 'snapshot', return_value='synthetic-backup'), \
                 patch.object(launcher, 'process_stamp', return_value='synthetic-worker'), \
                 patch.object(launcher, 'configure'), patch.object(launcher, 'environment', side_effect=environment), \

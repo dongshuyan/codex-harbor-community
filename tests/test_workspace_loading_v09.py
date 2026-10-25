@@ -8,6 +8,8 @@ import json
 from pathlib import Path
 import sys
 import tempfile
+import sqlite3
+from contextlib import closing
 import unittest
 from unittest.mock import patch
 
@@ -35,6 +37,10 @@ class WorkspaceLoading(unittest.TestCase):
         self.store.initialize_storage('local')
         self.store.initialize_storage('external')
         self.history = self.store.registry.history_path(self.store.registry.entry('local'))
+        core.directory(self.history)
+        with closing(sqlite3.connect(self.history/'state_5.sqlite')) as db, db:
+            db.execute('CREATE TABLE threads(id TEXT PRIMARY KEY)')
+            db.execute("INSERT INTO threads VALUES('synthetic-thread')")
         self.metadata = {
             'local-projects': {
                 'synthetic-project': {'id': 'synthetic-project', 'name': 'Synthetic project',
@@ -68,7 +74,7 @@ class WorkspaceLoading(unittest.TestCase):
         return {
             PROJECT_CHECKPOINT: {identity: {
                 'version': 1, 'projectsMigrated': True,
-                'threadAssignmentsMigrated': True, 'threadAssignmentsReadMigrated': True,
+                'threadAssignmentsMigrated': False,
                 'pendingThreadAssignmentIds': [],
             }},
             PIN_CHECKPOINT: {identity: ['synthetic-thread']},
@@ -103,6 +109,10 @@ class WorkspaceLoading(unittest.TestCase):
         profile, prepared = self.prepare_profile()
         self.desktop_completed_migration(prepared)
         other_history = self.store.registry.history_path(self.store.registry.entry('external'))
+        core.directory(other_history)
+        with closing(sqlite3.connect(other_history/'state_5.sqlite')) as db, db:
+            db.execute('CREATE TABLE threads(id TEXT PRIMARY KEY)')
+            db.execute("INSERT INTO threads VALUES('synthetic-thread')")
         core.write_json(other_history / STATE, self.metadata)
 
         switched = self.store.prepare(profile['id'], 'external')
@@ -113,7 +123,7 @@ class WorkspaceLoading(unittest.TestCase):
         self.assertNotIn(PROJECT_CHECKPOINT, state)
         self.assertNotIn(PIN_CHECKPOINT, state)
 
-    def test_reuse_drops_checkpoints_for_foreign_host_identities(self):
+    def test_reuse_preserves_unknown_private_host_checkpoints(self):
         profile, prepared = self.prepare_profile()
         expected = self.desktop_completed_migration(prepared)
         state = self.state(prepared)
@@ -126,7 +136,8 @@ class WorkspaceLoading(unittest.TestCase):
 
         state = self.state(restarted)
         for field, checkpoint in expected.items():
-            self.assertEqual(state.get(field), checkpoint)
+            self.assertEqual(state[field]['local:'+prepared['home']],next(iter(checkpoint.values())))
+            self.assertIn('local:/synthetic-other-home',state[field])
 
     def test_unfinished_prior_binding_does_not_reuse_checkpoint(self):
         profile, prepared = self.prepare_profile()
@@ -135,16 +146,15 @@ class WorkspaceLoading(unittest.TestCase):
         value = json.loads(journal.read_text())
         writer = value['writers'][prepared['home']]
         writer['phase'] = 'pending'
-        writer['baseline'] = {'projectless-thread-ids': ['unwritten-preparation']}
+        writer['ack_snapshot'] = {'projectless-thread-ids': ['unwritten-preparation']}
         core.write_json(journal, value)
 
-        restarted = self.store.prepare(profile['id'], 'local')
+        before=(Path(prepared['home'])/STATE).read_bytes()
+        with self.assertRaisesRegex(core.UserError,'未完成'):
+            self.store.prepare(profile['id'], 'local')
+        self.assertEqual((Path(prepared['home'])/STATE).read_bytes(),before)
 
-        state = self.state(restarted)
-        self.assertNotIn(PROJECT_CHECKPOINT, state)
-        self.assertNotIn(PIN_CHECKPOINT, state)
-
-    def test_source_assignment_change_invalidates_private_project_checkpoint(self):
+    def test_legacy_source_assignment_change_preserves_actual_private_checkpoint(self):
         profile, prepared = self.prepare_profile()
         self.desktop_completed_migration(prepared)
         changed = copy.deepcopy(self.metadata)
@@ -157,9 +167,9 @@ class WorkspaceLoading(unittest.TestCase):
         state = self.state(restarted)
         self.assertEqual(state['thread-project-assignments'], {})
         self.assertEqual(state['projectless-thread-ids'], ['synthetic-thread'])
-        self.assertNotIn(PROJECT_CHECKPOINT, state)
+        self.assertEqual(state[PROJECT_CHECKPOINT]['local:'+restarted['home']]['threadAssignmentsMigrated'],False)
 
-    def test_other_writer_assignment_change_invalidates_reader_checkpoint(self):
+    def test_legacy_writer_assignment_change_preserves_actual_private_checkpoint(self):
         profile, reader = self.prepare_profile(name='Synthetic reader')
         self.desktop_completed_migration(reader)
         _, writer = self.prepare_profile(name='Synthetic writer')
@@ -174,7 +184,18 @@ class WorkspaceLoading(unittest.TestCase):
         state = self.state(restarted)
         self.assertEqual(state['thread-project-assignments'], {})
         self.assertEqual(state['projectless-thread-ids'], ['synthetic-thread'])
-        self.assertNotIn(PROJECT_CHECKPOINT, state)
+        self.assertEqual(state[PROJECT_CHECKPOINT]['local:'+restarted['home']]['threadAssignmentsMigrated'],False)
+
+    def test_native_membership_mode_requires_verified_adapter_before_projection(self):
+        profile, prepared = self.prepare_profile()
+        state = self.state(prepared)
+        state[PROJECT_CHECKPOINT] = {'local:'+prepared['home']: {
+            'projectsMigrated':True,'threadAssignmentsMigrated':True,'threadAssignmentsReadMigrated':True}}
+        path=Path(prepared['home'])/STATE
+        core.write_json(path,state);before=path.read_bytes()
+        with self.assertRaisesRegex(core.UserError,'尚未验证'):
+            self.store.prepare(profile['id'],'local')
+        self.assertEqual(path.read_bytes(),before)
 
     def test_new_home_does_not_import_source_or_other_home_checkpoints(self):
         source = copy.deepcopy(self.metadata)
